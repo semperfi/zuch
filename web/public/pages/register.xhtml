@@ -1,0 +1,79 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+xmlns:h="http://xmlns.jcp.org/jsf/html"
+xmlns:f="http://xmlns.jcp.org/jsf/core"
+xmlns:p="http://primefaces.org/ui"
+>
+    
+    <ui:composition template="/templates/simple.xhtml">
+        <ui:define name="content">
+           
+                    <h:form id="subscribeForm"  >
+                        
+                  <div align="center">  
+                      <p:panel style=" width: 40%;">
+                                     
+                       <p:panelGrid columns="3"  style=" width: 100%;">
+                           
+                           <f:facet name="header">  
+                               #{bundle["application.subscription.title"]}
+                            </f:facet> 
+                           
+                          
+               
+                           <p:outputLabel id="usernameLabel" for="username" 
+                                          value="#{bundle['user.name']}"/>
+                            <p:inputText id="username" autocomplete="off" 
+                                        value="#{userBacking.newUser.id}"
+                                        required="true" 
+                                        requiredMessage="#{bundle['user.name.validation']}" 
+                                        styleClass="form-control" />
+                            <p:message  for="username"/>                            
+                            
+                            <p:outputLabel id="passwordLabel" for="password" 
+                                           value="#{bundle['user.password']}"/>
+                            <p:password id="password" autocomplete="off"
+                                        value="#{userBacking.newUser.password}"
+                                        promptLabel="#{bundle['user.password.promptLabel']}" 
+                                        feedback="true" 
+                                        goodLabel="#{bundle['user.password.goodLabel']}"
+                                        strongLabel="#{bundle['user.password.strongLabel']}" 
+                                        weakLabel="#{bundle['user.password.weakLabel']}"
+                                        required="true" 
+                                        requiredMessage="#{bundle['user.password.validation']}"
+                                        styleClass="form-control"/>
+                            <p:message  for="password"/>
+                           
+                            
+                            <p:outputLabel id="confirmPasswordLabel" for="password" 
+                                           value="#{bundle['user.password.confirm']}"/>
+                            <p:password id="confirmPassword" autocomplete="off" 
+                                        value="#{userBacking.newUser.password2}"
+                                        styleClass="form-control"/>
+                            <p:message  for="confirmPassword"/>
+                            
+                            <h:commandButton value="#{bundle['application.register']}" 
+                                             action="#{userBacking.registerUser()}" 
+                                             styleClass="btn btn-large btn-primary"/>
+                            <p:spacer width="2" />
+                            <p:spacer width="2"/>
+                            
+                        </p:panelGrid>
+                            
+                      </p:panel>  
+                         <p:spacer height="35" />
+                         <h:link value="Back to login page"
+                                    outcome="/login"/>
+
+                       
+                         <p:messages globalOnly="true"  showSummary="true"
+                                      />    
+                       </div>            
+                    </h:form>
+            
+        </ui:define>
+     </ui:composition>  
+    
+</html>

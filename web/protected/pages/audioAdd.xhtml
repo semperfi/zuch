@@ -1,0 +1,59 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+xmlns:h="http://xmlns.jcp.org/jsf/html"
+xmlns:f="http://xmlns.jcp.org/jsf/core"
+xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition template="/templates/main.xhtml">
+        
+        <ui:define name="menu">
+            <ui:include src="/protected/views/menu.xhtml"/>
+        </ui:define>
+        
+        <ui:define name="content">
+         
+         <h:form id="audioAddForm" enctype="multipart/form-data">
+         
+                  <div align="center">    
+                      <p:panel id="uploadAudioPanel" style="width: 55%;" >
+                         <p:panelGrid columns="2" style="width: 100%;" >
+                           
+                           <f:facet name="header">  
+                               #{bundle["audio.add"]}
+                            </f:facet> 
+                                              
+                            
+                                 <p:fileUpload id="audioFileUpload" 
+                                          fileUploadListener="#{audioAddBacking.handleFileUpload}" 
+                                          multiple="true"
+                                          mode="advanced"
+                                          allowTypes="/(\.|\/)(mp3|MP3)$/"
+                                          sizeLimit="25000000"
+                                          fileLimit="10" 
+                                          
+                                          >
+                                
+                                </p:fileUpload>
+                                      
+                        
+                        </p:panelGrid>
+                      </p:panel>
+                      
+                         <p:spacer height="30" />
+                         
+                        <h:messages id="messages"  styleClass="errorMessage"/>
+                       
+                       </div>       
+          </h:form>
+           
+            
+            
+        </ui:define>
+        
+    </ui:composition>
+    
+
+    
+</html>

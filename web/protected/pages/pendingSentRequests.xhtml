@@ -1,0 +1,100 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+xmlns:h="http://xmlns.jcp.org/jsf/html"
+xmlns:f="http://xmlns.jcp.org/jsf/core"
+xmlns:p="http://primefaces.org/ui"
+xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+    <ui:composition template="/templates/main.xhtml">
+        
+        <ui:define name="menu">
+            <ui:include src="/protected/views/menu.xhtml"/>
+        </ui:define>
+        
+        <ui:define name="content">
+         
+            <h:form id="pendingSentRequestsForm" styleClass="form-search" >
+         
+                <div align="center">   
+                 
+                  <p:panel id="pendingSentRequestsPanelGroup" styleClass="table-responsive">
+                        
+                      <f:facet name="header">  
+                               CURRENT SENT REQUESTS
+                      </f:facet> 
+                           
+                      
+                      <p:dataTable value="#{sentRequestsBacking.retrieveSentPendingRequests()}"
+                                        id="pendingSentRequestsListTable"
+                                        var="currentRequest" styleClass="table" 
+                                        paginator="true"
+                                        paginatorAlwaysVisible="false"
+                                        scrollable="true"
+                                        scrollHeight="270"
+                                        rows="20"
+                                        pageLinks="-1">
+                         
+                              
+                              <p:column>
+                                <f:facet name="header">
+                                    TITLE
+                                </f:facet>
+                                    #{currentRequest.requestedAudio.id3.title}
+                                </p:column>
+                              <p:column>
+                                <f:facet name="header">
+                                    ARTIST
+                                </f:facet>
+                                    #{currentRequest.requestedAudio.id3.artist}
+                                </p:column>
+                                <p:column>
+                                <f:facet name="header">
+                                    ALBUM
+                                </f:facet>
+                                    #{currentRequest.requestedAudio.id3.album}
+                               </p:column>
+                              <p:column>
+                                <f:facet name="header">
+                                    GENRE
+                                </f:facet>
+                                    #{currentRequest.requestedAudio.id3.genre}
+                               </p:column>
+                              <p:column>
+                                <f:facet name="header">
+                                    YEAR
+                                </f:facet>
+                                    #{currentRequest.requestedAudio.id3.audioYear}
+                               </p:column>
+                              
+                              <p:column>
+                                <f:facet name="header">
+                                    OWNER
+                                </f:facet>
+                                  <h:outputText value="#{currentRequest.requestedAudio.owner.id}" 
+                                                style="color: #189807; font-weight: bolder;"/>
+                                    
+                               </p:column>
+                              
+                            
+                          </p:dataTable>
+                          
+                      </p:panel>
+                      
+                      
+                      
+                         <p:spacer height="35" />
+                         
+                         <p:growl  id="sentRequestGrowl" showDetail="true"/>
+                        
+                       </div>       
+          </h:form>
+            
+        </ui:define>
+        
+    </ui:composition>
+    
+
+    
+</html>

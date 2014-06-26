@@ -1,0 +1,48 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+xmlns:h="http://xmlns.jcp.org/jsf/html"
+xmlns:f="http://xmlns.jcp.org/jsf/core"
+xmlns:p="http://primefaces.org/ui">
+<f:view contentType="text/html">
+    <ui:insert name="metadata"/>
+    <h:head>
+        <title><ui:insert name="title">Zuch</ui:insert></title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"></meta>
+        <ui:include src="common/bootstrapCSS.xhtml"/>
+    </h:head>
+    <h:body>
+        
+        <p:layout fullPage="true">
+            
+            <p:layoutUnit position="north" size="90" 
+                          collapsible="true" 
+                          gutter="0">
+                <ui:insert name="header">
+                    <ui:include src="common/header.xhtml"/>
+                </ui:insert>
+            </p:layoutUnit>
+            
+             <p:layoutUnit position="west" collapsible="true" 
+                           gutter="0" 
+                           header="Menu">
+                <ui:insert name="menu"/>
+            </p:layoutUnit>
+            
+          
+            <p:layoutUnit position="center" gutter="0">
+                 <ui:insert name="content"/>
+            </p:layoutUnit>
+            
+            <p:layoutUnit position="south" size="30" gutter="0"
+                          header="Welcome #{request.remoteUser}">
+                <ui:insert name="footer"></ui:insert>
+            </p:layoutUnit>
+            
+        </p:layout>
+      
+        
+    </h:body>
+</f:view>
+</html>

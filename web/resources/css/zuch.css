@@ -1,0 +1,48 @@
+body{
+    background-color: #010909;
+}
+
+.ui-layout-center {                    
+   overflow-x: hidden !important;
+ }
+
+.ui-layout-center .ui-layout-unit-content {
+  overflow-y:hidden !important;
+}   
+
+.ui-widget, .ui-widget .ui-widget {
+    font-size: 96% !important;
+}
+
+
+.errorMessage {
+    color: red;
+}
+
+.ui-panelgrid td, .ui-panelgrid tr
+{
+    border-style: none !important;
+    
+}
+
+
+.auth-panel{
+     margin-top: 5px;
+     
+   -webkit-border-radius: 8px;
+    -moz-border-radius: 8px;
+    border-radius: 8px;
+    
+    -webkit-box-shadow: 3px 3px 6px 4px rgba(0, 0, 0, 0.4);
+    -moz-box-shadow: 3px 3px 6px 4px rgba(0, 0, 0, 0.4);
+    box-shadow: 3px 3px 6px 4px rgba(0, 0, 0, 0.4);
+    
+    
+    
+}
+
+.zuch-panel{
+    
+    background-color:  #f6f9f9;
+    width: 60%;
+}

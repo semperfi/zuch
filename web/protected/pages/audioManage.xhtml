@@ -1,0 +1,111 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+xmlns:h="http://xmlns.jcp.org/jsf/html"
+xmlns:f="http://xmlns.jcp.org/jsf/core"
+xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition template="/templates/main.xhtml">
+        
+        <ui:define name="menu">
+            <ui:include src="/protected/views/menu.xhtml"/>
+        </ui:define>
+        
+        <ui:define name="content">
+        
+             <div align="center">    
+                 
+                <h:form id="audioManageListForm" prependId="false" >
+                    <p:dataTable value="#{audioManageBacking.retrieveManagableAudioList()}"
+                          var="audio"
+                          id="manageableAudioData"
+                          paginator="true"
+                          paginatorAlwaysVisible="false"
+                          scrollable="true"
+                          scrollHeight="350"
+                          rows="20"
+                          pageLinks="-1">
+                 
+                          <f:facet name="header">  
+                               MANAGE AUDIO FILE
+                            </f:facet> 
+                            <p:column >
+                                <f:facet name="header">
+                                    TITLE
+                                </f:facet>
+                                    #{audio.id3.title}
+                               </p:column>
+                              <p:column>
+                                <f:facet name="header">
+                                    ARTIST
+                                </f:facet>
+                                    #{audio.id3.artist}
+                             </p:column>
+                              <p:column >
+                                <f:facet name="header">
+                                    ALBUM
+                                </f:facet>
+                                    #{audio.id3.album}
+                               </p:column>
+                              <p:column>
+                                <f:facet name="header">
+                                    GENRE
+                                </f:facet>
+                                    #{audio.id3.genre}
+                               </p:column>
+                             
+                               <p:column>
+                                <f:facet name="header">
+                                    ACTIONS
+                                </f:facet>
+                                <div align="center">
+
+                               <h:commandLink value="Download"
+                                        action="#{audioManageBacking.downloadAudio(audio)}"
+                                         style="color: #06338c; font-weight: bolder;" >
+                                                              
+                                </h:commandLink>
+                                <p:spacer width="10" />    
+                              
+                                 <p:commandLink value="Delete"  
+                                               onclick="PF('deleteCdWidget').show();"
+                                               style="color: #06338c; font-weight: bolder;"
+                                               >
+                                     <f:setPropertyActionListener 
+                                         target="#{audioManageBacking.selectedAudio}"
+                                         value="#{audio}" />
+                                </p:commandLink>
+                               
+                               </div>  
+                                   
+                               </p:column>
+                              
+                 
+                    </p:dataTable>
+                      <p:growl  id="manageGrowl" showDetail="true"/>
+                      
+                      
+                </h:form>
+             <p:confirmDialog id="deleteConfirmDialog" 
+                         message="Are you sure about deleting this file?"
+                         header="Deleting audio file" severity="alert" 
+                         widgetVar="deleteCdWidget"
+                         appendTo="@(body)">
+                   <h:form id="confirmDialogForm">
+                       <p:commandButton value="Yes" actionListener="#{audioManageBacking.deleteAudio}" 
+                           oncomplete="PF('deleteCdWidget').hide()"
+                           update=":audioManageListForm"/>
+                       <p:commandButton value="No" onclick="PF('deleteCdWidget').hide();" type="button" 
+                                        update=":audioManageListForm"/>
+                   </h:form>
+                 </p:confirmDialog>
+              </div>       
+          
+        </ui:define>
+        
+    </ui:composition>
+    
+      
+   
+</html>

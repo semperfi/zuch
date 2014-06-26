@@ -1,0 +1,165 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+xmlns:h="http://xmlns.jcp.org/jsf/html"
+xmlns:f="http://xmlns.jcp.org/jsf/core"
+xmlns:p="http://primefaces.org/ui"
+xmlns:jsf="http://xmlns.jcp.org/jsf"
+xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
+
+    <ui:composition template="/templates/main.xhtml">
+        
+        <ui:define name="menu">
+            <ui:include src="/protected/views/menu.xhtml"/>
+        </ui:define>
+        
+        <ui:define name="content">
+         
+            <h:form id="audioSearchForm" styleClass="form-search" >
+         
+                  <div align="center" >   
+                      <p:panel styleClass="zuch-panel" >
+                          <p:panelGrid columns="2" >
+                           
+                         
+                       
+                        <h:inputText id="searchTitle" styleClass="form-control"
+                                     size="40"
+                                     value="#{audioSearchBacking.searchToken}">
+                            <f:passThroughAttribute name="placeHolder" value="type search keyword..."/>
+                        </h:inputText>
+                        <h:commandButton value="Search" styleClass="btn btn-small btn-primary"
+                                         action="#{audioSearchBacking.retrieveAudioList()}">
+                            <f:ajax execute="@form" render=":audioSearchDataForm"/>
+                        </h:commandButton>
+                        
+                       
+                        
+                        </p:panelGrid>
+                      
+                      </p:panel>
+                       
+                   
+                   <div align="center">
+                     <p:panel id="sampleAudioPanel"  >
+                        <audio jsf:id="audioSample"
+                               controls="controls"
+                               autoplay="true"
+                               src="#{audioSearchBacking.retrieveAudioSampleSource()}">
+    
+                        </audio>
+                        
+                      
+                      </p:panel>
+                     <p:sticky target="sampleAudioPanel" />    
+                    </div>
+                 </div>
+            </h:form>  
+            
+            <h:form id="audioSearchDataForm" styleClass="form-search" >   
+                <div align="center" > 
+                  <h:panelGroup id="results" styleClass="table-responsive">
+                          
+                       <h:outputText id="informationMessage"
+                                        value="#{audioSearchBacking.infoMessage}"
+                                        rendered="#{audioSearchBacking.infoMessage ne null}"
+                                        styleClass="informationMessage"/>
+                          
+                          <p:dataTable value="#{audioSearchBacking.audioList}"
+                                        id="audioSearchListTable"
+                                        var="currentAudio" styleClass="table"
+                                        rendered="#{not empty audioSearchBacking.audioList}"
+                                        paginator="true"
+                                        scrollable="true"
+                                        paginatorAlwaysVisible="false"
+                                        pageLinks="-1"
+                                        rows="20"
+                                        scrollHeight="270"
+                                     >
+                              
+                              <p:column>
+                                <f:facet name="header">
+                                    TITLE
+                                </f:facet>
+                                    #{currentAudio.id3.title}
+                              </p:column>
+                              <p:column>
+                                <f:facet name="header">
+                                    ARTIST
+                                </f:facet>
+                                    #{currentAudio.id3.artist}
+                              </p:column>
+                              <p:column>
+                                <f:facet name="header">
+                                    ALBUM
+                                </f:facet>
+                                    #{currentAudio.id3.album}
+                               </p:column>
+                              <p:column>
+                                <f:facet name="header">
+                                    GENRE
+                                </f:facet>
+                                    #{currentAudio.id3.genre}
+                               </p:column>
+                              
+                              		  
+				<p:column>
+                                <f:facet name="header">
+                                    SAMPLE
+                                </f:facet>
+                                  <p:commandButton update=":audioSearchForm:sampleAudioPanel"
+                                                   icon="ui-icon-play">
+                                      <f:setPropertyActionListener 
+                                          value="#{currentAudio}"
+                                          target="#{audioSearchBacking.selectedAudio}" />
+                                  </p:commandButton>
+                                    
+                               </p:column>
+                              
+                              <p:column>
+                                <f:facet name="header">
+                                    OWNER
+                                </f:facet>
+                                  <h:outputText value="#{currentAudio.owner.id}" 
+                                                style="color: #189807; font-weight: bolder;"/>
+                                    
+                               </p:column>
+                              
+                               <p:column>
+                                <f:facet name="header">
+                                    ACTIONS
+                                </f:facet>
+                             
+                                <h:commandLink value="Request lending"
+                                               id="requestLink"
+                                               rendered="#{audioSearchBacking.showRequestLink(currentAudio)}"
+                                               action="#{audioSearchBacking.requestAudio(currentAudio)}"
+                                               style="color: #06338c; font-weight: bolder;">
+                                    <f:ajax execute="@form"  render="@form"/>
+                                </h:commandLink>
+                                 
+                                <p:tooltip for="requestLink" value="Music lended will be available to you for 3 days"/>
+                                   
+                               </p:column>
+                          
+                          </p:dataTable>
+                          
+                      </h:panelGroup>
+                      
+                      
+                      
+                         <p:spacer height="35" />
+                         
+                         <p:growl  id="searchGrowl" showDetail="true"/>
+                        
+                       </div>       
+          </h:form>
+            
+        </ui:define>
+        
+    </ui:composition>
+    
+
+    
+</html>

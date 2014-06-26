@@ -1,0 +1,173 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+xmlns:h="http://xmlns.jcp.org/jsf/html"
+xmlns:f="http://xmlns.jcp.org/jsf/core"
+xmlns:p="http://primefaces.org/ui"
+xmlns:jsf="http://xmlns.jcp.org/jsf">
+
+    <ui:composition template="/templates/main.xhtml">
+        
+        <ui:define name="menu">
+            <ui:include src="/protected/views/menu.xhtml"/>
+        </ui:define>
+        
+        <ui:define name="content">
+            <f:event listener="#{jukeBoxBacking.buildReceivedReqMsg()}" type="preRenderView" />
+          <div align="center">
+            
+              <h:form id="jukeboxPalyerForm"  prependId="false" >
+               <p:outputPanel id="playerOutputPanel"   >
+                      
+               <p:panel style="width: 70%;"  >
+                 
+                 <p:panelGrid columns="2" > 
+                 <audio jsf:id="zuchAudioPlayer"
+                            src="#{jukeBoxBacking.retrieveAudioSource()}">
+                      <f:passThroughAttribute name="controls" value="true"/>
+                      <f:passThroughAttribute name="autoplay" value="true"/>
+    
+                 </audio>
+                     
+                <canvas jsf:id="canvas" >
+                    <f:passThroughAttribute name="height" value="60"/>
+                    <f:passThroughAttribute name="width" value="200"/>
+                    
+                </canvas>
+               
+               </p:panelGrid> 
+                 
+                 <h:outputText value=" #{jukeBoxBacking.audioInfo}" />
+            
+                  <p:growl  id="jukeBoxGrowl" showDetail="true"/>
+               </p:panel> 
+                      
+                </p:outputPanel>
+              
+               </h:form>
+           
+            </div>
+           
+           
+            
+         
+            <h:form id="audioPlayListSearchForm" prependId="false" >
+               
+               <div align="right">
+                
+                        <p:inputText id="searchPlayList" size="30"
+                                        
+                                        value="#{jukeBoxBacking.searchToken}">
+                               <f:passThroughAttribute name="placeHolder" value="type search keyword..."/>
+                        </p:inputText>
+                      <h:commandButton value="serach" styleClass="btn btn-small btn-primary"
+                                     action="#{jukeBoxBacking.retrieveSearchedAudioList()}">
+                          <f:ajax execute="@form"  render=":audioListForm:audioData  searchGrowl"/>
+                     </h:commandButton>
+                 
+                </div>
+                
+                 <p:growl id="searchGrowl" />  
+            </h:form>
+           
+           
+        
+         
+         <h:form id="audioListForm" prependId="false" >
+             <div>
+                  <h:outputText id="informationMessage"
+                                value="#{jukeBoxBacking.receivedReqMessage}"
+                                rendered="#{jukeBoxBacking.receivedReqCount gt 0}"
+                                style="color: #dc4d06;"/>
+             </div>
+             
+             <p:dataTable value="#{jukeBoxBacking.audioList}" var="audio"
+                          selection="#{jukeBoxBacking.selectedAudio}"
+                          selectionMode="single"
+                          rowKey="#{audio.id}"
+                          paginator="true"
+                          paginatorPosition="top"
+                          scrollable="true"
+                          scrollHeight="270"
+                          paginatorAlwaysVisible="false"
+                          pageLinks="-1"
+                          rows="20"
+                          rowIndexVar="rowIndex"
+                          widgetVar="audioTableWidget"
+                          id="audioData" >
+                 
+                          <f:facet name="header">  
+                               My playlist
+                           </f:facet> 
+                           
+                            
+                 
+                            <p:column >
+                                <f:facet name="header">
+                                    TITLE
+                                </f:facet>
+                                    #{audio.id3.title}
+                               
+                               
+                              </p:column>
+                              <p:column>
+                                <f:facet name="header">
+                                    ARTIST
+                                </f:facet>
+                                    #{audio.id3.artist}
+                             </p:column>
+                              <p:column >
+                                <f:facet name="header">
+                                    ALBUM
+                                </f:facet>
+                                    #{audio.id3.album}
+                               </p:column>
+                              <p:column>
+                                <f:facet name="header">
+                                    GENRE
+                                </f:facet>
+                                    #{audio.id3.genre}
+                               </p:column>
+                              <p:column>
+                                <f:facet name="header">
+                                    YEAR
+                                </f:facet>
+                                    #{audio.id3.audioYear}
+                               </p:column>
+                               
+                             
+                 
+                               <p:column >
+                                   <h:outputText rendered="#{jukeBoxBacking.isPlayable(audio)}" 
+                                                 value="#{audio.status.value}" 
+                                                  style="color: #ce0612; font-weight: bolder;" />
+                                    
+                               </p:column>
+                 
+                             
+                 
+                     <f:ajax event="rowSelect" 
+                             
+                             listener="#{jukeBoxBacking.retrieveAudioInfo()}" 
+                             delay="1500"
+                             render=":jukeboxPalyerForm
+                                     :audioListForm:nextIndex"
+                             
+                             onevent="keepPlaying"/>
+                
+             </p:dataTable>
+             
+             <h:inputHidden  id="nextIndex" value="#{jukeBoxBacking.nextIndex}" /> 
+             
+         </h:form>
+          <h:outputScript  library="javascript"  name="jukeBox.js"/>  
+        </ui:define>
+        
+    </ui:composition>
+        
+
+    
+</html>
+           
+
