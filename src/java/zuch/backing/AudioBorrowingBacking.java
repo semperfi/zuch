@@ -63,7 +63,7 @@ public class AudioBorrowingBacking extends BaseBacking implements Serializable{
         long currentId = -1;
         
         if(selectedAudio != null){
-            if(selectedAudio.getStatus().equals(AudioStatus.LENDED)){
+            if(selectedAudio.getStatus().equals(AudioStatus.LENT)){
                 currentId = selectedAudio.getId();
                 
                 String token = UUID.randomUUID().toString();

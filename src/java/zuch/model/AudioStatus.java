@@ -12,7 +12,7 @@ package zuch.model;
  */
 public enum AudioStatus {
     
-    LENDED("LENT"),
+    LENT("LENT"),
     LENDING_REQUESTED("LENDING REQUESTED"),
     IN_JUKEBOX("IN JUKEBOX");
     

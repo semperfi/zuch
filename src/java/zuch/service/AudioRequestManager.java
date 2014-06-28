@@ -74,7 +74,7 @@ public class AudioRequestManager implements AudioRequestManagerLocal{
         
         //set audio status
         Audio updatableAudio = updatableAudiorequest.getRequestedAudio();
-        updatableAudio.setStatus(AudioStatus.LENDED);
+        updatableAudio.setStatus(AudioStatus.LENT);
         
         em.merge(updatableAudio);
         em.flush();
