@@ -55,7 +55,7 @@ public class ReceivedRequestsBacking extends BaseBacking implements Serializable
         request.setResponseTime(System.currentTimeMillis());
         
         Audio audio = request.getRequestedAudio();
-        audio.setStatus(AudioStatus.LENDED);
+        audio.setStatus(AudioStatus.LENT);
         //audio.getAudioRequests().add(request);
         
         audioLending.setAudio(audio);
