@@ -35,15 +35,14 @@
     </welcome-file-list>
     
     
-    
     <security-constraint>
         <display-name>securityConstraint</display-name>
         
         <web-resource-collection>
-        <web-resource-name>resources</web-resource-name>
-        <url-pattern>/protected/*</url-pattern>
-        <url-pattern>/faces/protected/*</url-pattern>
-        
+            <web-resource-name>resources</web-resource-name>
+            <url-pattern>/protected/*</url-pattern>
+            <url-pattern>/faces/protected/*</url-pattern>
+            <url-pattern>/rs/*</url-pattern>
         </web-resource-collection>
         <auth-constraint>
         <role-name>ZUCH_USER</role-name>
@@ -60,6 +59,8 @@
         <form-error-page>/faces/public/pages/nologin.xhtml</form-error-page>
         </form-login-config>
     </login-config>
+    
+  
     
     <error-page>
         <error-code>404</error-code>
