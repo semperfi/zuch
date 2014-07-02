@@ -19,7 +19,7 @@ import org.apache.commons.lang3.SystemUtils;
 public class ZFileSystemUtils {
     
     public  String getTempMp3UrlString(){
-         String path = "";
+       String path = "";
         
        if(SystemUtils.IS_OS_WINDOWS){
             
@@ -28,6 +28,36 @@ public class ZFileSystemUtils {
         }else if(SystemUtils.IS_OS_UNIX){
             
             path = "/root/zuch/tmp/";
+        }
+       
+       return path;
+  }
+    
+  public String getSearchDataPathString(){
+      String path = "";
+        
+       if(SystemUtils.IS_OS_WINDOWS){
+            
+            path =  "c:/zuch/search_data";
+            
+        }else if(SystemUtils.IS_OS_UNIX){
+            
+            path = "/root/zuch/search_data";
+        }
+       
+       return path;
+  }
+  
+  public String getSearchIndexPathString(){
+      String path = "";
+        
+       if(SystemUtils.IS_OS_WINDOWS){
+            
+            path =  "c:/zuch/search_index/";
+            
+        }else if(SystemUtils.IS_OS_UNIX){
+            
+            path = "/root/zuch/search_index/";
         }
        
        return path;

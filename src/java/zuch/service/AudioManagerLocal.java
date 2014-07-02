@@ -19,7 +19,7 @@ import zuch.model.Audio;
 @Local
 public interface AudioManagerLocal {
     
-    public void registerAudio(Audio audio) throws AudioAlreadyExists;
+    public Audio registerAudio(Audio audio) throws AudioAlreadyExists;
     public Audio updateAudio(Audio audio);
     public Audio getAudio(Long id) throws AudioNotFound;
     public void removeAudio(Long id) throws AudioNotFound;

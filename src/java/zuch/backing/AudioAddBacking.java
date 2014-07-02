@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
+import javax.ejb.Asynchronous;
 import javax.inject.Named;
 import javax.enterprise.context.RequestScoped;
 import javax.faces.application.FacesMessage;
@@ -31,6 +32,8 @@ import zuch.model.Audio;
 import zuch.model.AudioContent;
 import zuch.model.AudioStatus;
 import zuch.model.ID3;
+import zuch.search.Content;
+import zuch.search.Indexer;
 import zuch.service.AudioManagerLocal;
 import zuch.service.ZUserManagerLocal;
 import zuch.util.AudioUtils;
@@ -53,6 +56,8 @@ public class AudioAddBacking extends BaseBacking implements Serializable{
     @Inject JukeBoxBacking jukeBoxBacking;
     @Inject AudioUtils audioUtils;
     @Inject ZFileSystemUtils fileSystemUtils;
+    @Inject Content searchContent;
+    @Inject Indexer indexer;
     
     private Part filePart;
     
@@ -184,6 +189,7 @@ public class AudioAddBacking extends BaseBacking implements Serializable{
                 newAudio.setContent(newContent);
                 ID3 id3 = audioUtils.getID3Tag(content, uploadedFile.getFileName());
                 
+                
                
                 if(id3.getTitle() == null){
                     id3.setTitle(fileSystemUtils.normalizeFileName(uploadedFile.getFileName()));
@@ -199,9 +205,10 @@ public class AudioAddBacking extends BaseBacking implements Serializable{
                 newAudio.setStatus(AudioStatus.IN_JUKEBOX);
 
                 audioManager.registerAudio(newAudio);
-                
                 uploadedFile = null;
-            
+                
+                indexAudioContent(id3);
+                
             } catch ( AudioAlreadyExists | UserNotFound ex) {
                 
                  log.warning("This audio file already exists in your jukebox!");
@@ -214,6 +221,14 @@ public class AudioAddBacking extends BaseBacking implements Serializable{
        //refresh audio list to get latest tracks in view
        jukeBoxBacking.retrieveAudioList();
        
+   }
+   
+   @Asynchronous
+   private void indexAudioContent(ID3 id3){
+       searchContent.buildContent(id3);
+       indexer.buildIndex(id3);
+     
+            
    }
    
     public Part getFilePart() {

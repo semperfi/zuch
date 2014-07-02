@@ -40,7 +40,7 @@ public class AudioManager implements AudioManagerLocal{
 
     @Interceptors(LoggingInterceptor.class)
     @Override
-    public void registerAudio(Audio audio) throws AudioAlreadyExists {
+    public Audio registerAudio(Audio audio) throws AudioAlreadyExists {
         
        // String msg = "LINK TO RETRIEVE: " + selectedMp3Link;
         Logger.getLogger(AudioManager.class.getName()).info("CALLING REGISTER AUDIO...");
@@ -69,7 +69,7 @@ public class AudioManager implements AudioManagerLocal{
             
             log.severe(ex.getMessage());
         }
-        //return audio;
+        return audio;
     }
 
     @Override

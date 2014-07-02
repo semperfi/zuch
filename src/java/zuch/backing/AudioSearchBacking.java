@@ -23,6 +23,7 @@ import zuch.model.AudioRequestStatus;
 import zuch.model.AudioStatus;
 import zuch.model.PlayTokens;
 import zuch.model.ZUser;
+import zuch.search.Searcher;
 import zuch.service.AudioManagerLocal;
 import zuch.service.AudioRequestManagerLocal;
 import zuch.service.ZUserManagerLocal;
@@ -40,6 +41,7 @@ public class AudioSearchBacking extends BaseBacking implements Serializable{
     @Inject AudioRequestManagerLocal audioRequestManager;
     @Inject ZUserManagerLocal userManager;
     @Inject PlayTokens playTokens;
+    @Inject Searcher searcher;
   
 
     private String searchToken;
@@ -54,7 +56,7 @@ public class AudioSearchBacking extends BaseBacking implements Serializable{
     
       if(!searchToken.isEmpty()){
          audioList = audioManager.searchForAudio(searchToken);
-        
+         searcher.search(searchToken);
         if(audioList.isEmpty()){
             infoMessage = "No audio results found";
         }else{
