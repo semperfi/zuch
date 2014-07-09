@@ -56,7 +56,8 @@ public class AudioSearchBacking extends BaseBacking implements Serializable{
     
       if(!searchToken.isEmpty()){
          audioList = audioManager.searchForAudio(searchToken);
-         searcher.search(searchToken);
+         searcher.searchEn(searchToken);
+        // searcher.searchFr(searchToken);
         if(audioList.isEmpty()){
             infoMessage = "No audio results found";
         }else{
@@ -166,6 +167,13 @@ public class AudioSearchBacking extends BaseBacking implements Serializable{
             Logger.getLogger(JukeBoxBacking.class.getName()).info(msg);
            
        }
+   }
+    
+   public String highlight(String field){
+       
+     
+       
+       return field;
    }
 
     public String getSearchToken() {

@@ -88,57 +88,7 @@ public class AudioAddBacking extends BaseBacking implements Serializable{
         }
     }
     
-    /*
-    public void  saveAudio(){
-        Logger.getLogger(AudioAddBacking.class.getName()).info("CALLING SAVE AUDIO...");
-        
-     // synchronized(this){
-      
-            try {
-            byte[] content = IOUtils.toByteArray(filePart.getInputStream());
-            int sampleSize = content.length / 4;
-            byte[] sample = Arrays.copyOfRange(content, 0, sampleSize);
-            //System.arraycopy(content, 0, sample, 0, sample.length);
-            
-            Audio newAudio = new Audio();
-            AudioContent newContent = new AudioContent();
-            
-            newContent.setContent(content);
-            newContent.setContentSample(sample);
-            newAudio.setContent(newContent);
-            ID3 id3 = audioUtils.getID3Tag(content, filePart.getSubmittedFileName());
-            
-           // AudioUtils.getMetaData(content, filePart.getSubmittedFileName());
-           
-           
-            if(id3.getTitle() == null){
-                id3.setTitle(ZFileSystemUtils.normalizeFileName(filePart.getSubmittedFileName()));
-            }else if(id3.getTitle().isEmpty()){
-                id3.setTitle(ZFileSystemUtils.normalizeFileName(filePart.getSubmittedFileName()));
-            }
-            
-            String footPrint = audioUtils.getAudioFootPrint(id3);
-            id3.setFootPrint(footPrint);
-            newAudio.setId3(id3);
-            String currentUser = getCurrentUser();
-            newAudio.setOwner(userManager.getZuchUser(currentUser));
-            newAudio.setStatus(AudioStatus.IN_JUKEBOX);
-            
-            audioManager.registerAudio(newAudio);
-            
-            
-            
-        } catch (IOException | AudioAlreadyExists | UserNotFound ex) {
-           
-            log.warning("This audio file already exists in your jukebox!");
-        }
-            
-     // }
-        
-        
-        
-    }
-  */
+   
   
   private UploadedFile uploadedFile;
   
@@ -170,7 +120,7 @@ public class AudioAddBacking extends BaseBacking implements Serializable{
    
        
        log.fine("CALLING HANDLE FILE UPLOAD...");
-       synchronized(this){
+      // synchronized(this){
        
          try {
                 uploadedFile = event.getFile();
@@ -204,10 +154,10 @@ public class AudioAddBacking extends BaseBacking implements Serializable{
                 newAudio.setOwner(userManager.getZuchUser(currentUser));
                 newAudio.setStatus(AudioStatus.IN_JUKEBOX);
 
-                audioManager.registerAudio(newAudio);
+                Audio registredAudio = audioManager.registerAudio(newAudio);
                 uploadedFile = null;
                 
-                indexAudioContent(id3);
+                indexAudioContent(registredAudio,id3);
                 
             } catch ( AudioAlreadyExists | UserNotFound ex) {
                 
@@ -217,16 +167,17 @@ public class AudioAddBacking extends BaseBacking implements Serializable{
                log.severe(ex.getMessage());
            }
 
-       }
+      // }
        //refresh audio list to get latest tracks in view
        jukeBoxBacking.retrieveAudioList();
        
    }
    
    @Asynchronous
-   private void indexAudioContent(ID3 id3){
-       searchContent.buildContent(id3);
-       indexer.buildIndex(id3);
+   private void indexAudioContent(Audio audio,ID3 id3){
+      // searchContent.buildContent(id3);
+       indexer.buildEnIndex(audio,id3);
+      // indexer.buildFrIndex(audio,id3);
      
             
    }

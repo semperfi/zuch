@@ -15,16 +15,19 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.inject.Named;
+import javax.ejb.Asynchronous;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.servlet.http.HttpServletResponse;
 import zuch.exception.AudioNotFound;
 import zuch.model.Audio;
+import zuch.model.ID3;
 import zuch.model.ZConstants;
+import zuch.search.Indexer;
 import zuch.service.AudioManagerLocal;
 
 /**
@@ -36,6 +39,8 @@ import zuch.service.AudioManagerLocal;
 public class AudioManageBacking extends BaseBacking implements Serializable{
     
      @Inject AudioManagerLocal audioManager;
+     @Inject JukeBoxBacking jukeBoxBacking;
+     @Inject Indexer indexer;
      
      private Audio selectedAudio;
 
@@ -120,6 +125,9 @@ public class AudioManageBacking extends BaseBacking implements Serializable{
                     + " has been deleted!";
            getContext().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, 
            msg, ""));
+           deleteId3FromIndex(selectedAudio.getId3());
+           //refresh audio list to get latest tracks in view
+           jukeBoxBacking.retrieveAudioList();
         } catch (AudioNotFound ex) {
              String msg = "File cannot be deleted!";
             getContext().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, 
@@ -128,7 +136,13 @@ public class AudioManageBacking extends BaseBacking implements Serializable{
         }
    }
     
-    
+   @Asynchronous
+   private void deleteId3FromIndex(ID3 id3){
+       
+       indexer.deleteDocument(id3);
+     
+            
+   }
     
      public List<Audio> retrieveManagableAudioList(){
          return audioManager.getAllUserAudiosInJukebox(getCurrentUser());

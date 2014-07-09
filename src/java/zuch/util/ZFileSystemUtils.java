@@ -62,6 +62,21 @@ public class ZFileSystemUtils {
        
        return path;
   }
+  
+  public String getFrSearchIndexPathString(){
+      String path = "";
+        
+       if(SystemUtils.IS_OS_WINDOWS){
+            
+            path =  "c:/zuch/fr_search_index/";
+            
+        }else if(SystemUtils.IS_OS_UNIX){
+            
+            path = "/root/zuch/fr_search_index/";
+        }
+       
+       return path;
+  }
     
   public String normalizeFileName(String fileName){
   

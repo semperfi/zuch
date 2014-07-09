@@ -108,13 +108,28 @@ public class AudioUtils {
                     String tMsg = "Track: " + id3v1Tag.getTrack();
                     log.fine(tMsg);
                     
-                    id3.setTrack(id3v1Tag.getTrack());
-                    id3.setArtist(id3v1Tag.getArtist());
-                    id3.setTitle(id3v1Tag.getTitle());
-                    id3.setAlbum(id3v1Tag.getAlbum());
-                    id3.setAudioYear(id3v1Tag.getYear());
-                    id3.setGenre(id3v1Tag.getGenreDescription());
-                    id3.setComment(id3v1Tag.getComment());
+                    String track = 
+                            (id3v1Tag.getTrack() != null) ? id3v1Tag.getTrack().trim():"";
+                    String artist = 
+                            (id3v1Tag.getArtist() != null) ? id3v1Tag.getArtist().trim():"";
+                    String title = 
+                            (id3v1Tag.getTitle() != null) ? id3v1Tag.getTitle().trim():"";
+                    String album = 
+                            (id3v1Tag.getAlbum() != null) ? id3v1Tag.getAlbum().trim():"";
+                    String year = 
+                            (id3v1Tag.getYear() != null) ? id3v1Tag.getYear().trim():"";
+                    String genre = 
+                            (id3v1Tag.getGenreDescription() != null) ? id3v1Tag.getGenreDescription().trim():"";
+                    String comment = 
+                            (id3v1Tag.getComment() != null) ? id3v1Tag.getComment().trim():"";
+                    
+                    id3.setTrack(track);
+                    id3.setArtist(artist);
+                    id3.setTitle(title);
+                    id3.setAlbum(album);
+                    id3.setAudioYear(year);
+                    id3.setGenre(genre);
+                    id3.setComment(comment);
                     
                     
                   }
