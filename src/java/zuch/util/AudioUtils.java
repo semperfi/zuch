@@ -36,6 +36,7 @@ import org.apache.commons.lang3.SystemUtils;
 import zuch.model.Audio;
 import zuch.model.AudioContent;
 import zuch.model.ID3;
+import zuch.model.ZConstants;
 
 /**
  *
@@ -71,6 +72,23 @@ public class AudioUtils {
         
         return hash;
     }
+     
+   public String getAudioFootPrint(byte[] content){
+       
+        String hash ="";
+        try {
+           
+            int part = content.length/ZConstants.PART_FOR_FOOTPRINT;
+            byte[] tmpPart = Arrays.copyOfRange(content, 2*part, 3*part);
+            MessageDigest msgDigest = MessageDigest.getInstance("SHA-256");
+            byte[] hashVal = msgDigest.digest(tmpPart);
+            hash = Hex.encodeHexString(hashVal);
+        } catch (NoSuchAlgorithmException ex) {
+            log.severe(ex.getMessage());
+        }
+       
+        return hash;
+   }
      
    public ID3 getID3Tag(byte[] fileContent,String fileName){
        

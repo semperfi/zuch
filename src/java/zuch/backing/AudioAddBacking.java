@@ -12,16 +12,18 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Logger;
 import javax.ejb.Asynchronous;
-import javax.inject.Named;
 import javax.enterprise.context.RequestScoped;
+import javax.enterprise.inject.Default;
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.validator.ValidatorException;
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.servlet.http.Part;
 import org.apache.commons.io.IOUtils;
 import org.primefaces.event.FileUploadEvent;
@@ -49,6 +51,8 @@ import zuch.util.ZFileSystemUtils;
 public class AudioAddBacking extends BaseBacking implements Serializable{
     
     static final Logger log = Logger.getLogger("zuch.service.AudioAddBacking");
+   // @Inject Logger log;
+   // @Inject Date maintenant;
     
     
     @Inject AudioManagerLocal audioManager;
@@ -147,7 +151,7 @@ public class AudioAddBacking extends BaseBacking implements Serializable{
                     id3.setTitle(fileSystemUtils.normalizeFileName(uploadedFile.getFileName()));
                 }
 
-                String footPrint = audioUtils.getAudioFootPrint(id3);
+                String footPrint = audioUtils.getAudioFootPrint(content);
                 id3.setFootPrint(footPrint);
                 newAudio.setId3(id3);
                 String currentUser = getCurrentUser();
@@ -177,7 +181,7 @@ public class AudioAddBacking extends BaseBacking implements Serializable{
    private void indexAudioContent(Audio audio,ID3 id3){
       // searchContent.buildContent(id3);
        indexer.buildEnIndex(audio,id3);
-      // indexer.buildFrIndex(audio,id3);
+       indexer.buildFrIndex(audio,id3);
      
             
    }

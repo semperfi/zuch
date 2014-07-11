@@ -57,7 +57,7 @@ public class AudioSearchBacking extends BaseBacking implements Serializable{
       if(!searchToken.isEmpty()){
          audioList = audioManager.searchForAudio(searchToken);
          searcher.searchEn(searchToken);
-        // searcher.searchFr(searchToken);
+         searcher.searchFr(searchToken);
         if(audioList.isEmpty()){
             infoMessage = "No audio results found";
         }else{

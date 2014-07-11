@@ -20,5 +20,6 @@ public interface ZConstants {
     public static String tokenQueryParam = "tk";
     public static String rangeTokenQueryParam = "rtk";
     public static int STREAM_BUFFERSIZE = 8 * 1024;
+    public static int PART_FOR_FOOTPRINT = 5;
     
 }

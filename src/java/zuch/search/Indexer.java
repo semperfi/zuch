@@ -10,12 +10,15 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.Lock;
 import javax.ejb.LockType;
 import javax.ejb.Singleton;
+import javax.enterprise.event.Event;
+import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.en.EnglishAnalyzer;
@@ -24,7 +27,6 @@ import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.analysis.util.CharArraySet;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
-import org.apache.lucene.document.FieldType;
 import org.apache.lucene.document.LongField;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
@@ -32,7 +34,6 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.store.Directory;
-
 import org.apache.lucene.store.NIOFSDirectory;
 import org.apache.lucene.util.Version;
 import zuch.model.Audio;
@@ -49,13 +50,18 @@ public class Indexer {
    static final Logger log = Logger.getLogger("zuch.service.Indexer");
    
    @Inject ZFileSystemUtils systemUtils;
-   private IndexWriter writer;
+  // private IndexWriter writer;
   // private IndexWriter frWriter;
    
    private static  final List<String> words = Arrays.asList("a","à");
    
    private static final CharArraySet stopWords = 
            new CharArraySet(Version.LUCENE_4_9, words, true);
+   
+   @Inject
+   private Event<Date> startIndexingEvent;
+   
+  
     
     
     @Lock(LockType.WRITE)
@@ -65,7 +71,7 @@ public class Indexer {
             Analyzer analyser = new EnglishAnalyzer(Version.LUCENE_4_9, stopWords);
             IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_4_9, analyser);
             config.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
-            writer = new IndexWriter(dir,config);
+            IndexWriter writer = new IndexWriter(dir,config);
             
            // String filePath = id3.getFootPrint() + ".txt";
         
@@ -79,6 +85,9 @@ public class Indexer {
             
             writer.close();
             
+            startIndexingEvent.fire(new Date());
+            
+            
         } catch (IOException ex) {
             Logger.getLogger(Indexer.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -91,7 +100,7 @@ public class Indexer {
             Analyzer analyser = new FrenchAnalyzer(Version.LUCENE_4_9, stopWords);
             IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_4_9, analyser);
             config.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
-            writer = new IndexWriter(dir,config);
+            IndexWriter writer = new IndexWriter(dir,config);
             
            // String filePath = id3.getFootPrint() + ".txt";
         
@@ -175,7 +184,7 @@ public class Indexer {
            Analyzer analyser = new StandardAnalyzer(Version.LUCENE_4_9, stopWords);
            IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_4_9, analyser);
            config.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
-           writer = new IndexWriter(dir,config);
+           IndexWriter writer = new IndexWriter(dir,config);
           
            
            writer.deleteDocuments(new Term("footprint", id3.getFootPrint()));
@@ -186,11 +195,14 @@ public class Indexer {
        }
         
     }
-
-    public IndexWriter getWriter() {
-        return writer;
-    }
     
-     
+  
+   
+    
+    public void checkIndexing(@Observes Date event){
+        log.warning("IT'S TIME TO INDEX: ".concat(event.toString()));
+    }
+
+  
      
 }
