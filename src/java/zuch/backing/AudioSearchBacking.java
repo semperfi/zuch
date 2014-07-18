@@ -15,6 +15,7 @@ import javax.faces.application.FacesMessage;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import zuch.exception.AudioNotFound;
 import zuch.exception.AudioRequestAlreadyExists;
 import zuch.exception.UserNotFound;
 import zuch.model.Audio;
@@ -22,6 +23,7 @@ import zuch.model.AudioRequest;
 import zuch.model.AudioRequestStatus;
 import zuch.model.AudioStatus;
 import zuch.model.PlayTokens;
+import zuch.model.SearchResult;
 import zuch.model.ZUser;
 import zuch.search.Searcher;
 import zuch.service.AudioManagerLocal;
@@ -46,8 +48,10 @@ public class AudioSearchBacking extends BaseBacking implements Serializable{
 
     private String searchToken;
     private List<Audio> audioList;
+    private List<SearchResult> searchResultList;
     private String infoMessage;
     private Audio selectedAudio;
+    private SearchResult selectedResult;
     private String audioInfo;
     
     
@@ -58,6 +62,7 @@ public class AudioSearchBacking extends BaseBacking implements Serializable{
          audioList = audioManager.searchForAudio(searchToken);
          searcher.searchEn(searchToken);
          searcher.searchFr(searchToken);
+         searcher.searchSp(searchToken);
         if(audioList.isEmpty()){
             infoMessage = "No audio results found";
         }else{
@@ -68,6 +73,35 @@ public class AudioSearchBacking extends BaseBacking implements Serializable{
         
         return null;
         
+    }
+    
+    public String retrieveLuceneSearchAudios(){
+        if(!searchToken.isEmpty()){
+         
+          searchResultList = searcher.luceneSearchForAudio(searchToken);
+        if(searchResultList.isEmpty()){
+            infoMessage = "No audio results found";
+        }else{
+            infoMessage = searchResultList.size() + " audio file(s) found ";
+        }
+      }
+       
+        
+        return null;
+    }
+    
+    public String getOwnerId(long audioId){
+        
+        String owner = "";
+        
+        try {
+            Audio audio = audioManager.getAudio(audioId);
+            owner = audio.getOwner().getId();
+        } catch (AudioNotFound ex) {
+            Logger.getLogger(AudioSearchBacking.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        return owner;
     }
     
     public void requestAudio(Audio audio){
@@ -96,12 +130,59 @@ public class AudioSearchBacking extends BaseBacking implements Serializable{
         }
     }
     
+    public void requestAudio(SearchResult searchResult){
+        try {
+            
+            Audio audio = audioManager.getAudio(searchResult.getAudioId());
+            AudioRequest audioRequest = new AudioRequest();
+                                    
+            ZUser requester = userManager.getZuchUser(getCurrentUser());
+            
+            audioRequest.setRequester(requester);
+            audioRequest.setStatus(AudioRequestStatus.PENDING);
+            audioRequest.setRequestTime(System.currentTimeMillis());
+            audioRequest.setRequestedAudio(audio);
+            
+            audio.getAudioRequests().add(audioRequest);
+            audio.setStatus(AudioStatus.LENDING_REQUESTED);
+            
+            audioRequestManager.sendAudioRequest(audioRequest, 0);
+            audioManager.updateAudio(audio);
+            
+            
+            
+            getContext().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, 
+                    "Your request has been sent!", ""));
+        } catch (AudioRequestAlreadyExists | UserNotFound | AudioNotFound ex) {
+            Logger.getLogger(AudioSearchBacking.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
     public boolean showRequestLink(Audio audio){
         boolean result = false;
         if( (audio.getStatus().equals(AudioStatus.IN_JUKEBOX)) && 
             (! audio.getOwner().getId().equals(getCurrentUser())) ){
             
             result = true;
+        }
+        
+        return result;
+    }
+    
+    public boolean showRequestLink(SearchResult searchResult){
+        boolean result = false;
+        try {
+            
+            
+            Audio audio = audioManager.getAudio(searchResult.getAudioId());
+            if( (audio.getStatus().equals(AudioStatus.IN_JUKEBOX)) && 
+            (! audio.getOwner().getId().equals(getCurrentUser())) ){
+            
+                result = true;
+            }
+        
+        } catch (AudioNotFound ex) {
+            Logger.getLogger(AudioSearchBacking.class.getName()).log(Level.SEVERE, null, ex);
         }
         
         return result;
@@ -156,6 +237,57 @@ public class AudioSearchBacking extends BaseBacking implements Serializable{
         return selectedAudioLink;
    }
    
+    public String retrieveAudioResultSampleSource(){
+       
+       String smsg = "SELCTED MP3: " + selectedResult;
+        Logger.getLogger(JukeBoxBacking.class.getName()).info(smsg);
+        
+        String selectedAudioLink = "";
+       
+        long currentId = -1;
+        
+        if(selectedResult != null){
+            currentId = selectedResult.getAudioId();
+            
+            String token = UUID.randomUUID().toString();
+            String rangeToken = UUID.randomUUID().toString();
+            
+        
+          //  ticketService.getAudioTicket().add(token);
+          //  ticketService.getAudioRangeTicket().add(rangeToken);
+            playTokens.setToken(token);
+            playTokens.setRangeToken(rangeToken);
+
+            selectedAudioLink =  AudioUtils.getAudioSampleStreamBaseLink()
+                    +"?id="+currentId+"&tk="+token
+                    +"&rtk="+rangeToken;
+
+            String msg = "LINK TO RETRIEVE: " + selectedAudioLink;
+            Logger.getLogger(JukeBoxBacking.class.getName()).info(msg);
+            
+        }else{
+            
+                String token = UUID.randomUUID().toString();
+                String rangeToken = UUID.randomUUID().toString();
+                
+               // ticketService.getAudioTicket().add(token);
+               // ticketService.getAudioRangeTicket().add(rangeToken);
+                playTokens.setToken(token);
+                playTokens.setRangeToken(rangeToken);
+            
+                selectedAudioLink =  AudioUtils.getAudioStreamBaseLink()
+                        +"?id=sample&tk="+token
+                        +"&rtk="+rangeToken;;
+            
+        }
+        
+        
+        
+        return selectedAudioLink;
+   }
+   
+    
+    
     public void retrieveAudioInfo(){
          if(selectedAudio != null){
                    audioInfo =  selectedAudio.getId3().getArtist()+" - "+
@@ -191,6 +323,10 @@ public class AudioSearchBacking extends BaseBacking implements Serializable{
     public void setAudioInfo(String audioInfo) {
         this.audioInfo = audioInfo;
     }
+
+    public List<SearchResult> getSearchResultList() {
+        return searchResultList;
+    }
     
     
 
@@ -217,6 +353,14 @@ public class AudioSearchBacking extends BaseBacking implements Serializable{
 
     public void setSelectedAudio(Audio selectedAudio) {
         this.selectedAudio = selectedAudio;
+    }
+
+    public SearchResult getSelectedResult() {
+        return selectedResult;
+    }
+
+    public void setSelectedResult(SearchResult selectedResult) {
+        this.selectedResult = selectedResult;
     }
     
     
