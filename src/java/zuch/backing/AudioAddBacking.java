@@ -119,8 +119,9 @@ public class AudioAddBacking extends BaseBacking implements Serializable{
         }
       }
   }
-    
-   public void handleFileUpload(FileUploadEvent event){
+  
+ @Asynchronous
+ public void handleFileUpload(FileUploadEvent event){
    
        
        log.fine("CALLING HANDLE FILE UPLOAD...");
@@ -128,6 +129,7 @@ public class AudioAddBacking extends BaseBacking implements Serializable{
        
          try {
                 uploadedFile = event.getFile();
+                
                                                 
                 byte[] content = IOUtils.toByteArray(uploadedFile.getInputstream());
                // byte[] content = uploadedFile.getContents();
@@ -177,11 +179,12 @@ public class AudioAddBacking extends BaseBacking implements Serializable{
        
    }
    
-   @Asynchronous
+   
    private void indexAudioContent(Audio audio,ID3 id3){
       // searchContent.buildContent(id3);
        indexer.buildEnIndex(audio,id3);
        indexer.buildFrIndex(audio,id3);
+       indexer.buildSpIndex(audio, id3);
      
             
    }

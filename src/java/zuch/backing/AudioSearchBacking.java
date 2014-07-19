@@ -130,7 +130,7 @@ public class AudioSearchBacking extends BaseBacking implements Serializable{
         }
     }
     
-    public void requestAudio(SearchResult searchResult){
+    public void requestAudioLending(SearchResult searchResult){
         try {
             
             Audio audio = audioManager.getAudio(searchResult.getAudioId());
@@ -169,7 +169,7 @@ public class AudioSearchBacking extends BaseBacking implements Serializable{
         return result;
     }
     
-    public boolean showRequestLink(SearchResult searchResult){
+    public boolean showAudioRequestLink(SearchResult searchResult){
         boolean result = false;
         try {
             

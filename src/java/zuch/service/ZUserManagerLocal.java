@@ -20,6 +20,7 @@ import zuch.model.ZUser;
 public interface ZUserManagerLocal {
     
     public ZUser getZuchUser(String userID) throws UserNotFound;
+    //public ZUser getAudioOwner(long audioID) throws UserNotFound;
     public List<ZUser> retrieveUsers();
     public ZUser registerUser(ZUser user) throws UserAlreadyExists;
     public void removeUser(String userID) throws UserNotFound;

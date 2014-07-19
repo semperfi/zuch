@@ -48,6 +48,10 @@ public class ZUserManager implements ZUserManagerLocal{
         
         return zUser;
     }
+    
+   
+    
+    
 
     @Override
     public List<ZUser> retrieveUsers() {
@@ -118,7 +122,7 @@ public class ZUserManager implements ZUserManagerLocal{
         em.remove(zUser);
         em.flush();
     }
-    
+
     
     
 }

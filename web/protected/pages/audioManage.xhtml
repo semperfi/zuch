@@ -20,6 +20,9 @@ xmlns:p="http://primefaces.org/ui">
                     <p:dataTable value="#{audioManageBacking.retrieveManagableAudioList()}"
                           var="audio"
                           id="manageableAudioData"
+                          selection="#{audioManageBacking.selectedAudio}"
+                          selectionMode="single"
+                          rowKey="#{audio.id}"
                           paginator="true"
                           paginatorAlwaysVisible="false"
                           scrollable="true"
@@ -63,14 +66,14 @@ xmlns:p="http://primefaces.org/ui">
 
                                <h:commandLink value="Download"
                                         action="#{audioManageBacking.downloadAudio(audio)}"
-                                         style="color: #06338c; font-weight: bolder;" >
+                                        style="color: #ccffff; font-weight: bolder;" >
                                                               
                                 </h:commandLink>
                                 <p:spacer width="10" />    
                               
                                  <p:commandLink value="Delete"  
                                                onclick="PF('deleteCdWidget').show();"
-                                               style="color: #06338c; font-weight: bolder;"
+                                               style="color: #ccffff; font-weight: bolder;"
                                                >
                                      <f:setPropertyActionListener 
                                          target="#{audioManageBacking.selectedAudio}"

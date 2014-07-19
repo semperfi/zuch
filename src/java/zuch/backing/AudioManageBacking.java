@@ -139,7 +139,9 @@ public class AudioManageBacking extends BaseBacking implements Serializable{
    @Asynchronous
    private void deleteId3FromIndex(ID3 id3){
        
-       indexer.deleteDocument(id3);
+       indexer.deleteEnDocument(id3);
+       indexer.deleteFrDocument(id3);
+       indexer.deleteSpDocument(id3);
      
             
    }

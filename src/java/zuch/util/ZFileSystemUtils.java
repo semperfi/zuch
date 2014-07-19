@@ -48,7 +48,7 @@ public class ZFileSystemUtils {
        return path;
   }
   
-  public String getSearchIndexPathString(){
+  public String getEnSearchIndexPathString(){
       String path = "";
         
        if(SystemUtils.IS_OS_WINDOWS){
@@ -73,6 +73,21 @@ public class ZFileSystemUtils {
         }else if(SystemUtils.IS_OS_UNIX){
             
             path = "/root/zuch/fr_search_index/";
+        }
+       
+       return path;
+  }
+  
+  public String getSpSearchIndexPathString(){
+      String path = "";
+        
+       if(SystemUtils.IS_OS_WINDOWS){
+            
+            path =  "c:/zuch/sp_search_index/";
+            
+        }else if(SystemUtils.IS_OS_UNIX){
+            
+            path = "/root/zuch/sp_search_index/";
         }
        
        return path;

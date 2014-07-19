@@ -30,7 +30,7 @@ xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
                             <f:passThroughAttribute name="placeHolder" value="type search keyword..."/>
                         </h:inputText>
                         <h:commandButton value="Search" styleClass="btn btn-small btn-primary"
-                                         action="#{audioSearchBacking.retrieveAudioList()}">
+                                         action="#{audioSearchBacking.retrieveLuceneSearchAudios()}">
                             <f:ajax execute="@form" render=":audioSearchDataForm"/>
                         </h:commandButton>
                         
@@ -46,8 +46,7 @@ xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
                         <audio jsf:id="audioSample"
                                controls="controls"
                                autoplay="true"
-                               src="#{audioSearchBacking.retrieveAudioSampleSource()}">
-    
+                               src="#{audioSearchBacking.retrieveAudioResultSampleSource()}">
                         </audio>
                         
                       
@@ -66,10 +65,10 @@ xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
                                         rendered="#{audioSearchBacking.infoMessage ne null}"
                                         styleClass="informationMessage"/>
                           
-                          <p:dataTable value="#{audioSearchBacking.audioList}"
+                       <p:dataTable value="#{audioSearchBacking.searchResultList}"
                                         id="audioSearchListTable"
-                                        var="currentAudio" styleClass="table"
-                                        rendered="#{not empty audioSearchBacking.audioList}"
+                                        var="currentResult" styleClass="table"
+                                        rendered="#{not empty audioSearchBacking.searchResultList}"
                                         paginator="true"
                                         scrollable="true"
                                         paginatorAlwaysVisible="false"
@@ -82,25 +81,25 @@ xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
                                 <f:facet name="header">
                                     TITLE
                                 </f:facet>
-                                    #{currentAudio.id3.title}
+                                    #{currentResult.title}
                               </p:column>
                               <p:column>
                                 <f:facet name="header">
                                     ARTIST
                                 </f:facet>
-                                    #{currentAudio.id3.artist}
+                                    #{currentResult.artist}
                               </p:column>
                               <p:column>
                                 <f:facet name="header">
                                     ALBUM
                                 </f:facet>
-                                    #{currentAudio.id3.album}
+                                    #{currentResult.album}
                                </p:column>
                               <p:column>
                                 <f:facet name="header">
                                     GENRE
                                 </f:facet>
-                                    #{currentAudio.id3.genre}
+                                    #{currentResult.genre}
                                </p:column>
                               
                               		  
@@ -111,8 +110,8 @@ xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
                                   <p:commandButton update=":audioSearchForm:sampleAudioPanel"
                                                    icon="ui-icon-play">
                                       <f:setPropertyActionListener 
-                                          value="#{currentAudio}"
-                                          target="#{audioSearchBacking.selectedAudio}" />
+                                          value="#{currentResult}"
+                                          target="#{audioSearchBacking.selectedResult}" />
                                   </p:commandButton>
                                     
                                </p:column>
@@ -121,7 +120,7 @@ xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
                                 <f:facet name="header">
                                     OWNER
                                 </f:facet>
-                                  <h:outputText value="#{currentAudio.owner.id}" 
+                                  <h:outputText value="#{audioSearchBacking.getOwnerId(currentResult.audioId)}" 
                                                 style="color: #189807; font-weight: bolder;"/>
                                     
                                </p:column>
@@ -133,13 +132,13 @@ xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
                              
                                 <h:commandLink value="Request lending"
                                                id="requestLink"
-                                               rendered="#{audioSearchBacking.showRequestLink(currentAudio)}"
-                                               action="#{audioSearchBacking.requestAudio(currentAudio)}"
+                                               rendered="#{audioSearchBacking.showAudioRequestLink(currentResult)}"
+                                               action="#{audioSearchBacking.requestAudioLending(currentResult)}"
                                                style="color: #06338c; font-weight: bolder;">
                                     <f:ajax execute="@form"  render="@form"/>
                                 </h:commandLink>
                                  
-                                <p:tooltip for="requestLink" value="Music lended will be available to you for 3 days"/>
+                                <p:tooltip for="requestLink" value="Music lent will be available to you for 3 days"/>
                                    
                                </p:column>
                           
