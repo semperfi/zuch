@@ -63,6 +63,21 @@ public class ZFileSystemUtils {
        return path;
   }
   
+   public String getEnSpellCheckerPathString(){
+      String path = "";
+        
+       if(SystemUtils.IS_OS_WINDOWS){
+            
+            path =  "c:/zuch/spellchecker_data/";
+            
+        }else if(SystemUtils.IS_OS_UNIX){
+            
+            path = "/root/zuch/spellchecker_data/";
+        }
+       
+       return path;
+  }
+  
   public String getFrSearchIndexPathString(){
       String path = "";
         

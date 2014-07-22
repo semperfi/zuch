@@ -36,6 +36,7 @@ import zuch.model.AudioStatus;
 import zuch.model.ID3;
 import zuch.search.Content;
 import zuch.search.Indexer;
+import zuch.search.ZSpellChecker;
 import zuch.service.AudioManagerLocal;
 import zuch.service.ZUserManagerLocal;
 import zuch.util.AudioUtils;
@@ -62,6 +63,7 @@ public class AudioAddBacking extends BaseBacking implements Serializable{
     @Inject ZFileSystemUtils fileSystemUtils;
     @Inject Content searchContent;
     @Inject Indexer indexer;
+    @Inject ZSpellChecker spellChecker;
     
     private Part filePart;
     
@@ -164,6 +166,7 @@ public class AudioAddBacking extends BaseBacking implements Serializable{
                 uploadedFile = null;
                 
                 indexAudioContent(registredAudio,id3);
+                buildSpellChecker();
                 
             } catch ( AudioAlreadyExists | UserNotFound ex) {
                 
@@ -187,6 +190,10 @@ public class AudioAddBacking extends BaseBacking implements Serializable{
        indexer.buildSpIndex(audio, id3);
      
             
+   }
+   
+   private void buildSpellChecker(){
+       spellChecker.buildSpellChecker();
    }
    
     public Part getFilePart() {

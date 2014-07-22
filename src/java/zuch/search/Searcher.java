@@ -54,6 +54,7 @@ public class Searcher {
     static final Logger log = Logger.getLogger("zuch.service.Searcher");
     
     @Inject ZFileSystemUtils systemUtils;
+    @Inject Suggest suggest;
     
    private static  final List<String> words = Arrays.asList("a","à");
    
@@ -62,7 +63,8 @@ public class Searcher {
 
     public List<Document> searchEn(String q){
         
-        List<Document> result = new ArrayList<>();
+        List<Document> searchResult = new ArrayList<>();
+       
         
         try {
             Directory dir = NIOFSDirectory.open(new File(systemUtils.getEnSearchIndexPathString()));
@@ -91,13 +93,15 @@ public class Searcher {
               
                for(ScoreDoc scoreDoc : hits.scoreDocs){
                     Document doc  = indexSearcher.doc(scoreDoc.doc);
-                    result.add(doc);
+                    searchResult.add(doc);
                     System.out.println(doc.get("artist"));
                     System.out.println(doc.get("title"));
                     System.out.println("----------------------------------");
                   
                 }
             }  
+            
+            suggest.buildSuggestions(q);
             
         }   catch (Exception ex) {
                 if(ex instanceof NullPointerException){
@@ -107,7 +111,7 @@ public class Searcher {
                 }
            
         }
-        return result;
+        return searchResult;
     }
     
     

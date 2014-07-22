@@ -26,6 +26,7 @@ import zuch.model.PlayTokens;
 import zuch.model.SearchResult;
 import zuch.model.ZUser;
 import zuch.search.Searcher;
+import zuch.search.Suggest;
 import zuch.service.AudioManagerLocal;
 import zuch.service.AudioRequestManagerLocal;
 import zuch.service.ZUserManagerLocal;
@@ -44,18 +45,21 @@ public class AudioSearchBacking extends BaseBacking implements Serializable{
     @Inject ZUserManagerLocal userManager;
     @Inject PlayTokens playTokens;
     @Inject Searcher searcher;
+    @Inject Suggest suggest;
   
 
     private String searchToken;
     private List<Audio> audioList;
     private List<SearchResult> searchResultList;
+    private List<String> sugestionResultList;
+    private String currentSuggestion;
     private String infoMessage;
     private Audio selectedAudio;
     private SearchResult selectedResult;
     private String audioInfo;
     
     
-    
+   /* 
     public String retrieveAudioList(){
     
       if(!searchToken.isEmpty()){
@@ -74,11 +78,16 @@ public class AudioSearchBacking extends BaseBacking implements Serializable{
         return null;
         
     }
-    
+    */
     public String retrieveLuceneSearchAudios(){
         if(!searchToken.isEmpty()){
          
           searchResultList = searcher.luceneSearchForAudio(searchToken);
+          sugestionResultList = suggest.buildSuggestions(searchToken);
+          if(!sugestionResultList.isEmpty()){
+              currentSuggestion = sugestionResultList.get(0);
+          }
+          
         if(searchResultList.isEmpty()){
             infoMessage = "No audio results found";
         }else{
@@ -361,6 +370,22 @@ public class AudioSearchBacking extends BaseBacking implements Serializable{
 
     public void setSelectedResult(SearchResult selectedResult) {
         this.selectedResult = selectedResult;
+    }
+
+    public List<String> getSugestionResultList() {
+        return sugestionResultList;
+    }
+
+    public void setSugestionResultList(List<String> sugestionResultList) {
+        this.sugestionResultList = sugestionResultList;
+    }
+
+    public String getCurrentSuggestion() {
+        return currentSuggestion;
+    }
+
+    public void setCurrentSuggestion(String currentSuggestion) {
+        this.currentSuggestion = currentSuggestion;
     }
     
     
