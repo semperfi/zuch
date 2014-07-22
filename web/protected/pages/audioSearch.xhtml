@@ -65,6 +65,13 @@ xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
                                         rendered="#{audioSearchBacking.infoMessage ne null}"
                                         styleClass="informationMessage"/>
                           
+                       <p:panel rendered="#{not empty audioSearchBacking.sugestionResultList}" >
+                           <h:outputText value="Did you mean? "  style=" font-size: 20px;"/> 
+                           <h:outputText value="#{audioSearchBacking.currentSuggestion}" style=" font-size: 20px;"/>
+                       </p:panel>
+                           
+                      
+                       
                        <p:dataTable value="#{audioSearchBacking.searchResultList}"
                                         id="audioSearchListTable"
                                         var="currentResult" styleClass="table"
