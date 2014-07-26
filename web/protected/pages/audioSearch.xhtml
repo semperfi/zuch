@@ -15,7 +15,7 @@ xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
         </ui:define>
         
         <ui:define name="content">
-         
+            
             <h:form id="audioSearchForm" styleClass="form-search" >
          
                   <div align="center" >   
@@ -65,9 +65,15 @@ xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
                                         rendered="#{audioSearchBacking.infoMessage ne null}"
                                         styleClass="informationMessage"/>
                           
-                       <p:panel rendered="#{not empty audioSearchBacking.sugestionResultList}" >
+                       <p:panel rendered="#{audioSearchBacking.showSuggestion()}" >
                            <h:outputText value="Did you mean? "  style=" font-size: 20px;"/> 
-                           <h:outputText value="#{audioSearchBacking.currentSuggestion}" style=" font-size: 20px;"/>
+                           
+                           <h:commandLink 
+                               value="#{audioSearchBacking.currentSuggestion}"
+                               action="#{audioSearchBacking.luceneSuggestAudios()}"
+                               style="font-size: 20px; color: #2f4ef8" >
+                               <f:ajax execute="@form" render=":audioSearchDataForm"/>
+                           </h:commandLink>
                        </p:panel>
                            
                       
@@ -127,7 +133,7 @@ xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
                                 <f:facet name="header">
                                     OWNER
                                 </f:facet>
-                                  <h:outputText value="#{audioSearchBacking.getOwnerId(currentResult.audioId)}" 
+                                  <h:outputText value="#{currentResult.owner}" 
                                                 style="color: #189807; font-weight: bolder;"/>
                                     
                                </p:column>

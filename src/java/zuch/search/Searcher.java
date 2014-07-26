@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.Stateless;
+import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import org.apache.lucene.analysis.en.EnglishAnalyzer;
 import org.apache.lucene.analysis.es.SpanishAnalyzer;
@@ -40,8 +41,11 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.NIOFSDirectory;
 import org.apache.lucene.util.QueryBuilder;
 import org.apache.lucene.util.Version;
+import zuch.backing.AudioSearchBacking;
+import zuch.exception.AudioNotFound;
 import zuch.model.Audio;
 import zuch.model.SearchResult;
+import zuch.service.AudioManagerLocal;
 import zuch.util.ZFileSystemUtils;
 
 /**
@@ -55,6 +59,7 @@ public class Searcher {
     
     @Inject ZFileSystemUtils systemUtils;
     @Inject Suggest suggest;
+    @Inject AudioManagerLocal audioManager;
     
    private static  final List<String> words = Arrays.asList("a","à");
    
@@ -101,7 +106,7 @@ public class Searcher {
                 }
             }  
             
-            suggest.buildSuggestions(q);
+           // suggest.buildSuggestions(q);
             
         }   catch (Exception ex) {
                 if(ex instanceof NullPointerException){
@@ -210,6 +215,9 @@ public class Searcher {
      
     
     public List<SearchResult> luceneSearchForAudio(String searchToken){
+        
+        long start = System.currentTimeMillis();
+        
         List<SearchResult> resultList = new ArrayList<>();
        // Map<String,Integer> docs = new HashMap<>();
         List<List<Document>> docList = new ArrayList<>();
@@ -229,10 +237,30 @@ public class Searcher {
             resultList.add(toSearchResult(doc));
         }
         
+      // resultList = filterCurrentUserAudios(resultList);
        
-        
-        return resultList;
+       long end = System.currentTimeMillis();
+
+      log.info(String.format("Search %s files took %d milliseconds",
+                    resultList.size(),(end - start) ));
+      
+      return resultList;
     }
+    
+    /*
+    private List<SearchResult> filterCurrentUserAudios(List<SearchResult> resultList){
+        List<SearchResult> newResultList = new ArrayList<>();
+        String cUser = FacesContext.getCurrentInstance().getExternalContext()
+                .getUserPrincipal().getName();
+        for(SearchResult res : resultList){
+            if(!res.getOwner().equals(cUser)){
+                newResultList.add(res);
+            }
+        }
+        
+        return newResultList;
+    }
+    */
     
     private List<Document> max(List<List<Document>> docs){
         
@@ -251,6 +279,7 @@ public class Searcher {
         
         SearchResult res = new SearchResult();
         res.setAudioId(Long.parseLong(doc.get("id")) );
+        res.setOwner(getOwnerId(Long.parseLong(doc.get("id"))));
         res.setTitle(doc.get("title"));
         res.setArtist(doc.get("artist"));
         res.setAlbum(doc.get("album"));
@@ -261,6 +290,20 @@ public class Searcher {
         
         return res;
         
+    }
+    
+     private String getOwnerId(long audioId){
+        
+        String owner = "";
+        
+        try {
+            Audio audio = audioManager.getAudio(audioId);
+            owner = audio.getOwner().getId();
+        } catch (AudioNotFound ex) {
+            Logger.getLogger(AudioSearchBacking.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        return owner;
     }
 
     

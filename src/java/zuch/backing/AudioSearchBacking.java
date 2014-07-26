@@ -7,6 +7,7 @@
 package zuch.backing;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.logging.Level;
@@ -40,6 +41,8 @@ import zuch.util.AudioUtils;
 @ViewScoped
 public class AudioSearchBacking extends BaseBacking implements Serializable{
     
+    static final Logger log = Logger.getLogger("zuch.service.AudioSearchBacking");
+    
     @Inject AudioManagerLocal audioManager;
     @Inject AudioRequestManagerLocal audioRequestManager;
     @Inject ZUserManagerLocal userManager;
@@ -49,10 +52,12 @@ public class AudioSearchBacking extends BaseBacking implements Serializable{
   
 
     private String searchToken;
+    
     private List<Audio> audioList;
-    private List<SearchResult> searchResultList;
-    private List<String> sugestionResultList;
-    private String currentSuggestion;
+    private List<SearchResult> searchResultList = new ArrayList<>();
+    
+   // private List<String> sugestionResultList = new ArrayList<>();
+    private String currentSuggestion = "";
     private String infoMessage;
     private Audio selectedAudio;
     private SearchResult selectedResult;
@@ -79,14 +84,16 @@ public class AudioSearchBacking extends BaseBacking implements Serializable{
         
     }
     */
+    
+   
+    
+    
     public String retrieveLuceneSearchAudios(){
         if(!searchToken.isEmpty()){
          
           searchResultList = searcher.luceneSearchForAudio(searchToken);
-          sugestionResultList = suggest.buildSuggestions(searchToken);
-          if(!sugestionResultList.isEmpty()){
-              currentSuggestion = sugestionResultList.get(0);
-          }
+          currentSuggestion  = suggest.buildSuggestions(searchToken);
+                        
           
         if(searchResultList.isEmpty()){
             infoMessage = "No audio results found";
@@ -99,19 +106,43 @@ public class AudioSearchBacking extends BaseBacking implements Serializable{
         return null;
     }
     
-    public String getOwnerId(long audioId){
+   
+    
+    
+   public String luceneSuggestAudios(){
+       if(!currentSuggestion.isEmpty()){
+         
+          log.info("SUBMITING SUGGESTION....");
+          searchResultList = searcher.luceneSearchForAudio(currentSuggestion);
+          
+          currentSuggestion = "";
+          
+       
+          if(searchResultList.isEmpty()){
+               infoMessage = "No audio results found";
+          }else{
+               infoMessage = searchResultList.size() + " audio file(s) found ";
+               
+          }
         
-        String owner = "";
+      }
+       
         
-        try {
-            Audio audio = audioManager.getAudio(audioId);
-            owner = audio.getOwner().getId();
-        } catch (AudioNotFound ex) {
-            Logger.getLogger(AudioSearchBacking.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
-        return owner;
-    }
+        return null;
+   }
+    
+   public boolean showSuggestion(){
+   
+       boolean result = false;
+       if( (searchResultList.isEmpty()) && (!currentSuggestion.isEmpty()) ){
+           result = true;
+       }
+       
+       return result;
+   }
+    
+   
+   
     
     public void requestAudio(Audio audio){
         try {
@@ -310,12 +341,8 @@ public class AudioSearchBacking extends BaseBacking implements Serializable{
        }
    }
     
-   public String highlight(String field){
-       
-     
-       
-       return field;
-   }
+   
+  
 
     public String getSearchToken() {
         return searchToken;
@@ -372,13 +399,7 @@ public class AudioSearchBacking extends BaseBacking implements Serializable{
         this.selectedResult = selectedResult;
     }
 
-    public List<String> getSugestionResultList() {
-        return sugestionResultList;
-    }
-
-    public void setSugestionResultList(List<String> sugestionResultList) {
-        this.sugestionResultList = sugestionResultList;
-    }
+    
 
     public String getCurrentSuggestion() {
         return currentSuggestion;
@@ -387,6 +408,8 @@ public class AudioSearchBacking extends BaseBacking implements Serializable{
     public void setCurrentSuggestion(String currentSuggestion) {
         this.currentSuggestion = currentSuggestion;
     }
+
+    
     
     
 }

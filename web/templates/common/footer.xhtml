@@ -1,0 +1,20 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html">
+    <ui:composition>
+        <div  style="position: relative; color:  #ffffff;">
+            <ui:insert name="footerText">
+                <h:form >
+                <h:outputText value="Welcome #{request.remoteUser} " style="color: #dc4d06;"/>
+                <h:outputText id="informationMessage"
+                                value="#{jukeBoxBacking.receivedReqMessage}"
+                                rendered="#{jukeBoxBacking.receivedReqCount gt 0}"
+                                style="color: #dc4d06;"/>
+                </h:form>
+            </ui:insert>
+            
+        </div>   
+       
+      
+    </ui:composition>
+</html>

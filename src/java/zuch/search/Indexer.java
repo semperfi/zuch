@@ -84,8 +84,8 @@ public class Indexer {
             indexFile(writer,audio,id3);
             long end = System.currentTimeMillis();
 
-            System.out.println("Indexing " + writer.numDocs()+ " files took "
-            + (end - start) + " milliseconds");
+            log.info(String.format("EN Indexing %s files took %d milliseconds",
+                    writer.numDocs(),(end - start) ));
             
             writer.close();
             
@@ -123,8 +123,8 @@ public class Indexer {
             indexFile(writer,audio,id3);
             long end = System.currentTimeMillis();
 
-            System.out.println("Indexing " + writer.numDocs()+ " files took "
-            + (end - start) + " milliseconds");
+            log.info(String.format("FR Indexing %s files took %d milliseconds",
+                    writer.numDocs(),(end - start) ));
             
             writer.close();
             
@@ -160,8 +160,8 @@ public class Indexer {
             indexFile(writer,audio,id3);
             long end = System.currentTimeMillis();
 
-            System.out.println("Indexing " + writer.numDocs()+ " files took "
-            + (end - start) + " milliseconds");
+            log.info(String.format("SP Indexing %s files took %d milliseconds",
+                    writer.numDocs(),(end - start) ));
             
             writer.close();
             
@@ -183,9 +183,8 @@ public class Indexer {
      private void indexFile(IndexWriter inWriter,Audio audio,ID3 id3) {
         try {
            
-            System.out.println("Indexing " + 
-                    id3.getArtist() + ":"+ id3.getTitle());
-            //Document doc = getDocument(file,audio,id3);
+            
+            log.info(String.format("Indexing %s : %s",id3.getArtist(),id3.getTitle() ));
             Document doc = getDocument(audio,id3);
             inWriter.addDocument(doc);
         } catch (IOException ex) {

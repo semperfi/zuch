@@ -69,9 +69,8 @@ public class AudioAddBacking extends BaseBacking implements Serializable{
     
     
     
-    public AudioAddBacking() {
-    }
-    
+   
+   /* 
     public void validateFile(FacesContext ctx, UIComponent comp, Object value){
         List<FacesMessage> msgs = new ArrayList<>();
         
@@ -94,10 +93,10 @@ public class AudioAddBacking extends BaseBacking implements Serializable{
         }
     }
     
-   
+   */
   
-  private UploadedFile uploadedFile;
   
+  /*
   public void validateAudioFile(FacesContext ctx, UIComponent comp, Object value){
       Logger.getLogger(AudioAddBacking.class.getName()).info("CALLING VALIDATING AUDIO...");
       
@@ -121,16 +120,48 @@ public class AudioAddBacking extends BaseBacking implements Serializable{
         }
       }
   }
+  */
+  
+ private UploadedFile uploadedFile;
+ 
+ private boolean isValid(UploadedFile upFile){
+     boolean result = true;
+     if(upFile != null){
+        if (upFile.getSize() > (30*1048576) ) {
+            
+            log.warning("file size must not exceed 30 MB");
+            result = false;
+        
+        }
+        if ( ! ( "audio/mpeg".equals(upFile.getContentType()) ||
+                "audio/mp3".equals(upFile.getContentType()) ) ) {
+             
+             log.warning("File format must be mp3");
+             result = false;
+        }
+        
+      }
+     
+     return result;
+ }
   
  @Asynchronous
  public void handleFileUpload(FileUploadEvent event){
    
        
-       log.fine("CALLING HANDLE FILE UPLOAD...");
+       log.info("CALLING HANDLE FILE UPLOAD...");
       // synchronized(this){
        
          try {
                 uploadedFile = event.getFile();
+                
+                if(!isValid(uploadedFile)){
+                    FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, 
+                            "Error", "Invalid file format or size.");
+                    FacesContext.getCurrentInstance()
+                            .addMessage(null, msg );
+                    throw new ValidatorException(msg);
+                }
                 
                                                 
                 byte[] content = IOUtils.toByteArray(uploadedFile.getInputstream());
@@ -174,6 +205,8 @@ public class AudioAddBacking extends BaseBacking implements Serializable{
             } catch (IOException ex) {
                
                log.severe(ex.getMessage());
+           }catch(ValidatorException ex){
+               log.warning("Invalid file format or size.");
            }
 
       // }
@@ -193,7 +226,9 @@ public class AudioAddBacking extends BaseBacking implements Serializable{
    }
    
    private void buildSpellChecker(){
-       spellChecker.buildSpellChecker();
+       spellChecker.buildEnSpellChecker();
+       spellChecker.buildFrSpellChecker();
+       spellChecker.buildSpSpellChecker();
    }
    
     public Part getFilePart() {

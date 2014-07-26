@@ -14,10 +14,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.Lock;
 import javax.ejb.LockType;
+import javax.ejb.Singleton;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.en.EnglishAnalyzer;
+import org.apache.lucene.analysis.es.SpanishAnalyzer;
 import org.apache.lucene.analysis.util.CharArraySet;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
@@ -34,7 +36,7 @@ import zuch.util.ZFileSystemUtils;
  *
  * @author florent
  */
-@Stateless
+@Singleton
 public class ZSpellChecker {
 
    static final Logger log = Logger.getLogger("zuch.service.ZSpellCheker");
@@ -46,7 +48,7 @@ public class ZSpellChecker {
    
    
    @Lock(LockType.WRITE)
-   public void buildSpellChecker(){
+   public void buildEnSpellChecker(){
        
        log.warning("BUILD SPELL CHECKER...");
        
@@ -75,6 +77,71 @@ public class ZSpellChecker {
        }
    
    }
+   
+   
+   @Lock(LockType.WRITE)
+   public void buildFrSpellChecker(){
+       
+       log.warning("BUILD SPELL CHECKER...");
+       
+       try {
+           Directory dir = NIOFSDirectory.open(new File(systemUtils.getFrSpellCheckerPathString()));
+           Analyzer analyser = new ZuchFrenchAnalyzer();
+           IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_4_9, analyser);
+           SpellChecker spell = new SpellChecker(dir);
+           long startTime = System.currentTimeMillis();
+           
+           Directory dir2 = FSDirectory.open(new File(systemUtils.getEnSearchIndexPathString()));
+           IndexReader inReader = DirectoryReader.open(dir2);
+           try {
+                spell.indexDictionary(new LuceneDictionary(inReader, "contents"),config,true);
+           } finally {
+                inReader.close();
+           }
+           
+           dir.close();
+           dir2.close();
+           long endTime = System.currentTimeMillis();
+           System.out.println(" took " + (endTime-startTime) + " milliseconds");
+
+       } catch (IOException ex) {
+           Logger.getLogger(ZSpellChecker.class.getName()).log(Level.SEVERE, null, ex);
+       }
+   
+   }
+   
+   
+   @Lock(LockType.WRITE)
+   public void buildSpSpellChecker(){
+       
+       log.warning("BUILD SPELL CHECKER...");
+       
+       try {
+           Directory dir = NIOFSDirectory.open(new File(systemUtils.getSpSpellCheckerPathString()));
+           Analyzer analyser = new SpanishAnalyzer(Version.LUCENE_4_9, stopWords);
+           IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_4_9, analyser);
+           SpellChecker spell = new SpellChecker(dir);
+           long startTime = System.currentTimeMillis();
+           
+           Directory dir2 = FSDirectory.open(new File(systemUtils.getEnSearchIndexPathString()));
+           IndexReader inReader = DirectoryReader.open(dir2);
+           try {
+                spell.indexDictionary(new LuceneDictionary(inReader, "contents"),config,true);
+           } finally {
+                inReader.close();
+           }
+           
+           dir.close();
+           dir2.close();
+           long endTime = System.currentTimeMillis();
+           System.out.println(" took " + (endTime-startTime) + " milliseconds");
+
+       } catch (IOException ex) {
+           Logger.getLogger(ZSpellChecker.class.getName()).log(Level.SEVERE, null, ex);
+       }
+   
+   }
+   
    
    
 }

@@ -22,7 +22,12 @@ xmlns:jsf="http://xmlns.jcp.org/jsf">
                       
                <p:panel style="width: 70%;"  >
                  
-                 <p:panelGrid columns="2" > 
+                 <canvas jsf:id="canvas" >
+                    <f:passThroughAttribute name="height" value="60"/>
+                    <f:passThroughAttribute name="width" value="200"/>
+                    
+                </canvas>
+                 <p:panelGrid columns="1" > 
                  <audio jsf:id="zuchAudioPlayer"
                             src="#{jukeBoxBacking.retrieveAudioSource()}">
                       <f:passThroughAttribute name="controls" value="true"/>
@@ -30,11 +35,7 @@ xmlns:jsf="http://xmlns.jcp.org/jsf">
     
                  </audio>
                      
-                <canvas jsf:id="canvas" >
-                    <f:passThroughAttribute name="height" value="60"/>
-                    <f:passThroughAttribute name="width" value="200"/>
-                    
-                </canvas>
+               
                
                </p:panelGrid> 
                  
@@ -75,12 +76,6 @@ xmlns:jsf="http://xmlns.jcp.org/jsf">
         
          
          <h:form id="audioListForm" prependId="false" >
-             <div>
-                  <h:outputText id="informationMessage"
-                                value="#{jukeBoxBacking.receivedReqMessage}"
-                                rendered="#{jukeBoxBacking.receivedReqCount gt 0}"
-                                style="color: #dc4d06;"/>
-             </div>
              
              <p:dataTable value="#{jukeBoxBacking.audioList}" var="audio"
                           selection="#{jukeBoxBacking.selectedAudio}"
@@ -163,6 +158,9 @@ xmlns:jsf="http://xmlns.jcp.org/jsf">
          </h:form>
           <h:outputScript  library="javascript"  name="jukeBox.js"/>  
         </ui:define>
+        
+        
+        
         
     </ui:composition>
         

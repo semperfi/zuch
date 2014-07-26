@@ -30,6 +30,7 @@ public class SearchResult implements Serializable {
     private String audioYear;
     private String genre;
     private String footPrint;
+    private String owner;
     private long audioId;
 
     public long getAudioId() {
@@ -96,6 +97,14 @@ public class SearchResult implements Serializable {
 
     public void setFootPrint(String footPrint) {
         this.footPrint = footPrint;
+    }
+
+    public String getOwner() {
+        return owner;
+    }
+
+    public void setOwner(String owner) {
+        this.owner = owner;
     }
 
    

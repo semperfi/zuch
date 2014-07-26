@@ -30,11 +30,10 @@ xmlns:p="http://primefaces.org/ui">
                                           multiple="true"
                                           mode="advanced"
                                           allowTypes="/(\.|\/)(mp3|MP3)$/"
-                                          sizeLimit="25000000"
+                                          sizeLimit="30000000"
                                           fileLimit="10" 
-                                          
-                                          >
-                                
+                                          update="uploadGrowl">
+                                   
                                 </p:fileUpload>
                                       
                         
@@ -43,6 +42,7 @@ xmlns:p="http://primefaces.org/ui">
                       
                          <p:spacer height="30" />
                          
+                         <p:growl id="uploadGrowl" showDetail="true" showSummary="true"  />
                         <h:messages id="messages"  styleClass="errorMessage"/>
                        
                        </div>       

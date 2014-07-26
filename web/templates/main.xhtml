@@ -16,7 +16,7 @@ xmlns:p="http://primefaces.org/ui">
         
         <p:layout fullPage="true">
             
-            <p:layoutUnit position="north" size="90" 
+            <p:layoutUnit position="north" size="70" 
                           collapsible="true" 
                           gutter="0">
                 <ui:insert name="header">
@@ -35,9 +35,12 @@ xmlns:p="http://primefaces.org/ui">
                  <ui:insert name="content"/>
             </p:layoutUnit>
             
-            <p:layoutUnit position="south" size="30" gutter="0"
-                          header="Welcome #{request.remoteUser}">
-                <ui:insert name="footer"></ui:insert>
+            <p:layoutUnit position="south" size="40" gutter="0" >
+                <ui:insert name="footer">
+                    <ui:include src="common/footer.xhtml"/>
+                </ui:insert>
+                   
+           
             </p:layoutUnit>
             
         </p:layout>

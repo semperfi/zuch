@@ -93,6 +93,21 @@ public class ZFileSystemUtils {
        return path;
   }
   
+  public String getFrSpellCheckerPathString(){
+      String path = "";
+        
+       if(SystemUtils.IS_OS_WINDOWS){
+            
+            path =  "c:/zuch/fr_spellchecker_data/";
+            
+        }else if(SystemUtils.IS_OS_UNIX){
+            
+            path = "/root/zuch/fr_spellchecker_data/";
+        }
+       
+       return path;
+  }
+  
   public String getSpSearchIndexPathString(){
       String path = "";
         
@@ -103,6 +118,21 @@ public class ZFileSystemUtils {
         }else if(SystemUtils.IS_OS_UNIX){
             
             path = "/root/zuch/sp_search_index/";
+        }
+       
+       return path;
+  }
+  
+  public String getSpSpellCheckerPathString(){
+      String path = "";
+        
+       if(SystemUtils.IS_OS_WINDOWS){
+            
+            path =  "c:/zuch/sp_spellchecker_data/";
+            
+        }else if(SystemUtils.IS_OS_UNIX){
+            
+            path = "/root/zuch/sp_spellchecker_data/";
         }
        
        return path;

@@ -24,6 +24,8 @@ import zuch.model.Audio;
 import zuch.model.AudioRequestStatus;
 import zuch.model.AudioStatus;
 import zuch.model.PlayTokens;
+import zuch.model.SearchResult;
+import zuch.search.Searcher;
 import zuch.service.AudioManagerLocal;
 import zuch.service.AudioRequestManager;
 import zuch.service.AudioRequestManagerLocal;
@@ -40,8 +42,10 @@ public class JukeBoxBacking extends BaseBacking implements Serializable{
     @Inject AudioManagerLocal audioManager;
     @Inject PlayTokens playTokens;
     @Inject AudioRequestManagerLocal audioRequestManager;
+    @Inject Searcher searcher;
     
-    
+   // private List<SearchResult> searchJukeboxResultList = new ArrayList<>();
+   // private String searchJukeboxToken;
     private Audio selectedAudio;
     private String audioInfo;
    // private String rangeToken;
@@ -84,6 +88,40 @@ public class JukeBoxBacking extends BaseBacking implements Serializable{
         
     }
    
+    /*
+   //search in current user juke box
+     public String retrieveLuceneSearchJukebox(){ 
+        if(!searchJukeboxToken.isEmpty()){
+         
+          searchJukeboxResultList = searcher.luceneSearchForAudio(searchJukeboxToken);
+          searchJukeboxResultList  = filterOwner(searchJukeboxResultList, getCurrentUser());
+                        
+          
+        if(searchJukeboxResultList.isEmpty()){
+            infoMessage = "No audio results found";
+        }else{
+            infoMessage = searchJukeboxResultList.size() + " audio file(s) found ";
+        }
+      }
+       
+        
+        return null;
+    }
+     
+     
+   public List<SearchResult> filterOwner(List<SearchResult> entry, String ownerId){
+       List<SearchResult> result =  new ArrayList<>();
+       for(SearchResult search: entry){
+           if(search.getOwner().equals(ownerId)){
+               result.add(search);
+           }
+       }
+       
+       return result;
+   }
+   
+    */
+    
   private String receivedReqMessage;
   private long receivedReqCount;
   
@@ -92,8 +130,10 @@ public class JukeBoxBacking extends BaseBacking implements Serializable{
     receivedReqCount = 
             audioRequestManager.viewReceivedRequestsCount(getCurrentUser(),
                 AudioRequestStatus.PENDING);
-     receivedReqMessage = "You have "+receivedReqCount + " lending request(s).";
+     receivedReqMessage = " - You have received "+receivedReqCount + " lending request(s).";
   }
+  
+  
   
    public String retrieveAudioSource(){
        
