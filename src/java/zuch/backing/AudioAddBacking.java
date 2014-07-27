@@ -10,20 +10,16 @@ package zuch.backing;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
 import java.util.logging.Logger;
 import javax.ejb.Asynchronous;
 import javax.enterprise.context.RequestScoped;
-import javax.enterprise.inject.Default;
 import javax.faces.application.FacesMessage;
-import javax.faces.component.UIComponent;
 import javax.faces.context.FacesContext;
 import javax.faces.validator.ValidatorException;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.interceptor.Interceptors;
 import javax.servlet.http.Part;
 import org.apache.commons.io.IOUtils;
 import org.primefaces.event.FileUploadEvent;
@@ -38,6 +34,7 @@ import zuch.search.Content;
 import zuch.search.Indexer;
 import zuch.search.ZSpellChecker;
 import zuch.service.AudioManagerLocal;
+import zuch.service.LoggingInterceptor;
 import zuch.service.ZUserManagerLocal;
 import zuch.util.AudioUtils;
 import zuch.util.ZFileSystemUtils;
@@ -67,60 +64,7 @@ public class AudioAddBacking extends BaseBacking implements Serializable{
     
     private Part filePart;
     
-    
-    
-   
-   /* 
-    public void validateFile(FacesContext ctx, UIComponent comp, Object value){
-        List<FacesMessage> msgs = new ArrayList<>();
-        
-        Part file = (Part)value;
-        
-        if (file.getSize() > (30*1048576) ) {
-            msgs.add(new FacesMessage("file size must not exceed 30 MB"));
-            
-            log.warning("file size must not exceed 30 MB");
-        
-        }
-        if ( ! ( "audio/mpeg".equals(file.getContentType()) ||
-                "audio/mp3".equals(file.getContentType()) ) ) {
-             msgs.add(new FacesMessage("File format must be mp3"));
-             
-             log.warning("File format must be mp3");
-        }
-        if (! msgs.isEmpty()) {
-            throw new ValidatorException(msgs);
-        }
-    }
-    
-   */
   
-  
-  /*
-  public void validateAudioFile(FacesContext ctx, UIComponent comp, Object value){
-      Logger.getLogger(AudioAddBacking.class.getName()).info("CALLING VALIDATING AUDIO...");
-      
-       List<FacesMessage> msgs = new ArrayList<>();
-      
-      if(uploadedFile != null){
-        if (uploadedFile.getSize() > (30*1048576) ) {
-            msgs.add(new FacesMessage("file size must not exceed 30 MB"));
-            
-            log.warning("file size must not exceed 30 MB");
-        
-        }
-        if ( ! ( "audio/mpeg".equals(uploadedFile.getContentType()) ||
-                "audio/mp3".equals(uploadedFile.getContentType()) ) ) {
-             msgs.add(new FacesMessage("File format must be mp3"));
-             
-             log.warning("File format must be mp3");
-        }
-        if (! msgs.isEmpty()) {
-            throw new ValidatorException(msgs);
-        }
-      }
-  }
-  */
   
  private UploadedFile uploadedFile;
  
@@ -145,12 +89,17 @@ public class AudioAddBacking extends BaseBacking implements Serializable{
      return result;
  }
   
- @Asynchronous
+ @Interceptors(LoggingInterceptor.class)
+ //@Asynchronous
  public void handleFileUpload(FileUploadEvent event){
    
        
        log.info("CALLING HANDLE FILE UPLOAD...");
       // synchronized(this){
+       
+       log.info(String.format("METHOD handleFileUpload(FileUploadEvent event) ON THREAD [%s]", 
+                Thread.currentThread().getName()));   
+           
        
          try {
                 uploadedFile = event.getFile();
@@ -197,7 +146,7 @@ public class AudioAddBacking extends BaseBacking implements Serializable{
                 uploadedFile = null;
                 
                 indexAudioContent(registredAudio,id3);
-                buildSpellChecker();
+               // buildSpellChecker();
                 
             } catch ( AudioAlreadyExists | UserNotFound ex) {
                 
@@ -215,21 +164,27 @@ public class AudioAddBacking extends BaseBacking implements Serializable{
        
    }
    
-   
+   @Asynchronous
    private void indexAudioContent(Audio audio,ID3 id3){
+       log.info(String.format("METHOD indexAudioContent(Audio audio,ID3 id3) ON THREAD [%s]", 
+                Thread.currentThread().getName()));  
       // searchContent.buildContent(id3);
        indexer.buildEnIndex(audio,id3);
        indexer.buildFrIndex(audio,id3);
        indexer.buildSpIndex(audio, id3);
+       
+      // buildSpellChecker();
      
             
    }
    
+   /* 
    private void buildSpellChecker(){
        spellChecker.buildEnSpellChecker();
        spellChecker.buildFrSpellChecker();
        spellChecker.buildSpSpellChecker();
    }
+   */
    
     public Part getFilePart() {
         return filePart;

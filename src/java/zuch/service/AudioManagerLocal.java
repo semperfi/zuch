@@ -7,6 +7,7 @@
 package zuch.service;
 
 import java.util.List;
+import javax.ejb.Asynchronous;
 import javax.ejb.Local;
 import zuch.exception.AudioAlreadyExists;
 import zuch.exception.AudioNotFound;
@@ -19,6 +20,7 @@ import zuch.model.Audio;
 @Local
 public interface AudioManagerLocal {
     
+  
     public Audio registerAudio(Audio audio) throws AudioAlreadyExists;
     public Audio updateAudio(Audio audio);
     public Audio getAudio(Long id) throws AudioNotFound;

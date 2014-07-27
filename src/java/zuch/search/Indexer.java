@@ -14,17 +14,18 @@ import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.ejb.Asynchronous;
 import javax.ejb.Lock;
 import javax.ejb.LockType;
 import javax.ejb.Singleton;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
+import javax.interceptor.Interceptors;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.en.EnglishAnalyzer;
 import org.apache.lucene.analysis.es.SpanishAnalyzer;
 import org.apache.lucene.analysis.fr.FrenchAnalyzer;
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.analysis.util.CharArraySet;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -39,6 +40,7 @@ import org.apache.lucene.store.NIOFSDirectory;
 import org.apache.lucene.util.Version;
 import zuch.model.Audio;
 import zuch.model.ID3;
+import zuch.service.LoggingInterceptor;
 import zuch.util.ZFileSystemUtils;
 
 /**
@@ -51,6 +53,7 @@ public class Indexer {
    static final Logger log = Logger.getLogger("zuch.service.Indexer");
    
    @Inject ZFileSystemUtils systemUtils;
+   @Inject ZSpellChecker spellChecker;
   // private IndexWriter writer;
   // private IndexWriter frWriter;
    
@@ -64,9 +67,13 @@ public class Indexer {
    
   
     
-    
+    @Interceptors(LoggingInterceptor.class)
+    @Asynchronous
     @Lock(LockType.WRITE)
     public void buildEnIndex(Audio audio,ID3 id3){
+        
+       log.info(String.format("METHOD buildEnIndex(Audio audio,ID3 id3) ON THREAD [%s]", 
+                Thread.currentThread().getName()));  
         
         IndexWriter writer = null;
         
@@ -89,6 +96,9 @@ public class Indexer {
             
             writer.close();
             
+            //build spell checker
+            spellChecker.buildEnSpellChecker();
+            
             startIndexingEvent.fire(new Date());
             
             
@@ -104,8 +114,13 @@ public class Indexer {
         }
     }
     
+    @Interceptors(LoggingInterceptor.class)
+    @Asynchronous
     @Lock(LockType.WRITE)
     public void buildFrIndex(Audio audio,ID3 id3){
+        
+        log.info(String.format("METHOD buildFrIndex(Audio audio,ID3 id3) ON THREAD [%s]", 
+                Thread.currentThread().getName()));  
         
         IndexWriter writer = null;
         
@@ -126,6 +141,9 @@ public class Indexer {
             log.info(String.format("FR Indexing %s files took %d milliseconds",
                     writer.numDocs(),(end - start) ));
             
+            //build spell checker
+            spellChecker.buildFrSpellChecker();
+            
             writer.close();
             
         } catch (IOException ex) {
@@ -140,8 +158,13 @@ public class Indexer {
         }
     }
     
+    @Interceptors(LoggingInterceptor.class)
+    @Asynchronous
     @Lock(LockType.WRITE)
     public void buildSpIndex(Audio audio,ID3 id3){
+        
+       log.info(String.format("METHOD buildSpIndex(Audio audio,ID3 id3) ON THREAD [%s]", 
+                Thread.currentThread().getName()));  
         
         IndexWriter writer = null;
         
@@ -163,6 +186,9 @@ public class Indexer {
             log.info(String.format("SP Indexing %s files took %d milliseconds",
                     writer.numDocs(),(end - start) ));
             
+            //build spell checker
+            spellChecker.buildSpSpellChecker();
+            
             writer.close();
             
         } catch (IOException ex) {
@@ -179,8 +205,8 @@ public class Indexer {
     
     
    // @Asynchronous
-   
-     private void indexFile(IndexWriter inWriter,Audio audio,ID3 id3) {
+   @Interceptors(LoggingInterceptor.class)
+   private void indexFile(IndexWriter inWriter,Audio audio,ID3 id3) {
         try {
            
             
