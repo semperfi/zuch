@@ -40,6 +40,7 @@ import org.apache.lucene.store.NIOFSDirectory;
 import org.apache.lucene.util.Version;
 import zuch.model.Audio;
 import zuch.model.ID3;
+import zuch.qualifier.Added;
 import zuch.service.LoggingInterceptor;
 import zuch.util.ZFileSystemUtils;
 
@@ -65,12 +66,13 @@ public class Indexer {
    @Inject
    private Event<Date> startIndexingEvent;
    
-  
-    
+     
     @Interceptors(LoggingInterceptor.class)
     @Asynchronous
     @Lock(LockType.WRITE)
-    public void buildEnIndex(Audio audio,ID3 id3){
+    public void buildEnIndex(@Observes @Added Audio audio){
+        
+       log.warning("ADD AUDIO OBSERVER RECEIVED EVENT...");
         
        log.info(String.format("METHOD buildEnIndex(Audio audio,ID3 id3) ON THREAD [%s]", 
                 Thread.currentThread().getName()));  
@@ -84,9 +86,12 @@ public class Indexer {
             config.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
             writer = new IndexWriter(dir,config);
             
+            
            // String filePath = id3.getFootPrint() + ".txt";
         
             long start = System.currentTimeMillis();
+            
+            ID3 id3 = audio.getId3();
             
             indexFile(writer,audio,id3);
             long end = System.currentTimeMillis();
@@ -99,7 +104,7 @@ public class Indexer {
             //build spell checker
             spellChecker.buildEnSpellChecker();
             
-            startIndexingEvent.fire(new Date());
+           // startIndexingEvent.fire(new Date());
             
             
         } catch (IOException ex) {
@@ -114,10 +119,12 @@ public class Indexer {
         }
     }
     
+    
+    
     @Interceptors(LoggingInterceptor.class)
     @Asynchronous
     @Lock(LockType.WRITE)
-    public void buildFrIndex(Audio audio,ID3 id3){
+    public void buildFrIndex(@Observes @Added Audio audio){
         
         log.info(String.format("METHOD buildFrIndex(Audio audio,ID3 id3) ON THREAD [%s]", 
                 Thread.currentThread().getName()));  
@@ -134,7 +141,7 @@ public class Indexer {
            // String filePath = id3.getFootPrint() + ".txt";
         
             long start = System.currentTimeMillis();
-            
+            ID3 id3 = audio.getId3();
             indexFile(writer,audio,id3);
             long end = System.currentTimeMillis();
 
@@ -161,7 +168,7 @@ public class Indexer {
     @Interceptors(LoggingInterceptor.class)
     @Asynchronous
     @Lock(LockType.WRITE)
-    public void buildSpIndex(Audio audio,ID3 id3){
+    public void buildSpIndex(@Observes @Added Audio audio){
         
        log.info(String.format("METHOD buildSpIndex(Audio audio,ID3 id3) ON THREAD [%s]", 
                 Thread.currentThread().getName()));  
@@ -179,8 +186,9 @@ public class Indexer {
            // String filePath = id3.getFootPrint() + ".txt";
         
             long start = System.currentTimeMillis();
-            
+            ID3 id3 = audio.getId3();
             indexFile(writer,audio,id3);
+            
             long end = System.currentTimeMillis();
 
             log.info(String.format("SP Indexing %s files took %d milliseconds",
@@ -360,6 +368,7 @@ public class Indexer {
     
     public void checkIndexing(@Observes Date event){
         log.warning("IT'S TIME TO INDEX: ".concat(event.toString()));
+        
     }
 
   

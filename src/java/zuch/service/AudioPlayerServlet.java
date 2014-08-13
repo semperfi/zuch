@@ -8,6 +8,7 @@ import java.text.DateFormat;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
@@ -34,6 +35,9 @@ public class AudioPlayerServlet extends HttpServlet {
     @Inject JukeBoxBacking jukeBacking;
     @Inject PlayTokens playToken;
     @Inject AudioUtils audioUtils;
+    
+    @Inject
+    Event<Audio> startIndexingEvent;
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -102,6 +106,8 @@ public class AudioPlayerServlet extends HttpServlet {
                        
                        if(!id.equals("sample")){
                            audio = audioManager.getAudio(Long.valueOf(id));
+                           //fire selection audio event
+                           startIndexingEvent.fire(audio);
                        }else{
                        
                            audio = audioUtils.getDefaultAudioSample();
@@ -234,10 +240,16 @@ public class AudioPlayerServlet extends HttpServlet {
                        String msg = "TOKEN EXIST: " ;
                        Logger.getLogger(AudioPlayerServlet.class.getName()).info(msg);
                        
+                       
+                      
+   
+                       
                        Audio audio = null;
                        
                        if(!id.equals("sample")){
                            audio = audioManager.getAudio(Long.valueOf(id));
+                            //fire selection audio event
+                            startIndexingEvent.fire(audio);
                        }else{
                        
                            audio = audioUtils.getDefaultAudioSample();
@@ -314,6 +326,9 @@ public class AudioPlayerServlet extends HttpServlet {
                             
                             inputStream.skip(reqStart);
                             while (((length = inputStream.read(bbuf)) != -1)){
+                               
+                             
+                               
                                outputStream.write(bbuf,0,length);
                                outputStream.flush();
 

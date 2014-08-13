@@ -11,7 +11,6 @@ import com.mpatric.mp3agic.ID3v2;
 import com.mpatric.mp3agic.InvalidDataException;
 import com.mpatric.mp3agic.Mp3File;
 import com.mpatric.mp3agic.UnsupportedTagException;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.FileSystems;
@@ -25,18 +24,19 @@ import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.collections.MapChangeListener;
-import javafx.scene.media.Media;
 import javax.ejb.Stateless;
+import javax.enterprise.event.Observes;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.SystemUtils;
+import zuch.model.AlbumImage;
 import zuch.model.Audio;
 import zuch.model.AudioContent;
 import zuch.model.ID3;
 import zuch.model.ZConstants;
+import zuch.qualifier.Added;
 
 /**
  *
@@ -48,6 +48,8 @@ public class AudioUtils {
     static final Logger log = Logger.getLogger("zuch.service.AudioUtils");
     @Inject ZFileSystemUtils fileSystemUtils;
     
+    static final List<String> acceptedMimeType = Arrays.asList("image/jpeg",
+            "image/jpg","image/png");
     
      public String getAudioFootPrint(ID3 id3){
          
@@ -112,13 +114,12 @@ public class AudioUtils {
         
         try {
             
-            
-            ByteArrayInputStream bin = new ByteArrayInputStream(fileContent);
-            
             Files.write(tmpFile, fileContent);
+            
            
             if(tmpFile != null){
                 mp3file = new Mp3File(tmpFile.toString());
+                
                 //getMetaData(tmpFile.toString());
                 Logger.getLogger(AudioUtils.class.getName()).info(mp3file.getFilename());
                 if (mp3file.hasId3v1Tag()) {
@@ -153,13 +154,23 @@ public class AudioUtils {
                   }
                 
                 if (mp3file.hasId3v2Tag()) {
-                ID3v2 id3v2Tag = mp3file.getId3v2Tag();
-                
-                byte[] albumImageData = id3v2Tag.getAlbumImage();
-                if (albumImageData != null) {
-                  log.fine("Album image data exist ");
-                  
-                }
+                    ID3v2 id3v2Tag = mp3file.getId3v2Tag();
+
+                    byte[] albumImageData = id3v2Tag.getAlbumImage();
+                    
+                    if (albumImageData != null) {
+                      log.info("Album image data exist ");
+                      String mimeType = id3v2Tag.getAlbumImageMimeType();
+                      if(acceptedMimeType.contains(mimeType)){
+                           AlbumImage image = new AlbumImage();
+                           image.setMimeType(mimeType);
+                           image.setImageData(albumImageData);
+                           id3.setArtWork(true);
+                           id3.setImage(image);
+                      }
+                     
+
+                    }
               }
             
             }
@@ -184,28 +195,8 @@ public class AudioUtils {
     }
    
     
-   /*
-   public  void getMetaData(String fileName){
-       
-       log.info("MEDIA PLAYER METADATA... ");
-        
-            Path path = Paths.get(fileName);
-            String chemin = path.toUri().toString();
-            log.info(chemin);
-            Media media = new Media(chemin);
-           // Logger.getLogger(AudioUtils.class.getName()).info(mp3file.getFilename());
-            media.getMetadata().addListener(new MapChangeListener<String, Object>() { 
-                @Override 
-                public void onChanged(Change<? extends String, ? extends Object> ch) { 
-                    if (ch.wasAdded()) { 
-                        handleMetadata(ch.getKey(), ch.getValueAdded()); 
-                    } 
-                } 
-            });
-        
-      
-    }
-   */
+   
+  
    
    private static void handleMetadata(String key, Object value) { 
       switch (key) {
@@ -246,11 +237,14 @@ public class AudioUtils {
             
         }else if(SystemUtils.IS_OS_UNIX){
             
-            path = "http://192.162.71.141:8080/Zuch/zuchplayer";
+            path = "http://192.162.71.141:8080/Zuch/zuchplayer";  //to be changed
         }
        
        return path;
    }
+   
+   
+  
    
    
    public Audio getDefaultAudioSample(){
@@ -288,5 +282,25 @@ public class AudioUtils {
          
          return audio;
    }
+   
+   
+ 
+    public void saveAlbumImage(@Observes @Added Audio audio){
+       
+        log.info("SAVE ALBUM IMAGE RECEIVED ADD EVENT...");
+        
+       if(audio.getId3().hasArtWork()){
+           try {
+            byte[] albumImage = audio.getId3().getImage().getImageData();
+            Path imagePath = Paths.get(fileSystemUtils.getAlbumImagePath(audio));
+            Files.write(imagePath, albumImage);
+        } catch (IOException ex) {
+            Logger.getLogger(AudioUtils.class.getName()).log(Level.SEVERE, null, ex);
+        }
+       }
+        
+    }
+   
+   
     
 }

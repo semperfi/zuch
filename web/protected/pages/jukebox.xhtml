@@ -21,12 +21,13 @@ xmlns:jsf="http://xmlns.jcp.org/jsf">
                <p:outputPanel id="playerOutputPanel"   >
                       
                <p:panel style="width: 70%;"  >
-                 
+                  
                  <canvas jsf:id="canvas" >
                     <f:passThroughAttribute name="height" value="60"/>
                     <f:passThroughAttribute name="width" value="200"/>
                     
                 </canvas>
+                  
                  <p:panelGrid columns="1" > 
                  <audio jsf:id="zuchAudioPlayer"
                             src="#{jukeBoxBacking.retrieveAudioSource()}">
@@ -132,7 +133,6 @@ xmlns:jsf="http://xmlns.jcp.org/jsf">
                                </p:column>
                                
                              
-                 
                                <p:column >
                                    <h:outputText rendered="#{jukeBoxBacking.isPlayable(audio)}" 
                                                  value="#{audio.status.value}" 

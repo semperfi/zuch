@@ -14,6 +14,7 @@ import java.util.Arrays;
 import java.util.logging.Logger;
 import javax.ejb.Asynchronous;
 import javax.enterprise.context.RequestScoped;
+import javax.enterprise.event.Event;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.faces.validator.ValidatorException;
@@ -30,6 +31,7 @@ import zuch.model.Audio;
 import zuch.model.AudioContent;
 import zuch.model.AudioStatus;
 import zuch.model.ID3;
+import zuch.qualifier.Added;
 import zuch.search.Content;
 import zuch.search.Indexer;
 import zuch.search.ZSpellChecker;
@@ -62,11 +64,13 @@ public class AudioAddBacking extends BaseBacking implements Serializable{
     @Inject Indexer indexer;
     @Inject ZSpellChecker spellChecker;
     
+    @Inject @Added Event<Audio> addAudio;
+    
     private Part filePart;
     
+   
   
-  
- private UploadedFile uploadedFile;
+    private UploadedFile uploadedFile;
  
  private boolean isValid(UploadedFile upFile){
      boolean result = true;
@@ -90,7 +94,7 @@ public class AudioAddBacking extends BaseBacking implements Serializable{
  }
   
  @Interceptors(LoggingInterceptor.class)
- //@Asynchronous
+ @Asynchronous
  public void handleFileUpload(FileUploadEvent event){
    
        
@@ -101,7 +105,7 @@ public class AudioAddBacking extends BaseBacking implements Serializable{
                 Thread.currentThread().getName()));   
            
        
-         try {
+       try {
                 uploadedFile = event.getFile();
                 
                 if(!isValid(uploadedFile)){
@@ -114,6 +118,7 @@ public class AudioAddBacking extends BaseBacking implements Serializable{
                 
                                                 
                 byte[] content = IOUtils.toByteArray(uploadedFile.getInputstream());
+                
                // byte[] content = uploadedFile.getContents();
                 int sampleSize = content.length / 4;
                 byte[] sample = Arrays.copyOfRange(content, 0, sampleSize);
@@ -126,7 +131,6 @@ public class AudioAddBacking extends BaseBacking implements Serializable{
                 newContent.setContentSample(sample);
                 newAudio.setContent(newContent);
                 ID3 id3 = audioUtils.getID3Tag(content, uploadedFile.getFileName());
-                
                 
                
                 if(id3.getTitle() == null){
@@ -145,8 +149,9 @@ public class AudioAddBacking extends BaseBacking implements Serializable{
                 Audio registredAudio = audioManager.registerAudio(newAudio);
                 uploadedFile = null;
                 
-                indexAudioContent(registredAudio,id3);
-               // buildSpellChecker();
+                //fire event for lucene indexer, spell checker and artwork image saving
+                addAudio.fire(registredAudio);
+               
                 
             } catch ( AudioAlreadyExists | UserNotFound ex) {
                 
@@ -163,29 +168,8 @@ public class AudioAddBacking extends BaseBacking implements Serializable{
        jukeBoxBacking.retrieveAudioList();
        
    }
-   
-   @Asynchronous
-   private void indexAudioContent(Audio audio,ID3 id3){
-       log.info(String.format("METHOD indexAudioContent(Audio audio,ID3 id3) ON THREAD [%s]", 
-                Thread.currentThread().getName()));  
-      // searchContent.buildContent(id3);
-       indexer.buildEnIndex(audio,id3);
-       indexer.buildFrIndex(audio,id3);
-       indexer.buildSpIndex(audio, id3);
-       
-      // buildSpellChecker();
+ 
      
-            
-   }
-   
-   /* 
-   private void buildSpellChecker(){
-       spellChecker.buildEnSpellChecker();
-       spellChecker.buildFrSpellChecker();
-       spellChecker.buildSpSpellChecker();
-   }
-   */
-   
     public Part getFilePart() {
         return filePart;
     }

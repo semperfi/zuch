@@ -16,6 +16,7 @@ import javax.faces.application.FacesMessage;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.apache.lucene.store.RAMDirectory;
 import zuch.exception.AudioNotFound;
 import zuch.exception.AudioRequestAlreadyExists;
 import zuch.exception.UserNotFound;
@@ -26,6 +27,7 @@ import zuch.model.AudioStatus;
 import zuch.model.PlayTokens;
 import zuch.model.SearchResult;
 import zuch.model.ZUser;
+import zuch.search.SearchUtils;
 import zuch.search.Searcher;
 import zuch.search.Suggest;
 import zuch.service.AudioManagerLocal;
@@ -49,6 +51,7 @@ public class AudioSearchBacking extends BaseBacking implements Serializable{
     @Inject PlayTokens playTokens;
     @Inject Searcher searcher;
     @Inject Suggest suggest;
+    @Inject SearchUtils searchUtils;
   
 
     private String searchToken;
@@ -64,45 +67,20 @@ public class AudioSearchBacking extends BaseBacking implements Serializable{
     private String audioInfo;
     
     
-   /* 
-    public String retrieveAudioList(){
-    
-      if(!searchToken.isEmpty()){
-         audioList = audioManager.searchForAudio(searchToken);
-         searcher.searchEn(searchToken);
-         searcher.searchFr(searchToken);
-         searcher.searchSp(searchToken);
-        if(audioList.isEmpty()){
-            infoMessage = "No audio results found";
-        }else{
-            infoMessage = audioList.size() + " audio file(s) found ";
-        }
-      }
-       
-        
-        return null;
-        
-    }
-    */
-    
-   
-    
     
     public String retrieveLuceneSearchAudios(){
-        if(!searchToken.isEmpty()){
+        if(searchUtils.isSearchTokenValid(searchToken)){
          
           searchResultList = searcher.luceneSearchForAudio(searchToken);
           currentSuggestion  = suggest.buildSuggestions(searchToken);
-                        
+          infoMessage = searchResultList.size() + " audio file(s) found ";             
           
-        if(searchResultList.isEmpty()){
-            infoMessage = "No audio results found";
-        }else{
-            infoMessage = searchResultList.size() + " audio file(s) found ";
-        }
+        
+      }else{
+            infoMessage = "No results found";
       }
        
-        
+       
         return null;
     }
     
@@ -119,7 +97,7 @@ public class AudioSearchBacking extends BaseBacking implements Serializable{
           
        
           if(searchResultList.isEmpty()){
-               infoMessage = "No audio results found";
+               infoMessage = "No results found";
           }else{
                infoMessage = searchResultList.size() + " audio file(s) found ";
                
@@ -321,24 +299,26 @@ public class AudioSearchBacking extends BaseBacking implements Serializable{
             
         }
         
-        
-        
         return selectedAudioLink;
    }
    
     
     
     public void retrieveAudioInfo(){
-         if(selectedAudio != null){
-                   audioInfo =  selectedAudio.getId3().getArtist()+" - "+
-                   selectedAudio.getId3().getTitle() + " (" +
-                   selectedAudio.getId3().getAlbum()+" : " +
-                   selectedAudio.getId3().getAudioYear() + ")";
         
-            String msg = "SELECTED AUDIO FILE: " + audioInfo;
-            Logger.getLogger(JukeBoxBacking.class.getName()).info(msg);
+         
+         if(selectedResult != null){
+                   audioInfo =  selectedResult.getArtist()+" - "+
+                   selectedResult.getTitle() + " (" +
+                   selectedResult.getAlbum()+" : " +
+                   selectedResult.getAudioYear() + ")";
+        
+            String msg = "SELECTED AUDIO FILE IN SEARCH BACKING: " + audioInfo;
+            log.info(msg);
            
        }
+         
+       
    }
     
    

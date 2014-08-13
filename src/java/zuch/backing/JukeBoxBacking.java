@@ -6,25 +6,35 @@
 
 package zuch.backing;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.io.Serializable;
-
-import java.util.ArrayList;
-
 import java.util.List;
 import java.util.UUID;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.enterprise.context.SessionScoped;
-import javax.inject.Named;
+import javax.enterprise.event.Event;
 import javax.faces.application.FacesMessage;
-
+import javax.faces.context.ExternalContext;
+import javax.faces.context.FacesContext;
 import javax.inject.Inject;
-
+import javax.inject.Named;
+import org.primefaces.model.DefaultStreamedContent;
+import org.primefaces.model.StreamedContent;
+import zuch.exception.AudioNotFound;
 import zuch.model.Audio;
 import zuch.model.AudioRequestStatus;
 import zuch.model.AudioStatus;
+import zuch.model.ID3;
+import zuch.model.LogEvent;
+import zuch.model.LogEventType;
 import zuch.model.PlayTokens;
 import zuch.model.SearchResult;
+import zuch.qualifier.LogSessionCreated;
+import zuch.qualifier.LogSessionDestroyed;
 import zuch.search.Searcher;
 import zuch.service.AudioManagerLocal;
 import zuch.service.AudioRequestManager;
@@ -38,6 +48,8 @@ import zuch.util.AudioUtils;
 @Named(value = "jukeBoxBacking")
 @SessionScoped
 public class JukeBoxBacking extends BaseBacking implements Serializable{
+    
+    static final Logger log = Logger.getLogger("zuch.service.AudioAddBacking");
 
     @Inject AudioManagerLocal audioManager;
     @Inject PlayTokens playTokens;
@@ -56,13 +68,35 @@ public class JukeBoxBacking extends BaseBacking implements Serializable{
     
     private List<Audio> audioList;
     
+    @Inject @LogSessionCreated Event<LogEvent> createLogEvent;
+    @Inject @LogSessionDestroyed Event<LogEvent> destroyLogEvent;
+    
+    private String currentUser;  //because we cannot get user from facescontext in predestroy
     
     @PostConstruct
     public void retrieveAudioList(){
        
        audioList = audioManager.getAllUserAudios(getCurrentUser());
        buildReceivedReqMsg();
+       //fire login event
+       log.info("JUKEBOX SESSION BEAN CREATED...");
+       LogEvent lEvent = new LogEvent();
+       lEvent.setType(LogEventType.LOGIN);
+       currentUser = getCurrentUser();
+       lEvent.setZuser(currentUser);
+       createLogEvent.fire(lEvent);
      }
+    
+    
+    
+    @PreDestroy
+    public void onDestroy(){
+       log.info("JUKEBOX SESSION WILL BE DESTROYED...");
+       LogEvent lEvent = new LogEvent();
+       lEvent.setType(LogEventType.LOGOUT);
+       lEvent.setZuser(currentUser);
+       destroyLogEvent.fire(lEvent);
+    }
     
     
     private String searchToken;
@@ -71,7 +105,8 @@ public class JukeBoxBacking extends BaseBacking implements Serializable{
     public String retrieveSearchedAudioList(){
     
          Logger.getLogger(JukeBoxBacking.class.getName()).info("SEARCHING IN PLAY LIST...");
-        
+         
+          
         audioList = audioManager.searchForAudioInPlayList(searchToken,getCurrentUser());
         
         if(audioList.isEmpty()){
@@ -142,6 +177,7 @@ public class JukeBoxBacking extends BaseBacking implements Serializable{
        String smsg = "SELCTED MP3: " + selectedAudio;
        Logger.getLogger(JukeBoxBacking.class.getName()).info(smsg);
        
+             
        String selectedAudioLink = "";
        
         long currentId = -1;
@@ -233,6 +269,8 @@ public class JukeBoxBacking extends BaseBacking implements Serializable{
 
        }
    }
+   
+   
    
    public boolean isPlayable(Audio audio){
        return audio.getStatus().equals(AudioStatus.LENT);

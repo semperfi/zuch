@@ -47,9 +47,12 @@ public class AudioManager implements AudioManagerLocal{
         Logger.getLogger(AudioManager.class.getName()).info("CALLING REGISTER AUDIO...");
         
         Query query = em.createQuery("SELECT aud FROM Audio aud WHERE "
-                            + "aud.id3.footPrint = :footPrint");
+                            + "aud.id3.footPrint = :footPrint AND "
+                            + "aud.owner.id = :owner");
         
         query.setParameter("footPrint", audio.getId3().getFootPrint());
+        query.setParameter("owner", audio.getOwner().getId());
+        
         
         try{
             query.getSingleResult();
@@ -131,6 +134,17 @@ public class AudioManager implements AudioManagerLocal{
         return audioList;
         
     }
+    
+    @Override
+    public long getAllAudiosCount() {
+         Query query = em.createQuery("SELECT COUNT(audio) FROM Audio audio ");
+        
+         
+        long count = (Long)query.getSingleResult();
+        
+        return count;
+    }
+    
 
     @Override
     public List<Audio> searchForAudio(String searchToken) {
@@ -278,19 +292,6 @@ public class AudioManager implements AudioManagerLocal{
     @Override
     public Audio getAudio(Long id) throws AudioNotFound{
         
-        /*
-        Query query = em.createQuery("SELECT audio FROM Audio audio WHERE "
-                            + "audio.id = :id");
-        query.setParameter("id", id);
-        
-        Audio audio = null;
-        
-        try{
-            audio = (Audio)query.getSingleResult();
-        }catch(NoResultException ex){
-            log.warning(ex.getMessage());
-        }
-        */
         
         Audio audio = em.find(Audio.class, id);
         if(audio == null){
@@ -349,5 +350,6 @@ public class AudioManager implements AudioManagerLocal{
     }
     }
     */
+
     
 }

@@ -120,16 +120,38 @@ public class AudioManageBacking extends BaseBacking implements Serializable{
     public void deleteAudio(){
          Logger.getLogger(AudioAddBacking.class.getName()).info("CALLING DELETE AUDIO...");
         try {
-            audioManager.removeAudio(selectedAudio.getId());
-            String msg = "'"+selectedAudio.getId3().getTitle()+"'"
-                    + " has been deleted!";
-           getContext().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, 
-           msg, ""));
-           deleteId3FromIndex(selectedAudio.getId3());
-           //refresh audio list to get latest tracks in view
-           jukeBoxBacking.retrieveAudioList();
+            if(jukeBoxBacking.getSelectedAudio() != null){
+               if(!jukeBoxBacking.getSelectedAudio().equals(selectedAudio)){
+                    audioManager.removeAudio(selectedAudio.getId());
+                    String msg = "'"+selectedAudio.getId3().getTitle()+"'"
+                             + " has been deleted!";
+                    getContext().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, 
+                    msg, ""));
+                    deleteId3FromIndex(selectedAudio.getId3());
+                   
+              }else{
+            
+                String msg = "File " + selectedAudio.getId3().getTitle() +" is used it cannot be deleted!";
+                getContext().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, 
+                msg, ""));
+              }
+            }else{
+                
+                audioManager.removeAudio(selectedAudio.getId());
+                String msg = "'"+selectedAudio.getId3().getTitle()+"'"
+                         + " has been deleted!";
+                getContext().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, 
+                msg, ""));
+                deleteId3FromIndex(selectedAudio.getId3());
+                
+
+            }
+            
+            //refresh audio list to get latest tracks in view
+            jukeBoxBacking.retrieveAudioList();
+            
         } catch (AudioNotFound ex) {
-             String msg = "File cannot be deleted!";
+            String msg = "File cannot be deleted!";
             getContext().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, 
             msg, ""));
            // Logger.getLogger(JukeBoxBacking.class.getName()).log(Level.SEVERE, null, ex);

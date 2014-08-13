@@ -49,7 +49,15 @@ public class ZUserManager implements ZUserManagerLocal{
         return zUser;
     }
     
-   
+   @Override
+    public long getZuchUserCount() {
+                
+        Query query = em.createQuery("SELECT COUNT(zuchUser) FROM ZUser zuchUser");
+        long count = (Long)query.getSingleResult();
+        
+        return count;
+    }
+
     
     
 
@@ -123,6 +131,7 @@ public class ZUserManager implements ZUserManagerLocal{
         em.flush();
     }
 
+    
     
     
 }
