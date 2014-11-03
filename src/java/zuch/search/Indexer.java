@@ -12,12 +12,15 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.ejb.AccessTimeout;
 import javax.ejb.Asynchronous;
 import javax.ejb.Lock;
 import javax.ejb.LockType;
 import javax.ejb.Singleton;
+import javax.enterprise.context.RequestScoped;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
@@ -49,6 +52,8 @@ import zuch.util.ZFileSystemUtils;
  * @author florent
  */
 @Singleton
+@Lock(LockType.WRITE)
+@AccessTimeout(value=1,unit=TimeUnit.MINUTES)
 public class Indexer {
     
    static final Logger log = Logger.getLogger("zuch.service.Indexer");
@@ -69,7 +74,7 @@ public class Indexer {
      
     @Interceptors(LoggingInterceptor.class)
     @Asynchronous
-    @Lock(LockType.WRITE)
+   // @Lock(LockType.WRITE)
     public void buildEnIndex(@Observes @Added Audio audio){
         
        log.warning("ADD AUDIO OBSERVER RECEIVED EVENT...");
@@ -123,7 +128,7 @@ public class Indexer {
     
     @Interceptors(LoggingInterceptor.class)
     @Asynchronous
-    @Lock(LockType.WRITE)
+    //@Lock(LockType.WRITE)
     public void buildFrIndex(@Observes @Added Audio audio){
         
         log.info(String.format("METHOD buildFrIndex(Audio audio,ID3 id3) ON THREAD [%s]", 
@@ -167,7 +172,7 @@ public class Indexer {
     
     @Interceptors(LoggingInterceptor.class)
     @Asynchronous
-    @Lock(LockType.WRITE)
+   // @Lock(LockType.WRITE)
     public void buildSpIndex(@Observes @Added Audio audio){
         
        log.info(String.format("METHOD buildSpIndex(Audio audio,ID3 id3) ON THREAD [%s]", 
@@ -212,7 +217,7 @@ public class Indexer {
     }
     
     
-   // @Asynchronous
+   @Asynchronous
    @Interceptors(LoggingInterceptor.class)
    private void indexFile(IndexWriter inWriter,Audio audio,ID3 id3) {
         try {
@@ -264,16 +269,8 @@ public class Indexer {
         return value == null  ? "":value;
     }
     
-     private  class TextFilesFilter implements FileFilter{
-
-        @Override
-        public boolean accept(File path) {
-            return path.getName().toLowerCase().endsWith(".txt");
-        }
-    
-    }
-     
-    @Lock(LockType.WRITE)
+   
+    //@Lock(LockType.WRITE)
     public void deleteEnDocument(ID3 id3){
         
         log.info("DELETING FROM ENGLISH INDEX...");
@@ -303,7 +300,7 @@ public class Indexer {
         
     }
     
-    @Lock(LockType.WRITE)
+   // @Lock(LockType.WRITE)
     public void deleteFrDocument(ID3 id3){
         
         log.info("DELETING FROM FRENCH INDEX...");
@@ -333,7 +330,7 @@ public class Indexer {
         
     }
     
-    @Lock(LockType.WRITE)
+    //@Lock(LockType.WRITE)
     public void deleteSpDocument(ID3 id3){
         
         log.info("DELETING FROM SPANISH INDEX...");

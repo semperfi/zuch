@@ -6,8 +6,8 @@
 
     <application>
         <resource-bundle>
-        <base-name>zuch.util.messages</base-name>
-        <var>bundle</var>
+            <base-name>zuch.util.messages</base-name>
+            <var>bundle</var>
         </resource-bundle>
         
         <lifecycle>

@@ -1,10 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <persistence version="2.1" xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
   <persistence-unit name="ZuchPU" transaction-type="JTA">
+    <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
     <jta-data-source>jdbc/zuch</jta-data-source>
     <exclude-unlisted-classes>false</exclude-unlisted-classes>
     <properties>
-      <property name="javax.persistence.schema-generation.database.action" value="create"/>
+      <property name="eclipselink.canonicalmodel.subpackage" value="main"/>
+     
+    </properties>
+  </persistence-unit>
+  <persistence-unit name="ZuchTestPU" transaction-type="RESOURCE_LOCAL">
+    <provider>org.eclipse.persistence.jpa.PersistenceProvider</provider>
+    <class>zuch.model.ZUser</class>
+    <class>zuch.model.ZGroup</class>
+    <class>zuch.model.Audio</class>
+    <class>zuch.model.ID3</class>
+    <class>zuch.model.AlbumImage</class>
+    <class>zuch.model.AudioContent</class>
+    <class>zuch.model.AudioLending</class>
+    <class>zuch.model.AudioRequest</class>
+    <properties>
+      <property name="javax.persistence.schema-generation.database.action" value="drop-and-create"/>
+      <property name="javax.persistence.jdbc.driver" value="org.apache.derby.jdbc.EmbeddedDriver"/>
+      <property name="javax.persistence.jdbc.url" value="jdbc:derby:memory:zuchtest;create=true"/>
     </properties>
   </persistence-unit>
 </persistence>

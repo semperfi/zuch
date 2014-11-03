@@ -10,13 +10,12 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.Stateless;
+import javax.enterprise.context.RequestScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import org.apache.lucene.analysis.en.EnglishAnalyzer;
@@ -52,7 +51,7 @@ import zuch.util.ZFileSystemUtils;
  *
  * @author florent
  */
-@Stateless
+@RequestScoped
 public class Searcher {
     
     static final Logger log = Logger.getLogger("zuch.service.Searcher");

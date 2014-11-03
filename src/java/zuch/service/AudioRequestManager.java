@@ -27,7 +27,7 @@ import zuch.model.AudioStatus;
 @Stateless
 public class AudioRequestManager implements AudioRequestManagerLocal{
     
-    @PersistenceContext
+    @PersistenceContext(unitName = "ZuchPU")
     EntityManager em;
 
     @Override

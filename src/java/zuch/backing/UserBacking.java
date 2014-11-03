@@ -9,6 +9,7 @@ package zuch.backing;
 import java.io.Serializable;
 import java.math.BigInteger;
 import java.security.MessageDigest;
+import java.util.logging.Logger;
 
 import javax.ejb.EJB;
 import javax.enterprise.context.RequestScoped;
@@ -33,6 +34,8 @@ import zuch.service.ZUserManagerLocal;
 @Named("userBacking")
 @SessionScoped
 public class UserBacking extends BaseBacking implements Serializable{
+    
+    static final Logger log = Logger.getLogger("zuch.service.UserBacking");
     
     @EJB
     private ZUserManagerLocal userManager;
@@ -69,8 +72,10 @@ public class UserBacking extends BaseBacking implements Serializable{
             
             byte[] digest = msgDigest.digest();
             BigInteger bigInt = new BigInteger(1, digest);
-                                   
-            newUser.setPassword(bigInt.toString(16));
+            
+            String passwd = bigInt.toString(16);
+            newUser.setPassword(passwd);
+            log.info(String.format("create Password: %s",  passwd));
             ZUser registeredUser =  userManager.registerUser(newUser);
             
             //log user

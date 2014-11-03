@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.Stateless;
+import javax.enterprise.context.RequestScoped;
 import javax.enterprise.event.Observes;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
@@ -42,7 +43,8 @@ import zuch.qualifier.Added;
  *
  * @author florent
  */
-@Stateless
+//@Stateless
+@RequestScoped
 public class AudioUtils {
     
     static final Logger log = Logger.getLogger("zuch.service.AudioUtils");
@@ -217,11 +219,11 @@ public class AudioUtils {
         
        if(SystemUtils.IS_OS_WINDOWS){
             
-            path =  "http://localhost:8080/Zuch/zuchplayer";
+            path =  "http://localhost:8080/zuch/zuchplayer";
             
         }else if(SystemUtils.IS_OS_UNIX){
             
-            path = "http://192.162.71.141:8080/Zuch/zuchplayer";
+            path = "http://homefleet.cloudapp.net/Zuch/zuchplayer";
         }
        
        return path;
@@ -233,11 +235,11 @@ public class AudioUtils {
         
        if(SystemUtils.IS_OS_WINDOWS){
             
-            path =  "http://localhost:8080/Zuch/zuchsampleplayer";
+            path =  "http://localhost:8080/zuch/zuchsampleplayer";
             
         }else if(SystemUtils.IS_OS_UNIX){
             
-            path = "http://192.162.71.141:8080/Zuch/zuchplayer";  //to be changed
+            path = "http://homefleet.cloudapp.net/Zuch/zuchplayer";  //to be changed
         }
        
        return path;

@@ -16,12 +16,14 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Version;
 import javax.validation.constraints.NotNull;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
  * @author florent
  */
 @Entity
+@XmlRootElement
 public class AudioRequest implements Serializable {
     
     private static final long serialVersionUID = 1L;

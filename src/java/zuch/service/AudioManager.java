@@ -10,12 +10,11 @@ package zuch.service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
-import javax.ejb.Asynchronous;
+
 import javax.ejb.Stateless;
-import javax.inject.Inject;
-import javax.interceptor.AroundInvoke;
+
 import javax.interceptor.Interceptors;
-import javax.interceptor.InvocationContext;
+
 import javax.persistence.CacheRetrieveMode;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -25,6 +24,7 @@ import zuch.exception.AudioAlreadyExists;
 import zuch.exception.AudioNotFound;
 import zuch.model.Audio;
 import zuch.model.AudioLendStatus;
+import zuch.model.AudioRequestStatus;
 import zuch.model.AudioStatus;
 
 /**
@@ -32,6 +32,7 @@ import zuch.model.AudioStatus;
  * @author florent
  */
 @Stateless
+@PerformanceMonitor
 public class AudioManager implements AudioManagerLocal{
     
     static final Logger log = Logger.getLogger("zuch.service.AudioManager");
@@ -39,7 +40,9 @@ public class AudioManager implements AudioManagerLocal{
     @PersistenceContext(unitName = "ZuchPU")
     private EntityManager em;
 
-    @Interceptors(LoggingInterceptor.class)
+ 
+    
+    
     @Override
     public Audio registerAudio(Audio audio) throws AudioAlreadyExists {
         
@@ -84,7 +87,7 @@ public class AudioManager implements AudioManagerLocal{
                 + " ORDER BY cAudio.id3.album");
         
         query.setParameter("userID", userID);
-      //  query.setParameter("status", AudioStatus.IN_JUKEBOX);
+        //query.setParameter("status", AudioStatus.IN_JUKEBOX);
         query.setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS);
         
         List<Audio> audioList = (List<Audio>)query.getResultList();
@@ -286,7 +289,9 @@ public class AudioManager implements AudioManagerLocal{
     
     @Override
     public Audio updateAudio(Audio audio) {
-       return em.merge(audio);
+       Audio updatedAudio = em.merge(audio);
+       log.info(String.format("UPDATED AUDIO STATUS %s", updatedAudio.getStatus()));
+       return updatedAudio;
     }
 
     @Override

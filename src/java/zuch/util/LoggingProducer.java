@@ -8,7 +8,6 @@ package zuch.util;
 
 import java.util.Date;
 import java.util.logging.Logger;
-import javax.enterprise.inject.Default;
 import javax.enterprise.inject.Produces;
 import javax.enterprise.inject.spi.InjectionPoint;
 

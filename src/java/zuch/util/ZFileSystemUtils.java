@@ -11,6 +11,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.logging.Logger;
 import javax.ejb.Stateless;
+import javax.enterprise.context.RequestScoped;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import org.apache.commons.lang3.SystemUtils;
@@ -20,7 +21,7 @@ import zuch.model.Audio;
  *
  * @author florent
  */
-@Stateless
+@RequestScoped
 public class ZFileSystemUtils {
     
      static final Logger log = Logger.getLogger("zuch.service.ZFileSystemUtils");
@@ -37,7 +38,7 @@ public class ZFileSystemUtils {
                
         }else if(SystemUtils.IS_OS_UNIX){
             
-            path = "/root/zuch/tmp/";
+            path = "/usr/zuch/tmp/";
        
         }
        
@@ -53,7 +54,7 @@ public class ZFileSystemUtils {
             
         }else if(SystemUtils.IS_OS_UNIX){
             
-            path = "/root/zuch/search_data";
+            path = "/usr/zuch/search_data";
         }
        
        return path;
@@ -68,7 +69,7 @@ public class ZFileSystemUtils {
             
         }else if(SystemUtils.IS_OS_UNIX){
             
-            path = "/root/zuch/search_index/";
+            path = "/usr/zuch/search_index/";
         }
        
        return path;
@@ -83,7 +84,7 @@ public class ZFileSystemUtils {
             
         }else if(SystemUtils.IS_OS_UNIX){
             
-            path = "/root/zuch/spellchecker_data/";
+            path = "/usr/zuch/spellchecker_data/";
         }
        
        return path;
@@ -98,7 +99,7 @@ public class ZFileSystemUtils {
             
         }else if(SystemUtils.IS_OS_UNIX){
             
-            path = "/root/zuch/fr_search_index/";
+            path = "/usr/zuch/fr_search_index/";
         }
        
        return path;
@@ -113,7 +114,7 @@ public class ZFileSystemUtils {
             
         }else if(SystemUtils.IS_OS_UNIX){
             
-            path = "/root/zuch/fr_spellchecker_data/";
+            path = "/usr/zuch/fr_spellchecker_data/";
         }
        
        return path;
@@ -128,7 +129,7 @@ public class ZFileSystemUtils {
             
         }else if(SystemUtils.IS_OS_UNIX){
             
-            path = "/root/zuch/sp_search_index/";
+            path = "/usr/zuch/sp_search_index/";
         }
        
        return path;
@@ -143,7 +144,7 @@ public class ZFileSystemUtils {
             
         }else if(SystemUtils.IS_OS_UNIX){
             
-            path = "/root/zuch/sp_spellchecker_data/";
+            path = "/usr/zuch/sp_spellchecker_data/";
         }
        
        return path;
@@ -159,11 +160,15 @@ public class ZFileSystemUtils {
             
         }else if(SystemUtils.IS_OS_UNIX){
             
-            path = "/root/images/"+audio.getId3().getFootPrint()+".jpg";
+            path = "/usr/zuch/images/"+audio.getId3().getFootPrint()+".jpg";
         }
       }else{
-      
-          path = "C:\\zuch\\images\\music.png";
+          if(SystemUtils.IS_OS_WINDOWS){
+              path = "C:\\zuch\\images\\music.png";
+          }else if(SystemUtils.IS_OS_UNIX){
+              path = "/usr/zuch/images/music.png";
+          }
+          
       }
         
        

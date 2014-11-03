@@ -6,13 +6,14 @@
 
 package zuch.search;
 
-import javax.ejb.Stateless;
+
+import javax.enterprise.context.RequestScoped;
 
 /**
  *
  * @author florent
  */
-@Stateless
+@RequestScoped
 public class SearchUtils {
 
    public boolean isSearchTokenValid(String token){

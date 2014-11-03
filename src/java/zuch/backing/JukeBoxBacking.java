@@ -86,8 +86,7 @@ public class JukeBoxBacking extends BaseBacking implements Serializable{
        lEvent.setZuser(currentUser);
        createLogEvent.fire(lEvent);
      }
-    
-    
+     
     
     @PreDestroy
     public void onDestroy(){
@@ -215,7 +214,7 @@ public class JukeBoxBacking extends BaseBacking implements Serializable{
                         +"?id=sample" +"&tk="+token
                         +"&rtk="+rangeToken;
                 
-                String acceptMsg = "You cannot play lended file";
+                String acceptMsg = "You cannot play lent file";
                 getContext().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, 
                 acceptMsg, ""));
             }

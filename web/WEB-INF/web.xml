@@ -22,7 +22,7 @@
     
     <context-param>
         <param-name>zuch.PROD_MP3_TMP_FOLDER</param-name>
-        <param-value>/root/zuch/tmp/</param-value>
+        <param-value>/usr/zuch/tmp/</param-value>
     </context-param>
     
    

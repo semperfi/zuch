@@ -56,6 +56,7 @@ public class ReceivedRequestsBacking extends BaseBacking implements Serializable
         
         Audio audio = request.getRequestedAudio();
         audio.setStatus(AudioStatus.LENT);
+       
         //audio.getAudioRequests().add(request);
         
         audioLending.setAudio(audio);

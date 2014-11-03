@@ -14,6 +14,7 @@ import java.util.Arrays;
 import java.util.logging.Logger;
 import javax.ejb.Asynchronous;
 import javax.enterprise.context.RequestScoped;
+import javax.enterprise.context.SessionScoped;
 import javax.enterprise.event.Event;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
@@ -37,6 +38,7 @@ import zuch.search.Indexer;
 import zuch.search.ZSpellChecker;
 import zuch.service.AudioManagerLocal;
 import zuch.service.LoggingInterceptor;
+import zuch.service.PerformanceMonitor;
 import zuch.service.ZUserManagerLocal;
 import zuch.util.AudioUtils;
 import zuch.util.ZFileSystemUtils;
@@ -93,9 +95,9 @@ public class AudioAddBacking extends BaseBacking implements Serializable{
      return result;
  }
   
- @Interceptors(LoggingInterceptor.class)
- @Asynchronous
- public void handleFileUpload(FileUploadEvent event){
+  @Interceptors(LoggingInterceptor.class)
+  @Asynchronous
+  public void handleFileUpload(FileUploadEvent event){
    
        
        log.info("CALLING HANDLE FILE UPLOAD...");
