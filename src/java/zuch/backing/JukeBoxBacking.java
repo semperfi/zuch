@@ -22,8 +22,10 @@ import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.interceptor.Interceptors;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
+import zuch.aop.PerformanceInterceptor;
 import zuch.exception.AudioNotFound;
 import zuch.model.Audio;
 import zuch.model.AudioRequestStatus;
@@ -35,6 +37,7 @@ import zuch.model.PlayTokens;
 import zuch.model.SearchResult;
 import zuch.qualifier.LogSessionCreated;
 import zuch.qualifier.LogSessionDestroyed;
+import zuch.qualifier.PerformanceMonitor;
 import zuch.search.Searcher;
 import zuch.service.AudioManagerLocal;
 import zuch.service.AudioRequestManager;
@@ -47,6 +50,7 @@ import zuch.util.AudioUtils;
  */
 @Named(value = "jukeBoxBacking")
 @SessionScoped
+//@PerformanceMonitor
 public class JukeBoxBacking extends BaseBacking implements Serializable{
     
     static final Logger log = Logger.getLogger("zuch.service.AudioAddBacking");

@@ -26,6 +26,7 @@ public interface AudioManagerLocal {
     public Audio getAudio(Long id) throws AudioNotFound;
     public void removeAudio(Long id) throws AudioNotFound;
     public List<Audio> getAllAudios(String title);
+    public List<Audio> getAllAudiosInSystem();
     public long getAllAudiosCount();
     public List<Audio> getAllUserAudios(String userID);
     public List<Audio> getAllUserAudiosInJukebox(String userID);

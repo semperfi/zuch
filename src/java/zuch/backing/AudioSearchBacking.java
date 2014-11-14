@@ -27,6 +27,7 @@ import zuch.model.AudioStatus;
 import zuch.model.PlayTokens;
 import zuch.model.SearchResult;
 import zuch.model.ZUser;
+import zuch.qualifier.PerformanceMonitor;
 import zuch.search.SearchUtils;
 import zuch.search.Searcher;
 import zuch.search.Suggest;
@@ -41,6 +42,7 @@ import zuch.util.AudioUtils;
  */
 @Named(value = "audioSearchBacking")
 @ViewScoped
+//@PerformanceMonitor
 public class AudioSearchBacking extends BaseBacking implements Serializable{
     
     static final Logger log = Logger.getLogger("zuch.service.AudioSearchBacking");

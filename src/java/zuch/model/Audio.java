@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -44,7 +45,9 @@ public class Audio implements Serializable {
     
     private String uploadedName;
     private String comment;
-    private Integer rating;
+    
+    @Column(name = "AVG_RATING")
+    private Integer avgRating;
     
     @NotNull
     @Enumerated(EnumType.STRING)
@@ -64,6 +67,9 @@ public class Audio implements Serializable {
     
     @OneToMany(mappedBy = "audio", cascade = CascadeType.ALL)
     private List<AudioLending> audioLendings;
+    
+    @OneToMany(mappedBy = "audio")
+    private List<Rating> ratings;
     
     @NotNull
     @OneToOne(cascade = CascadeType.ALL)
@@ -105,15 +111,14 @@ public class Audio implements Serializable {
         return created;
     }
 
-    
-
-    public Integer getRating() {
-        return rating;
+    public Integer getAvgRating() {
+        return avgRating;
     }
 
-    public void setRating(Integer rating) {
-        this.rating = rating;
+    public void setAvgRating(Integer avgRating) {
+        this.avgRating = avgRating;
     }
+
     
     
     public Long getId() {
@@ -176,6 +181,14 @@ public class Audio implements Serializable {
 
     public void setVersion(Integer version) {
         this.version = version;
+    }
+
+    public List<Rating> getRatings() {
+        return ratings;
+    }
+
+    public void setRatings(List<Rating> ratings) {
+        this.ratings = ratings;
     }
 
     

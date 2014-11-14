@@ -26,6 +26,7 @@ import javax.servlet.http.Part;
 import org.apache.commons.io.IOUtils;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.model.UploadedFile;
+import zuch.aop.PerformanceInterceptor;
 import zuch.exception.AudioAlreadyExists;
 import zuch.exception.UserNotFound;
 import zuch.model.Audio;
@@ -37,8 +38,7 @@ import zuch.search.Content;
 import zuch.search.Indexer;
 import zuch.search.ZSpellChecker;
 import zuch.service.AudioManagerLocal;
-import zuch.service.LoggingInterceptor;
-import zuch.service.PerformanceMonitor;
+import zuch.qualifier.PerformanceMonitor;
 import zuch.service.ZUserManagerLocal;
 import zuch.util.AudioUtils;
 import zuch.util.ZFileSystemUtils;
@@ -50,6 +50,7 @@ import zuch.util.ZFileSystemUtils;
  */
 @Named(value = "audioAddBacking")
 @RequestScoped
+//@PerformanceMonitor
 public class AudioAddBacking extends BaseBacking implements Serializable{
     
     static final Logger log = Logger.getLogger("zuch.service.AudioAddBacking");
@@ -95,7 +96,7 @@ public class AudioAddBacking extends BaseBacking implements Serializable{
      return result;
  }
   
-  @Interceptors(LoggingInterceptor.class)
+  
   @Asynchronous
   public void handleFileUpload(FileUploadEvent event){
    

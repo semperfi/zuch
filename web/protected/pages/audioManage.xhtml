@@ -57,6 +57,17 @@ xmlns:p="http://primefaces.org/ui">
                                 </f:facet>
                                     #{audio.id3.genre}
                                </p:column>
+                        
+                               <p:column>
+                                <f:facet name="header">
+                                    RATING
+                                </f:facet>
+                                  <p:rating value="#{ratingBacking.rating}" >
+                                   <p:ajax event="rate"   listener="#{ratingBacking.handleRate(audio)}"  />
+                                   <p:ajax event="cancel" listener="#{ratingBacking.handleCancel}"  />
+                                  </p:rating> 
+                                  
+                               </p:column>
                              
                                <p:column>
                                 <f:facet name="header">

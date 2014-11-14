@@ -1,0 +1,25 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+  
+    
+        <ui:composition>
+            <h:form id="menuForm"  >
+                <p:menu  >
+                    <p:menuitem value="Manage Musics" url="/faces/admin/pages/audio.xhtml" />
+                    <p:menuitem value="Manage Users" url="/faces/admin/pages/user.xhtml"  />
+                    <p:menuitem value="Manage System" url="/faces/admin/pages/system.xhtml" />
+                    <p:menuitem value="Logout" action="#{userBacking.logout()}"  />
+
+                </p:menu>
+            </h:form>
+        </ui:composition>
+      
+    
+    
+   
+</html>
+

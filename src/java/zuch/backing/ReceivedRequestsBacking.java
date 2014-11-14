@@ -19,6 +19,7 @@ import zuch.model.AudioRequest;
 import zuch.model.AudioRequestStatus;
 import zuch.model.AudioStatus;
 import zuch.model.ZConstants;
+import zuch.qualifier.PerformanceMonitor;
 
 import zuch.service.AudioManagerLocal;
 import zuch.service.AudioRequestManagerLocal;
@@ -29,6 +30,7 @@ import zuch.service.AudioRequestManagerLocal;
  */
 @Named(value = "receivedRequestsBacking")
 @ViewScoped
+//@PerformanceMonitor
 public class ReceivedRequestsBacking extends BaseBacking implements Serializable{
     
     @Inject AudioRequestManagerLocal audioRequestManager;

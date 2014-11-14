@@ -7,6 +7,7 @@
 package zuch.service;
 
 
+import zuch.qualifier.PerformanceMonitor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -138,6 +139,22 @@ public class AudioManager implements AudioManagerLocal{
         
     }
     
+    
+    @Override
+    public List<Audio> getAllAudiosInSystem() {
+        
+        Query query = em.createQuery("SELECT music FROM Audio music");
+       
+        List<Audio> audioList = (List<Audio>)query.getResultList();
+        
+        if(audioList == null){
+            return new ArrayList<>();
+        }
+        
+        return audioList;
+        
+    }
+    
     @Override
     public long getAllAudiosCount() {
          Query query = em.createQuery("SELECT COUNT(audio) FROM Audio audio ");
@@ -147,6 +164,10 @@ public class AudioManager implements AudioManagerLocal{
         
         return count;
     }
+    
+    
+    
+
     
 
     @Override
@@ -338,23 +359,8 @@ public class AudioManager implements AudioManagerLocal{
         em.flush();
     }
     
-    /*
-    @AroundInvoke
-    private Object logMethod(InvocationContext ic) throws Exception {
-                
-        String enterMessage = "["+ic.getTarget().toString() 
-                +"] ENTER "+ic.getMethod().getName();
-        log.info(enterMessage);
-        
-    try {
-        return ic.proceed();
-    } finally {
-        String exitMessage = "["+ic.getTarget().toString() 
-                +"] EXIT "+ic.getMethod().getName();
-        log.info(exitMessage);
-    }
-    }
-    */
+   
 
+    
     
 }

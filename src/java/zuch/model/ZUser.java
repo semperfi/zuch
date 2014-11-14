@@ -51,6 +51,9 @@ public class ZUser implements Serializable {
     @OneToMany(mappedBy = "requester", cascade = CascadeType.ALL)
     private List<AudioRequest> audioRequests;
     
+    @OneToMany(mappedBy = "ratingAuthor")
+    private List<Rating> ratings;
+    
 
     public String getId() {
         return id;
@@ -125,6 +128,14 @@ public class ZUser implements Serializable {
 
     public void setVersion(Integer version) {
         this.version = version;
+    }
+
+    public List<Rating> getRatings() {
+        return ratings;
+    }
+
+    public void setRatings(List<Rating> ratings) {
+        this.ratings = ratings;
     }
 
     

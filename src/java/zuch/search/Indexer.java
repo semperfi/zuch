@@ -44,7 +44,7 @@ import org.apache.lucene.util.Version;
 import zuch.model.Audio;
 import zuch.model.ID3;
 import zuch.qualifier.Added;
-import zuch.service.LoggingInterceptor;
+import zuch.qualifier.AudioRebuilt;
 import zuch.util.ZFileSystemUtils;
 
 /**
@@ -71,8 +71,26 @@ public class Indexer {
    @Inject
    private Event<Date> startIndexingEvent;
    
-     
-    @Interceptors(LoggingInterceptor.class)
+   @Inject
+   private @Added Event<Audio>  addAudioEvent; //use to rebuild index
+   
+   
+   /*
+    * delete current ducument from 
+    */
+   @Asynchronous
+   public void deleteAndRebuild(@Observes @AudioRebuilt Audio audio){
+       
+       ID3 currentId3 = audio.getId3();
+       log.info(String.format("--> Current ID3 ID: %d", currentId3.getId()));
+       deleteEnDocument(currentId3);
+       deleteFrDocument(currentId3);
+       deleteSpDocument(currentId3);
+       
+       addAudioEvent.fire(audio);
+   
+   }
+   
     @Asynchronous
    // @Lock(LockType.WRITE)
     public void buildEnIndex(@Observes @Added Audio audio){
@@ -126,7 +144,7 @@ public class Indexer {
     
     
     
-    @Interceptors(LoggingInterceptor.class)
+    
     @Asynchronous
     //@Lock(LockType.WRITE)
     public void buildFrIndex(@Observes @Added Audio audio){
@@ -170,7 +188,7 @@ public class Indexer {
         }
     }
     
-    @Interceptors(LoggingInterceptor.class)
+   
     @Asynchronous
    // @Lock(LockType.WRITE)
     public void buildSpIndex(@Observes @Added Audio audio){
@@ -218,8 +236,7 @@ public class Indexer {
     
     
    @Asynchronous
-   @Interceptors(LoggingInterceptor.class)
-   private void indexFile(IndexWriter inWriter,Audio audio,ID3 id3) {
+    private void indexFile(IndexWriter inWriter,Audio audio,ID3 id3) {
         try {
            
             

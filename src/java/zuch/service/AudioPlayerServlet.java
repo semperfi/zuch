@@ -36,8 +36,8 @@ public class AudioPlayerServlet extends HttpServlet {
     @Inject PlayTokens playToken;
     @Inject AudioUtils audioUtils;
     
-    @Inject
-    Event<Audio> startIndexingEvent;
+   // @Inject
+   // Event<Audio> startIndexingEvent;
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -107,7 +107,7 @@ public class AudioPlayerServlet extends HttpServlet {
                        if(!id.equals("sample")){
                            audio = audioManager.getAudio(Long.valueOf(id));
                            //fire selection audio event
-                           startIndexingEvent.fire(audio);
+                         //  startIndexingEvent.fire(audio);
                        }else{
                        
                            audio = audioUtils.getDefaultAudioSample();
@@ -249,7 +249,7 @@ public class AudioPlayerServlet extends HttpServlet {
                        if(!id.equals("sample")){
                            audio = audioManager.getAudio(Long.valueOf(id));
                             //fire selection audio event
-                            startIndexingEvent.fire(audio);
+                           // startIndexingEvent.fire(audio);
                        }else{
                        
                            audio = audioUtils.getDefaultAudioSample();

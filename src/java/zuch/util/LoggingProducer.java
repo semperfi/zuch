@@ -19,7 +19,7 @@ import javax.enterprise.inject.spi.InjectionPoint;
 public class LoggingProducer {
     
     @Produces
-    private final Date maintenant = new Date();
+    private final Date now = new Date();
     
     @Produces 
     private Logger createLogger(InjectionPoint injectionPoint) {

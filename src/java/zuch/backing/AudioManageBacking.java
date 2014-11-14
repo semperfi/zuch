@@ -27,6 +27,7 @@ import zuch.exception.AudioNotFound;
 import zuch.model.Audio;
 import zuch.model.ID3;
 import zuch.model.ZConstants;
+import zuch.qualifier.PerformanceMonitor;
 import zuch.search.Indexer;
 import zuch.service.AudioManagerLocal;
 
@@ -36,6 +37,7 @@ import zuch.service.AudioManagerLocal;
  */
 @Named(value = "audioManageBacking")
 @ViewScoped
+//@PerformanceMonitor
 public class AudioManageBacking extends BaseBacking implements Serializable{
     
      @Inject AudioManagerLocal audioManager;

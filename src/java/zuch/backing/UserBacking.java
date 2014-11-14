@@ -24,6 +24,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import zuch.exception.UserAlreadyExists;
 import zuch.model.ZUser;
+import zuch.qualifier.PerformanceMonitor;
 import zuch.service.ZUserManager;
 import zuch.service.ZUserManagerLocal;
 
@@ -33,6 +34,7 @@ import zuch.service.ZUserManagerLocal;
  */
 @Named("userBacking")
 @SessionScoped
+//@PerformanceMonitor
 public class UserBacking extends BaseBacking implements Serializable{
     
     static final Logger log = Logger.getLogger("zuch.service.UserBacking");

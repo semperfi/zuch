@@ -18,6 +18,7 @@ import javax.inject.Inject;
 import zuch.model.Audio;
 import zuch.model.AudioStatus;
 import zuch.model.PlayTokens;
+import zuch.qualifier.PerformanceMonitor;
 import zuch.service.AudioManagerLocal;
 import zuch.util.AudioUtils;
 
@@ -27,6 +28,7 @@ import zuch.util.AudioUtils;
  */
 @Named(value = "audioBorrowingBacking")
 @RequestScoped
+//@PerformanceMonitor
 public class AudioBorrowingBacking extends BaseBacking implements Serializable{
     
     @Inject AudioManagerLocal audioManager;

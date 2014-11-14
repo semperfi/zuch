@@ -13,6 +13,7 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import zuch.model.AudioRequest;
 import zuch.model.AudioRequestStatus;
+import zuch.qualifier.PerformanceMonitor;
 import zuch.service.AudioManagerLocal;
 import zuch.service.AudioRequestManagerLocal;
 
@@ -22,6 +23,7 @@ import zuch.service.AudioRequestManagerLocal;
  */
 @Named(value = "sentRequestsBacking")
 @ViewScoped
+//@PerformanceMonitor
 public class SentRequestsBacking extends BaseBacking implements Serializable{
     
     @Inject AudioRequestManagerLocal audioRequestManager;
