@@ -56,8 +56,9 @@ public class AudioLendingManager implements AudioLendingManagerLocal{
 
     @Override
     public AudioLending updateLending(AudioLending lending) {
-        
-        return em.merge(lending);
+        AudioLending audLend = em.merge(lending);
+        em.flush();
+        return audLend;
     }
 
     

@@ -68,7 +68,7 @@ public class Audio implements Serializable {
     @OneToMany(mappedBy = "audio", cascade = CascadeType.ALL)
     private List<AudioLending> audioLendings;
     
-    @OneToMany(mappedBy = "audio")
+    @OneToMany(mappedBy = "audio", cascade = CascadeType.ALL)
     private List<Rating> ratings;
     
     @NotNull

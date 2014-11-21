@@ -35,4 +35,6 @@ public interface AudioManagerLocal {
     
     public List<Audio> searchForAudioInPlayList(String searchToken, String userID);
     
+    public int updateAudioAvgRating(Audio audio);
+    
 }

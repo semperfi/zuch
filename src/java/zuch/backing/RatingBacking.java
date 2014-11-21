@@ -5,13 +5,18 @@
  */
 package zuch.backing;
 
+import java.io.Serializable;
 import java.util.logging.Logger;
 import javax.inject.Named;
-import javax.enterprise.context.Dependent;
 import javax.enterprise.context.RequestScoped;
-import org.primefaces.event.RateEvent;
+import javax.inject.Inject;
+import zuch.exception.UserNotFound;
 import zuch.model.Audio;
-import zuch.qualifier.PerformanceMonitor;
+import zuch.model.Rating;
+import zuch.service.AudioManagerLocal;
+import zuch.service.RatingManagerLocal;
+import zuch.service.ZUserManagerLocal;
+
 
 /**
  *
@@ -20,7 +25,7 @@ import zuch.qualifier.PerformanceMonitor;
 @Named(value = "ratingBacking")
 @RequestScoped
 //@PerformanceMonitor
-public class RatingBacking {
+public class RatingBacking extends BaseBacking implements Serializable{
 
     /**
      * Creates a new instance of RatingBacking
@@ -28,16 +33,29 @@ public class RatingBacking {
     
     static final Logger log = Logger.getLogger("zuch.backing.RatingBacking");
     
-    private int rating;
+    @Inject RatingManagerLocal ratingManager;
+    @Inject ZUserManagerLocal userManager;
+    @Inject AudioManagerLocal audioManager;
+    
+    private int ratingValue;
     private Audio selectedAudio;
     
     public RatingBacking() {
     }
     
-    public void handleRate(Audio audio){
+    public void handleRate(Audio audio) throws UserNotFound{
         
-        log.info(String.format("USER RATING: %d", rating));
+        log.info(String.format("USER RATING: %d", ratingValue));
         log.info(String.format("SELECTED AUDIO: %d", audio.getId()));
+        
+        Rating rating = new Rating();
+        rating.setRatingValue(ratingValue);
+        String currentUser = getCurrentUser();
+        rating.setRatingAuthor(userManager.getZuchUser(currentUser));
+        rating.setAudio(audio);
+        
+        ratingManager.registerRating(rating);
+        audioManager.updateAudioAvgRating(audio);
     }
     
     public void handleCancel(){
@@ -51,16 +69,17 @@ public class RatingBacking {
     public void setSelectedAudio(Audio selectedAudio) {
         this.selectedAudio = selectedAudio;
     }
+
+    public int getRatingValue() {
+        return ratingValue;
+    }
+
+    public void setRatingValue(int ratingValue) {
+        this.ratingValue = ratingValue;
+    }
     
             
-
-    public int getRating() {
-        return rating;
-    }
-
-    public void setRating(int rating) {
-        this.rating = rating;
-    }
+    
     
     
 }

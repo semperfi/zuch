@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 
 import javax.interceptor.Interceptors;
 
@@ -27,6 +28,7 @@ import zuch.model.Audio;
 import zuch.model.AudioLendStatus;
 import zuch.model.AudioRequestStatus;
 import zuch.model.AudioStatus;
+import zuch.model.Rating;
 
 /**
  *
@@ -41,7 +43,7 @@ public class AudioManager implements AudioManagerLocal{
     @PersistenceContext(unitName = "ZuchPU")
     private EntityManager em;
 
- 
+    @Inject RatingManagerLocal ratingManager;
     
     
     @Override
@@ -311,6 +313,7 @@ public class AudioManager implements AudioManagerLocal{
     @Override
     public Audio updateAudio(Audio audio) {
        Audio updatedAudio = em.merge(audio);
+       em.flush();
        log.info(String.format("UPDATED AUDIO STATUS %s", updatedAudio.getStatus()));
        return updatedAudio;
     }
@@ -357,6 +360,27 @@ public class AudioManager implements AudioManagerLocal{
         
         em.remove(audio);
         em.flush();
+    }
+
+    @Override
+    public int updateAudioAvgRating(Audio audio) {
+        List<Rating> ratingList = ratingManager.getAudioRating(audio.getId());
+        int res = 0;
+        if(ratingList.size() > 0){
+            int sum = 0;
+            for(Rating rat : ratingList){
+                sum += rat.getRatingValue();
+            }
+            
+            res = sum/ratingList.size();
+            
+            audio.setAvgRating(res);
+            em.merge(audio);
+            em.flush();
+        }
+        
+        
+        return res;
     }
     
    

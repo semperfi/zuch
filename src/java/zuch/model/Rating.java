@@ -31,7 +31,7 @@ public class Rating implements Serializable {
     
     @Column(name = "CREATED")
     @Temporal(javax.persistence.TemporalType.DATE)
-    private Date created;
+    private Date created = new Date();
     
     @ManyToOne
     @JoinColumn(name = "USER_ID")

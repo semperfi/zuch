@@ -5,6 +5,7 @@
  */
 package zuch.service;
 
+import java.util.List;
 import javax.ejb.Local;
 import zuch.exception.RatingNotFound;
 import zuch.model.Rating;
@@ -19,5 +20,6 @@ public interface RatingManagerLocal {
     
     public Rating registerRating(Rating rating) ;
     public void removeRating(String ratingID) throws RatingNotFound;
+    public List<Rating> getAudioRating(long audioId);
     
 }

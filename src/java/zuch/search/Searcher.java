@@ -246,20 +246,7 @@ public class Searcher {
       return resultList;
     }
     
-    /*
-    private List<SearchResult> filterCurrentUserAudios(List<SearchResult> resultList){
-        List<SearchResult> newResultList = new ArrayList<>();
-        String cUser = FacesContext.getCurrentInstance().getExternalContext()
-                .getUserPrincipal().getName();
-        for(SearchResult res : resultList){
-            if(!res.getOwner().equals(cUser)){
-                newResultList.add(res);
-            }
-        }
-        
-        return newResultList;
-    }
-    */
+   
     
     private List<Document> max(List<List<Document>> docs){
         
