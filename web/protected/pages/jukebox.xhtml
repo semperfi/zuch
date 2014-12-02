@@ -22,11 +22,7 @@ xmlns:jsf="http://xmlns.jcp.org/jsf">
                       
                <p:panel style="width: 70%;"  >
                   
-                 <canvas jsf:id="canvas" >
-                    <f:passThroughAttribute name="height" value="60"/>
-                    <f:passThroughAttribute name="width" value="200"/>
-                    
-                </canvas>
+                
                   
                  <p:panelGrid columns="1" > 
                  <audio jsf:id="zuchAudioPlayer"
@@ -36,9 +32,15 @@ xmlns:jsf="http://xmlns.jcp.org/jsf">
     
                  </audio>
                      
-               
+                <canvas jsf:id="canvas" >
+                    <f:passThroughAttribute name="height" value="60"/>
+                    <f:passThroughAttribute name="width" value="200"/>
+                    
+                </canvas>
                
                </p:panelGrid> 
+                   
+               
                  
                  <h:outputText value=" #{jukeBoxBacking.audioInfo}" />
             

@@ -55,9 +55,9 @@ public class EncryptionServiceTest {
     public void testHash() throws Exception {
         System.out.println("hash");
         EncryptionServiceLocal encryptionSvcFacade = 
-               (EncryptionServiceLocal) ejbContainer.getContext().lookup("java:global/Zuch/EncryptionService");
-        String actResult = encryptionSvcFacade.hash("hello");
-        String expResult = "";
+               (EncryptionServiceLocal) ejbContainer.getContext().lookup("java:global/classes/EncryptionService");
+        String actResult = encryptionSvcFacade.hash("Hello world!");
+        String expResult = "c0535e4be2b79ffd93291305436bf889314e4a3faec05ecffcbb7df31ad9e51a";
         assertEquals("ERROR IN HASH STRING...", expResult, actResult);
         
     }
