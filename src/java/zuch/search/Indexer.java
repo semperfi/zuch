@@ -53,7 +53,7 @@ import zuch.util.ZFileSystemUtils;
  */
 @Singleton
 @Lock(LockType.WRITE)
-@AccessTimeout(value=1,unit=TimeUnit.MINUTES)
+@AccessTimeout(value=30,unit=TimeUnit.MINUTES)
 public class Indexer {
     
    static final Logger log = Logger.getLogger("zuch.service.Indexer");

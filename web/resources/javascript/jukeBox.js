@@ -35,7 +35,7 @@ function initAnalyser(){
     setTimeout(function() {
         requestAnimationFrame(initAnalyser);
         analyseSound();
-    }, 1000/60);
+    }, 40);  //old value 1000/60
 }
 function analyseSound(){
     

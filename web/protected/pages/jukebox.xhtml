@@ -133,6 +133,15 @@ xmlns:jsf="http://xmlns.jcp.org/jsf">
                                     #{audio.id3.audioYear}
                                </p:column>
                                
+                                <p:column>
+                                <f:facet name="header">
+                                    RATING
+                                </f:facet>
+                                   <p:rating value="#{audio.avgRating}"  readonly="true">
+                                   
+                                  </p:rating> 
+                                  
+                               </p:column>
                              
                                <p:column >
                                    <h:outputText rendered="#{jukeBoxBacking.isPlayable(audio)}" 

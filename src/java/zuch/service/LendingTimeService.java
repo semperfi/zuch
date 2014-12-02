@@ -28,7 +28,7 @@ public class LendingTimeService {
     @Inject AudioLendingManagerLocal audioLendingManager;
     @Inject AudioManagerLocal audioManager;
 
-   @Schedule(minute = "*/10", hour = "*", persistent = false)
+   @Schedule(dayOfMonth="*",dayOfWeek="*",hour="0",minute="0",second="0", persistent = false)
    public void checkLendingTimeLimit(){
        
        List<AudioLending> lendings = audioLendingManager.getAllLendings();
