@@ -18,7 +18,7 @@ public class AudioNotFound extends Exception{
     private final String message;
     
     public AudioNotFound(){
-        this.message = "Audio already exists";
+        this.message = "Audio file not found.";
     }
     
     public AudioNotFound(String message){

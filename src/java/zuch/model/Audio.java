@@ -47,7 +47,7 @@ public class Audio implements Serializable {
     private String comment;
     
     @Column(name = "AVG_RATING")
-    private Integer avgRating;
+    private int avgRating;
     
     @NotNull
     @Enumerated(EnumType.STRING)
@@ -111,13 +111,15 @@ public class Audio implements Serializable {
         return created;
     }
 
-    public Integer getAvgRating() {
+    public int getAvgRating() {
         return avgRating;
     }
 
-    public void setAvgRating(Integer avgRating) {
+    public void setAvgRating(int avgRating) {
         this.avgRating = avgRating;
     }
+
+   
 
     
     

@@ -19,9 +19,13 @@ xmlns:p="http://primefaces.org/ui">
                   <div align="center">    
                       <p:panel id="uploadAudioPanel" header="System admin" style="width: 55%;" >
                           
-                          <p:panelGrid columns="2" >
+                          <p:panelGrid columns="4" >
                               <p:commandButton value="Rebuild search index" 
                                                actionListener="#{admSystemBacking.rebuildIndex()}" />
+                              <p:commandButton value="Clear search index" 
+                                               actionListener="#{admSystemBacking.clearIndex()}" />
+                              <p:commandButton value="Clear spell checker index" 
+                                               actionListener="#{admSystemBacking.clearSpellCheckerIndex()}" />
                           </p:panelGrid>
                          
                       </p:panel>

@@ -32,6 +32,7 @@ import org.apache.lucene.analysis.fr.FrenchAnalyzer;
 import org.apache.lucene.analysis.util.CharArraySet;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+import org.apache.lucene.document.IntField;
 import org.apache.lucene.document.LongField;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
@@ -44,6 +45,7 @@ import org.apache.lucene.util.Version;
 import zuch.model.Audio;
 import zuch.model.ID3;
 import zuch.qualifier.Added;
+import zuch.qualifier.AudioClear;
 import zuch.qualifier.AudioRebuilt;
 import zuch.util.ZFileSystemUtils;
 
@@ -76,7 +78,7 @@ public class Indexer {
    
    
    /*
-    * delete current ducument from 
+    * delete current document from from index 
     */
    @Asynchronous
    public void deleteAndRebuild(@Observes @AudioRebuilt Audio audio){
@@ -89,6 +91,14 @@ public class Indexer {
        
        addAudioEvent.fire(audio);
    
+   }
+   
+   @Asynchronous
+   public void clearSearchIndex(@Observes @AudioClear Audio audio){
+       ID3 currentId3 = audio.getId3();
+       deleteEnDocument(currentId3);
+       deleteFrDocument(currentId3);
+       deleteSpDocument(currentId3);
    }
    
     @Asynchronous
@@ -266,6 +276,8 @@ public class Indexer {
                     .append(id3.getGenre())
                     .append("\n")
                     .append(id3.getArtist())
+                    .append("\n")
+                    .append(audio.getAvgRating())
                     .toString();
                   
             
@@ -276,6 +288,7 @@ public class Indexer {
             doc.add(new StringField("year",getFieldVAlue(id3.getAudioYear()), Field.Store.YES));
             doc.add(new StringField("genre",getFieldVAlue(id3.getGenre()), Field.Store.YES));
             doc.add(new StringField("footprint",getFieldVAlue(id3.getFootPrint()), Field.Store.YES));
+            doc.add(new IntField("avgRating", audio.getAvgRating(), Field.Store.YES));
             doc.add(new LongField("id", audio.getId(), Field.Store.YES));
        
         return doc;
@@ -302,6 +315,7 @@ public class Indexer {
           
            
            writer.deleteDocuments(new Term("footprint", id3.getFootPrint()));
+           
            writer.close();
            
        } catch (IOException ex) {

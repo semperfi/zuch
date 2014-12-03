@@ -12,7 +12,9 @@ import javax.enterprise.context.RequestScoped;
 import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import zuch.model.Audio;
+import zuch.qualifier.AudioClear;
 import zuch.qualifier.AudioRebuilt;
+import zuch.qualifier.SpellCheckerClear;
 import zuch.service.AudioManagerLocal;
 
 /**
@@ -30,7 +32,13 @@ public class AdmSystemBacking {
    @Inject
    private @AudioRebuilt Event<Audio> rebuidSearchIndexEvent;
    
-   @Inject  AudioManagerLocal audioManager;
+   @Inject
+   private @AudioClear Event<Audio> clearIndexEvent;
+   
+   private @SpellCheckerClear Event<String> clearSpellCheckerIndexEvent;
+   
+   @Inject  
+   private  AudioManagerLocal audioManager;
     
     public AdmSystemBacking() {
     }
@@ -41,5 +49,18 @@ public class AdmSystemBacking {
            rebuidSearchIndexEvent.fire(audio);
        }
        
+    }
+    
+    public void clearIndex(){
+       List<Audio> musicList = audioManager.getAllAudiosInSystem();
+       for(Audio audio : musicList){
+           clearIndexEvent.fire(audio);
+       }
+       
+    }
+    
+    public void clearSpellCheckerIndex(){
+          clearSpellCheckerIndexEvent.fire("Clear");
+      
     }
 }

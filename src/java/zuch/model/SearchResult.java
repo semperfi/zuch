@@ -31,6 +31,7 @@ public class SearchResult implements Serializable {
     private String genre;
     private String footPrint;
     private String owner;
+    private int avgRating;
     private long audioId;
 
     public long getAudioId() {
@@ -107,8 +108,17 @@ public class SearchResult implements Serializable {
         this.owner = owner;
     }
 
-   
+    public int getAvgRating() {
+        return avgRating;
+    }
 
+    public void setAvgRating(int avgRating) {
+        this.avgRating = avgRating;
+    }
+
+    
+   
+    
     
     
 

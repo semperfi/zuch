@@ -272,6 +272,13 @@ public class Searcher {
         res.setAudioYear(doc.get("year"));
         res.setGenre(doc.get("genre"));
         res.setContents(doc.get("contents"));
+        
+        if(doc.get("avgRating") != null){//avgRating has been add later and some value are still null
+            res.setAvgRating(Integer.valueOf(doc.get("avgRating")));
+        }else{
+            res.setAvgRating(0);
+        }
+        
         res.setFootPrint(doc.get("footprint"));
         
         return res;

@@ -36,6 +36,7 @@ public class RatingBacking extends BaseBacking implements Serializable{
     @Inject RatingManagerLocal ratingManager;
     @Inject ZUserManagerLocal userManager;
     @Inject AudioManagerLocal audioManager;
+    @Inject JukeBoxBacking jukeBoxBacking;
     
     private int ratingValue;
     private Audio selectedAudio;
@@ -56,6 +57,9 @@ public class RatingBacking extends BaseBacking implements Serializable{
         
         ratingManager.registerRating(rating);
         audioManager.updateAudioAvgRating(audio);
+        
+        //refresh jukebox (playlist) to reflect rating changes
+        jukeBoxBacking.retrieveAudioList();
     }
     
     public void handleCancel(){

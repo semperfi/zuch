@@ -6,41 +6,32 @@
 
 package zuch.backing;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
+
 import java.io.Serializable;
 import java.util.List;
 import java.util.UUID;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.enterprise.context.SessionScoped;
 import javax.enterprise.event.Event;
 import javax.faces.application.FacesMessage;
-import javax.faces.context.ExternalContext;
-import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.interceptor.Interceptors;
-import org.primefaces.model.DefaultStreamedContent;
-import org.primefaces.model.StreamedContent;
-import zuch.aop.PerformanceInterceptor;
-import zuch.exception.AudioNotFound;
 import zuch.model.Audio;
 import zuch.model.AudioRequestStatus;
 import zuch.model.AudioStatus;
-import zuch.model.ID3;
+
 import zuch.model.LogEvent;
 import zuch.model.LogEventType;
 import zuch.model.PlayTokens;
-import zuch.model.SearchResult;
+
 import zuch.qualifier.LogSessionCreated;
 import zuch.qualifier.LogSessionDestroyed;
-import zuch.qualifier.PerformanceMonitor;
+
 import zuch.search.Searcher;
 import zuch.service.AudioManagerLocal;
-import zuch.service.AudioRequestManager;
+
 import zuch.service.AudioRequestManagerLocal;
 import zuch.util.AudioUtils;
 
@@ -126,39 +117,7 @@ public class JukeBoxBacking extends BaseBacking implements Serializable{
         
     }
    
-    /*
-   //search in current user juke box
-     public String retrieveLuceneSearchJukebox(){ 
-        if(!searchJukeboxToken.isEmpty()){
-         
-          searchJukeboxResultList = searcher.luceneSearchForAudio(searchJukeboxToken);
-          searchJukeboxResultList  = filterOwner(searchJukeboxResultList, getCurrentUser());
-                        
-          
-        if(searchJukeboxResultList.isEmpty()){
-            infoMessage = "No audio results found";
-        }else{
-            infoMessage = searchJukeboxResultList.size() + " audio file(s) found ";
-        }
-      }
-       
-        
-        return null;
-    }
-     
-     
-   public List<SearchResult> filterOwner(List<SearchResult> entry, String ownerId){
-       List<SearchResult> result =  new ArrayList<>();
-       for(SearchResult search: entry){
-           if(search.getOwner().equals(ownerId)){
-               result.add(search);
-           }
-       }
-       
-       return result;
-   }
-   
-    */
+  
     
   private String receivedReqMessage;
   private long receivedReqCount;

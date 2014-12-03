@@ -35,7 +35,7 @@ import zuch.model.Rating;
  * @author florent
  */
 @Stateless
-@PerformanceMonitor
+//@PerformanceMonitor
 public class AudioManager implements AudioManagerLocal{
     
     static final Logger log = Logger.getLogger("zuch.service.AudioManager");
@@ -321,7 +321,7 @@ public class AudioManager implements AudioManagerLocal{
     @Override
     public Audio getAudio(Long id) throws AudioNotFound{
         
-        
+        log.info(String.format("getAudio CURRENT AUDIO ID: %d", id));
         Audio audio = em.find(Audio.class, id);
         if(audio == null){
             throw new AudioNotFound();

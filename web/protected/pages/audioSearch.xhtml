@@ -126,6 +126,18 @@ xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
                                 </f:facet>
                                     #{currentResult.audioYear}
                                </p:column>
+                           
+                           
+                           <p:column>
+                                <f:facet name="header">
+                                    RATING
+                                </f:facet>
+                                   <p:rating value="#{currentResult.avgRating}"  readonly="true">
+                                   
+                                  </p:rating> 
+                                  
+                               </p:column>
+                           
                               		  
 				<p:column>
                                 <f:facet name="header">

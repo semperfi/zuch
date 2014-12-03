@@ -18,6 +18,19 @@ if (contextClass) {
     console.log("Web Audio API is not available...");
 }
 
+
+window.requestAnimationFrame = (function(){
+    return window.requestAnimationFrame  ||
+    window.webkitRequestAnimationFrame ||
+    window.mozRequestAnimationFrame  ||
+    window.oRequestAnimationFrame  ||
+    window.msRequestAnimationFrame  ||
+    function(callback){
+    window.setTimeout(callback, 40);
+    };
+})();
+
+
 function initAudioContext(){
     audio = document.getElementById("zuchAudioPlayer");
     source = audioContext.createMediaElementSource(audio);
@@ -30,15 +43,35 @@ function initAudioContext(){
 
 var HEIGHT = 60;
 var WIDTH = 330;
+var TIME_TO_WAIT = 50;
+var TIME_TO_PAUSE = 60000;
 
+/*
 function initAnalyser(){
     setTimeout(function() {
         requestAnimationFrame(initAnalyser);
         analyseSound();
     }, 40);  //old value 1000/60
 }
+*/
+
+function initAnalyser(timeToWait){
+    setTimeout(function() {
+        analyseSound();
+    }, timeToWait);  //old value 1000/60
+}
+
+/*
+function initAnalyser(){
+    
+        requestAnimationFrame(initAnalyser);
+        analyseSound();
+   
+}
+*/
 function analyseSound(){
     
+   // console.log("Analyzing sound...");
     var canvas = document.getElementById('canvas');
     var canvasContext = canvas.getContext('2d');
     
@@ -66,6 +99,7 @@ function analyseSound(){
         
     }
     
+    initAnalyser(TIME_TO_WAIT);
 }
 
 
@@ -79,6 +113,7 @@ function jukeBoxPlayerEvent(){
     
     mediaplayer.addEventListener("playing", function() { 
         //document.getElementById("music").play();
+       // initAnalyser(TIME_TO_WAIT);
         console.log("mp3 playing...");
         var nextIndex = document.getElementById("nextIndex");
         console.log("next mp3 index: "+ nextIndex.value); 
@@ -93,6 +128,7 @@ function jukeBoxPlayerEvent(){
     
     mediaplayer.addEventListener("pause", function() { 
         //document.getElementById("music").play();
+        //initAnalyser(TIME_TO_PAUSE);
         console.log("mp3 pause...");
     
     }, false);
@@ -141,7 +177,7 @@ function keepPlaying(data){
             jukeBoxPlayerEvent();
             if(contextClass){
                 initAudioContext();
-                initAnalyser();
+                initAnalyser(TIME_TO_WAIT);
             }
             
             break;
@@ -155,7 +191,7 @@ function keepPlaying(data){
 document.addEventListener("DOMContentLoaded", jukeBoxPlayerEvent, false);
 if(contextClass){
     document.addEventListener("DOMContentLoaded", initAudioContext, false);
-    document.addEventListener("DOMContentLoaded", initAnalyser, false);
+    document.addEventListener("DOMContentLoaded", initAnalyser(TIME_TO_WAIT), false);
 }
 
 
