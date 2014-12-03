@@ -24,6 +24,7 @@ public class EncryptionServiceTest {
     
    // private static final String JNDI_NAME_ENCR = "java:global/Zuch/EncryptionService";
     private static EJBContainer ejbContainer;
+    EncryptionServiceLocal encryptionSvcFacade;
     
     public EncryptionServiceTest() {
     }
@@ -44,7 +45,9 @@ public class EncryptionServiceTest {
     }
     
     @Before
-    public void setUp() {
+    public void setUp() throws Exception {
+        encryptionSvcFacade = 
+               (EncryptionServiceLocal) ejbContainer.getContext().lookup("java:global/classes/EncryptionService");
     }
     
     @After
@@ -54,16 +57,32 @@ public class EncryptionServiceTest {
     @Test
     public void testHash() throws Exception {
         System.out.println("hash");
-        EncryptionServiceLocal encryptionSvcFacade = 
-               (EncryptionServiceLocal) ejbContainer.getContext().lookup("java:global/classes/EncryptionService");
+        
         String actResult = encryptionSvcFacade.hash("Hello world!");
         String expResult = "c0535e4be2b79ffd93291305436bf889314e4a3faec05ecffcbb7df31ad9e51a";
         assertEquals("ERROR IN HASH STRING...", expResult, actResult);
         
     }
-
     
-
+    @Test
+    public void testCompare() throws Exception {
+        boolean expResult = encryptionSvcFacade.compare("hello", "hello");
+        assertTrue("COMPARE IS NOT TRUE...", expResult);
+    }
     
+    @Test
+    public void testStringToByteArray() throws Exception {
+        byte[] expResult = "hello".getBytes("UTF-8");
+        byte[] actResult = encryptionSvcFacade.stringToByteArray("hello");
+        assertArrayEquals("STRING TO BYTE ERROR...", expResult, actResult);
+    }
+    
+    @Test
+    public void testByteArrayToHexString() throws Exception {
+        String expResult = "68656c6c6f"; //hello hex string
+        String actResult = encryptionSvcFacade.byteArrayToHexString("hello".getBytes("UTF-8"));
+        assertEquals("BYTE ARRAY TO HEX STRING ERROR... ", expResult, actResult);
+    
+    }
     
 }

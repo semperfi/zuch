@@ -29,7 +29,7 @@ function initAudioContext(){
 }
 
 var HEIGHT = 60;
-var WIDTH = 200;
+var WIDTH = 330;
 
 function initAnalyser(){
     setTimeout(function() {

@@ -17,6 +17,7 @@ import javax.enterprise.context.SessionScoped;
 import javax.enterprise.inject.Produces;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
+import javax.inject.Inject;
 
 import javax.inject.Named;
 import javax.servlet.ServletException;
@@ -25,6 +26,7 @@ import javax.servlet.http.HttpServletRequest;
 import zuch.exception.UserAlreadyExists;
 import zuch.model.ZUser;
 import zuch.qualifier.PerformanceMonitor;
+import zuch.service.EncryptionServiceLocal;
 import zuch.service.ZUserManager;
 import zuch.service.ZUserManagerLocal;
 
@@ -39,8 +41,11 @@ public class UserBacking extends BaseBacking implements Serializable{
     
     static final Logger log = Logger.getLogger("zuch.service.UserBacking");
     
-    @EJB
+    @Inject
     private ZUserManagerLocal userManager;
+    
+    @Inject
+    private EncryptionServiceLocal encSvc;
     
     @Named
     @Produces
@@ -68,16 +73,10 @@ public class UserBacking extends BaseBacking implements Serializable{
        try{
            
             registerErrorMsg = getBundleMessage("user.register.error");
-                      
-            MessageDigest msgDigest = MessageDigest.getInstance("SHA-256");
-            msgDigest.update(newUser.getPassword().getBytes("UTF-8"));
             
-            byte[] digest = msgDigest.digest();
-            BigInteger bigInt = new BigInteger(1, digest);
             
-            String passwd = bigInt.toString(16);
+            String passwd = encSvc.hash(newUser.getPassword());
             newUser.setPassword(passwd);
-            log.info(String.format("create Password: %s",  passwd));
             ZUser registeredUser =  userManager.registerUser(newUser);
             
             //log user
