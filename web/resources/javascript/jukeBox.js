@@ -5,6 +5,8 @@
  */
 
 
+    
+
 var contextClass = (window.AudioContext ||
 window.webkitAudioContext ||
 window.mozAudioContext ||
@@ -41,43 +43,31 @@ function initAudioContext(){
 
 }
 
-var HEIGHT = 60;
-var WIDTH = 330;
-var TIME_TO_WAIT = 50;
-var TIME_TO_PAUSE = 60000;
 
-/*
-function initAnalyser(){
-    setTimeout(function() {
-        requestAnimationFrame(initAnalyser);
-        analyseSound();
-    }, 40);  //old value 1000/60
-}
-*/
+var TIME_TO_WAIT = 50;
+
+
 
 function initAnalyser(timeToWait){
     setTimeout(function() {
-        analyseSound();
+      var mediaplayer = document.getElementById("zuchAudioPlayer");
+      if( !(mediaplayer.paused || mediaplayer.ended) ){
+          analyseSound();
+      }
+        
     }, timeToWait);  //old value 1000/60
 }
 
-/*
-function initAnalyser(){
-    
-        requestAnimationFrame(initAnalyser);
-        analyseSound();
-   
-}
-*/
+
 function analyseSound(){
+    
+    var HEIGHT = 60;
+    var WIDTH = 330;
     
    // console.log("Analyzing sound...");
     var canvas = document.getElementById('canvas');
     var canvasContext = canvas.getContext('2d');
-    
-   // var audio = document.getElementById("zuchAudioPlayer");
-   // var source = audioContext.createMediaElementSource(audio);
-   // var analyser = audioContext.createAnalyser(); 
+   
     source.connect(analyser);
     analyser.connect(audioContext.destination);
 
@@ -113,7 +103,7 @@ function jukeBoxPlayerEvent(){
     
     mediaplayer.addEventListener("playing", function() { 
         //document.getElementById("music").play();
-       // initAnalyser(TIME_TO_WAIT);
+        initAnalyser(TIME_TO_WAIT);
         console.log("mp3 playing...");
         var nextIndex = document.getElementById("nextIndex");
         console.log("next mp3 index: "+ nextIndex.value); 
@@ -128,7 +118,7 @@ function jukeBoxPlayerEvent(){
     
     mediaplayer.addEventListener("pause", function() { 
         //document.getElementById("music").play();
-        //initAnalyser(TIME_TO_PAUSE);
+       // stopTimer();
         console.log("mp3 pause...");
     
     }, false);
@@ -193,7 +183,6 @@ if(contextClass){
     document.addEventListener("DOMContentLoaded", initAudioContext, false);
     document.addEventListener("DOMContentLoaded", initAnalyser(TIME_TO_WAIT), false);
 }
-
 
 
 

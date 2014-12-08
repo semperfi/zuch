@@ -53,7 +53,7 @@ public class AudioPlayerServlet extends HttpServlet {
          
         String range = "";
         range = request.getHeader("Range");
-        Logger.getLogger(AudioPlayerServlet.class.getName()).info("HEADER RANGE "+range);
+        Logger.getLogger(AudioPlayerServlet.class.getName()).info(String.format("HEADER RANGE %s",range));
         
         
         if( (range == null) || (range.isEmpty()) ){
@@ -212,16 +212,15 @@ public class AudioPlayerServlet extends HttpServlet {
             }
             */
            
-             Logger.getLogger(AudioPlayerServlet.class.getName()).info("REQUEST START: "+reqStart);
-             Logger.getLogger(AudioPlayerServlet.class.getName()).info("REQUEST END: "+reqEnd);
+            
+             Logger.getLogger(AudioPlayerServlet.class.getName()).info(String.format("REQUEST START: %d",reqStart));
+             Logger.getLogger(AudioPlayerServlet.class.getName()).info(String.format("REQUEST END: %d",reqEnd));
         
             System.out.printf("METHOD processRequest() CALLED %s" + 
                 " ON THREAD [%s]\n", getClass().getSimpleName(), 
             Thread.currentThread().getName());
 
-        
-            
-        
+         
             String id = request.getParameter("id");
             String token = request.getParameter("tk");
             String rangeToken = request.getParameter("rtk");
@@ -239,11 +238,7 @@ public class AudioPlayerServlet extends HttpServlet {
                      
                        String msg = "TOKEN EXIST: " ;
                        Logger.getLogger(AudioPlayerServlet.class.getName()).info(msg);
-                       
-                       
-                      
-   
-                       
+                        
                        Audio audio = null;
                        
                        if(!id.equals("sample")){
