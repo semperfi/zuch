@@ -22,6 +22,7 @@ import javax.servlet.http.HttpServletResponse;
 import zuch.exception.AudioNotFound;
 import zuch.model.Audio;
 import zuch.model.PlayTokens;
+import zuch.model.ZConstants;
 
 /**
  *
@@ -34,6 +35,7 @@ public class AudioSamplePlayerServlet extends HttpServlet {
     
     @Inject AudioManagerLocal audioManager;
     @Inject PlayTokens playTokens;
+    @Inject ZFileManager fileManager;
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -55,7 +57,7 @@ public class AudioSamplePlayerServlet extends HttpServlet {
             Thread.currentThread().getName());
 
         
-            final int BYTES = 8 * 1024;
+           // final int BYTES = 8 * 1024;
             int length = 0;
         
             String id = request.getParameter("id");
@@ -79,7 +81,8 @@ public class AudioSamplePlayerServlet extends HttpServlet {
                
                String audioFileName = "";
                if(audio != null){
-                   inputStream = new ByteArrayInputStream(audio.getContent().getContentSample());
+                  // inputStream = new ByteArrayInputStream(audio.getContent().getContentSample());
+                   inputStream = fileManager.getSampleFileInputStream(audio.getId3().getFootPrint());
                    audioFileName = audio.getId3().getTitle();
                 
                }
@@ -100,7 +103,7 @@ public class AudioSamplePlayerServlet extends HttpServlet {
                 
                 Logger.getLogger(AudioPlayerServlet.class.getName()).info("BEGINING STREAMING...");
 
-                byte[] bbuf = new byte[BYTES];
+                byte[] bbuf = new byte[ZConstants.STREAM_BUFFERSIZE];
                 while (((length = inputStream.read(bbuf)) != -1)){
                   if(outputStream != null){
                        outputStream.write(bbuf,0,length);

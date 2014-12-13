@@ -26,11 +26,11 @@ import javax.servlet.http.Part;
 import org.apache.commons.io.IOUtils;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.model.UploadedFile;
-import zuch.aop.PerformanceInterceptor;
+
 import zuch.exception.AudioAlreadyExists;
 import zuch.exception.UserNotFound;
 import zuch.model.Audio;
-import zuch.model.AudioContent;
+
 import zuch.model.AudioStatus;
 import zuch.model.ID3;
 import zuch.qualifier.Added;
@@ -38,7 +38,8 @@ import zuch.search.Content;
 import zuch.search.Indexer;
 import zuch.search.ZSpellChecker;
 import zuch.service.AudioManagerLocal;
-import zuch.qualifier.PerformanceMonitor;
+
+import zuch.service.ZFileManager;
 import zuch.service.ZUserManagerLocal;
 import zuch.util.AudioUtils;
 import zuch.util.ZFileSystemUtils;
@@ -66,6 +67,7 @@ public class AudioAddBacking extends BaseBacking implements Serializable{
     @Inject Content searchContent;
     @Inject Indexer indexer;
     @Inject ZSpellChecker spellChecker;
+    @Inject ZFileManager fileManager;
     
     @Inject @Added Event<Audio> addAudio;
     
@@ -121,18 +123,9 @@ public class AudioAddBacking extends BaseBacking implements Serializable{
                 
                                                 
                 byte[] content = IOUtils.toByteArray(uploadedFile.getInputstream());
-                
-               // byte[] content = uploadedFile.getContents();
-                int sampleSize = content.length / 4;
-                byte[] sample = Arrays.copyOfRange(content, 0, sampleSize);
-                //System.arraycopy(content, 0, sample, 0, sample.length);
-                
+               
                 Audio newAudio = new Audio();
-                AudioContent newContent = new AudioContent();
-                
-                newContent.setContent(content);
-                newContent.setContentSample(sample);
-                newAudio.setContent(newContent);
+               
                 ID3 id3 = audioUtils.getID3Tag(content, uploadedFile.getFileName());
                 
                
@@ -154,7 +147,8 @@ public class AudioAddBacking extends BaseBacking implements Serializable{
                 
                 //fire event for lucene indexer, spell checker and artwork image saving
                 addAudio.fire(registredAudio);
-               
+               //save file on physical disk
+                fileManager.saveFile(content, footPrint);
                 
             } catch ( AudioAlreadyExists | UserNotFound ex) {
                 
@@ -166,7 +160,7 @@ public class AudioAddBacking extends BaseBacking implements Serializable{
                log.warning("Invalid file format or size.");
            }
 
-      // }
+      
        //refresh audio list to get latest tracks in view
        jukeBoxBacking.retrieveAudioList();
        

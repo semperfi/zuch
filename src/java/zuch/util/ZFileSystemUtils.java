@@ -150,32 +150,52 @@ public class ZFileSystemUtils {
        return path;
   }
   
-   public String getAlbumImagePath(Audio audio){
+   public String getArtWorkPathString(){
         String path = "";
-        
-      if(audio.getId3().hasArtWork()){
-         if(SystemUtils.IS_OS_WINDOWS){
+           
+        if(SystemUtils.IS_OS_WINDOWS){
             
-            path =  "C:\\zuch\\images\\"+audio.getId3().getFootPrint()+".jpg";
+            path =  "C:/zuch/images/";
             
         }else if(SystemUtils.IS_OS_UNIX){
             
-            path = "/usr/zuch/images/"+audio.getId3().getFootPrint()+".jpg";
+            path = "/usr/zuch/images/";
         }
-      }else{
-          if(SystemUtils.IS_OS_WINDOWS){
-              path = "C:\\zuch\\images\\music.png";
-          }else if(SystemUtils.IS_OS_UNIX){
-              path = "/usr/zuch/images/music.png";
-          }
-          
-      }
-        
-       
+     
        
        return path;
    }
     
+  public String getTracksPathString(){
+       String path = "";
+        
+       if(SystemUtils.IS_OS_WINDOWS){
+            
+            path =  "c:/zuch/tracks/";
+            
+        }else if(SystemUtils.IS_OS_UNIX){
+            
+            path = "/usr/zuch/tracks/";
+        }
+       
+       return path;
+  } 
+  
+  public String getSamplesPathString(){
+       String path = "";
+        
+       if(SystemUtils.IS_OS_WINDOWS){
+            
+            path =  "c:/zuch/samples/";
+            
+        }else if(SystemUtils.IS_OS_UNIX){
+            
+            path = "/usr/zuch/samples/";
+        }
+       
+       return path;
+  }
+  
   public String normalizeFileName(String fileName){
   
       Path path = Paths.get(fileName);

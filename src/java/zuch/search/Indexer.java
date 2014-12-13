@@ -181,10 +181,12 @@ public class Indexer {
             log.info(String.format("FR Indexing %s files took %d milliseconds",
                     writer.numDocs(),(end - start) ));
             
+            
+            writer.close();
+            
             //build spell checker
             spellChecker.buildFrSpellChecker();
             
-            writer.close();
             
         } catch (IOException ex) {
             if(writer != null){
@@ -226,11 +228,13 @@ public class Indexer {
 
             log.info(String.format("SP Indexing %s files took %d milliseconds",
                     writer.numDocs(),(end - start) ));
+           
+            writer.close();
             
+             
             //build spell checker
             spellChecker.buildSpSpellChecker();
             
-            writer.close();
             
         } catch (IOException ex) {
             if(writer != null ){

@@ -30,6 +30,7 @@ import zuch.model.ZConstants;
 import zuch.qualifier.PerformanceMonitor;
 import zuch.search.Indexer;
 import zuch.service.AudioManagerLocal;
+import zuch.service.ZFileManager;
 
 /**
  *
@@ -43,6 +44,7 @@ public class AudioManageBacking extends BaseBacking implements Serializable{
      @Inject AudioManagerLocal audioManager;
      @Inject JukeBoxBacking jukeBoxBacking;
      @Inject Indexer indexer;
+     @Inject ZFileManager fileManager;
      
      private Audio selectedAudio;
 
@@ -54,22 +56,23 @@ public class AudioManageBacking extends BaseBacking implements Serializable{
     
    
     
-    public String downloadAudio(Audio audio){
+    public String downloadAudio(Audio audio) throws IOException{
         
         Logger.getLogger(AudioAddBacking.class.getName()).info("CALLING DOWNLOAD AUDIO...");
-        byte[] content = audio.getContent().getContent();
+       // byte[] content = audio.getContent().getContent();
+        InputStream audioInputStream = fileManager.getFileInputStream(audio.getId3().getFootPrint());
         
         //ExternalContext externalContext = getContext().getExternalContext();
         
         ExternalContext externalContext = FacesContext.getCurrentInstance().getExternalContext();
         externalContext.responseReset();
         externalContext.setResponseContentType(ZConstants.APP_AUDIO_TYPE);
-        externalContext.setResponseHeader("Content-Length", String.valueOf(content.length));
+        externalContext.setResponseHeader("Content-Length", String.valueOf(audioInputStream.available()));
         externalContext.setResponseHeader("Content-Disposition", 
                 "attachment; filename=\"" 
                         + audio.getId3().getTitle()
                         + ".mp3\"");
-         String lMsg = "FILE SIZE: "+  content.length;
+         String lMsg = "FILE SIZE: "+  audioInputStream.available();
          Logger.getLogger(AudioAddBacking.class.getName()).info(lMsg);
          OutputStream output = null;
          InputStream input = null;
@@ -78,7 +81,8 @@ public class AudioManageBacking extends BaseBacking implements Serializable{
                
                 output = response.getOutputStream();
                 //response.setHeader("Content-Length", Long.toString(content.length));
-                input = new ByteArrayInputStream(content);
+               // input = new ByteArrayInputStream(content);
+                input = audioInputStream;
                
                 byte[] buffer = new byte[1024*1024];
                 int readLen;
@@ -130,6 +134,7 @@ public class AudioManageBacking extends BaseBacking implements Serializable{
                     getContext().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, 
                     msg, ""));
                     deleteId3FromIndex(selectedAudio.getId3());
+                    fileManager.deleteFile(selectedAudio.getId3().getFootPrint());
                    
               }else{
             
@@ -145,7 +150,7 @@ public class AudioManageBacking extends BaseBacking implements Serializable{
                 getContext().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, 
                 msg, ""));
                 deleteId3FromIndex(selectedAudio.getId3());
-                
+                fileManager.deleteFile(selectedAudio.getId3().getFootPrint());
 
             }
             

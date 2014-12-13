@@ -30,6 +30,7 @@ import zuch.model.Audio;
 public class AudioDownloadServlet extends HttpServlet {
     
     @Inject AudioManagerLocal audioManager;
+    @Inject ZFileManager fileManager;
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -61,13 +62,15 @@ public class AudioDownloadServlet extends HttpServlet {
                 audio = audioManager.getAudio(Long.valueOf(id));
                 String audioFileName = "";
                 if(audio != null){
-                    inputStream = new ByteArrayInputStream(audio.getContent().getContent());
+                   // inputStream = new ByteArrayInputStream(audio.getContent().getContent());
+                    inputStream = fileManager.getFileInputStream(audio.getId3().getFootPrint());
                     audioFileName = audio.getId3().getTitle();
                     
                     String attachement = "attachment; filename=\"" 
                         + audio.getId3().getTitle()
                         + ".mp3\"";
-                    int mp3length = audio.getContent().getContent().length;
+                    //int mp3length = audio.getContent().getContent().length;
+                    int mp3length = inputStream.available();
 
                     response.setContentType("audio/mpeg");
                     response.setHeader( "Content-Disposition", attachement );

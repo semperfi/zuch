@@ -32,12 +32,14 @@ import javax.inject.Inject;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.SystemUtils;
-import zuch.model.AlbumImage;
+
 import zuch.model.Audio;
-import zuch.model.AudioContent;
+
 import zuch.model.ID3;
 import zuch.model.ZConstants;
 import zuch.qualifier.Added;
+import zuch.service.EncryptionServiceLocal;
+import zuch.service.ZFileManager;
 
 /**
  *
@@ -48,7 +50,10 @@ import zuch.qualifier.Added;
 public class AudioUtils {
     
     static final Logger log = Logger.getLogger("zuch.service.AudioUtils");
+    
     @Inject ZFileSystemUtils fileSystemUtils;
+    @Inject EncryptionServiceLocal encryptionService;
+    @Inject ZFileManager fileManager;
     
     static final List<String> acceptedMimeType = Arrays.asList("image/jpeg",
             "image/jpg","image/png");
@@ -125,6 +130,7 @@ public class AudioUtils {
                 //getMetaData(tmpFile.toString());
                 Logger.getLogger(AudioUtils.class.getName()).info(mp3file.getFilename());
                 if (mp3file.hasId3v1Tag()) {
+                    
                     ID3v1 id3v1Tag = mp3file.getId3v1Tag();
                     String tMsg = "Track: " + id3v1Tag.getTrack();
                     log.fine(tMsg);
@@ -152,6 +158,7 @@ public class AudioUtils {
                     id3.setGenre(genre);
                     id3.setComment(comment);
                     
+                   
                     
                   }
                 
@@ -163,17 +170,38 @@ public class AudioUtils {
                     if (albumImageData != null) {
                       log.info("Album image data exist ");
                       String mimeType = id3v2Tag.getAlbumImageMimeType();
-                      if(acceptedMimeType.contains(mimeType)){
-                           AlbumImage image = new AlbumImage();
-                           image.setMimeType(mimeType);
-                           image.setImageData(albumImageData);
-                           id3.setArtWork(true);
-                           id3.setImage(image);
-                      }
-                     
+                      id3.setArtWork(true);
+                      id3.setArtWorkMimeType(getNormalizedMimeType(mimeType));
+                      String fileHash = encryptionService.hash(albumImageData);
+                      id3.setArtWorkHash(fileHash);
+                      String ext = getExtFromMimeType(mimeType);
+                      id3.setArtWorkExt(ext);
+                      fileManager.saveArtWork(albumImageData, fileHash, ext);
+                      
 
+                    }else{
+                        log.info("Album image does not data exist ");
+                      //String mimeType = id3v2Tag.getAlbumImageMimeType();
+                      //id3.setArtWork(true);
+                      id3.setArtWorkMimeType("image/png");
+                      String fileHash = encryptionService.hash(getDefaultArtWork());
+                      id3.setArtWorkHash(fileHash);
+                      String ext = getExtFromMimeType("image/png");
+                      id3.setArtWorkExt(ext);
+                      fileManager.saveDefaultArtWork(getDefaultArtWork(), fileHash, ext);
+                    
                     }
-              }
+              }else{
+                    log.info("Album image does not data exist ");
+                      //String mimeType = id3v2Tag.getAlbumImageMimeType();
+                      //id3.setArtWork(true);
+                      id3.setArtWorkMimeType("image/png");
+                      String fileHash = encryptionService.hash(getDefaultArtWork());
+                      id3.setArtWorkHash(fileHash);
+                      String ext = getExtFromMimeType(".png");
+                      fileManager.saveDefaultArtWork(getDefaultArtWork(), fileHash, ext);
+                    
+                }
             
             }
             
@@ -249,59 +277,71 @@ public class AudioUtils {
   
    
    
-   public Audio getDefaultAudioSample(){
+   public InputStream getDefaultAudioSample(){
        
          Audio audio = null;
-         try {
-             
-             List<String> samples = Arrays.asList("/zuch/sample/sample0.mp3",
-                     "/zuch/sample/sample1.mp3","/zuch/sample/sample2.mp3",
-                     "/zuch/sample/sample3.mp3","/zuch/sample/sample4.mp3",
-                     "/zuch/sample/sample5.mp3","/zuch/sample/sample6.mp3",
-                     "/zuch/sample/sample7.mp3","/zuch/sample/sample8.mp3",
-                     "/zuch/sample/sample9.mp3");
-             Collections.shuffle(samples);
-             
-             InputStream input = AudioUtils.class.getResourceAsStream(samples.get(0));
-             
-             
-             byte[] content = IOUtils.toByteArray(input);
-             ID3 id3 = getID3Tag(content, "sample.mp3");
-             String footPrint = samples.get(0);
-             id3.setFootPrint(footPrint);
-             AudioContent audioContent = new AudioContent();
-             audioContent.setContent(content);
-             audio = new Audio();
-             audio.setId3(id3);
-             audio.setContent(audioContent);
-             
-             
-             return audio;
-         } catch (IOException ex) {
-             Logger.getLogger(AudioUtils.class.getName()).log(Level.SEVERE, null, ex);
-             log.severe(ex.getMessage());
-         }
+         InputStream input;
+         List<String> samples = Arrays.asList("/zuch/sample/sample0.mp3",
+                 "/zuch/sample/sample1.mp3","/zuch/sample/sample2.mp3",
+                 "/zuch/sample/sample3.mp3","/zuch/sample/sample4.mp3",
+                 "/zuch/sample/sample5.mp3","/zuch/sample/sample6.mp3",
+                 "/zuch/sample/sample7.mp3","/zuch/sample/sample8.mp3",
+                 "/zuch/sample/sample9.mp3");
+         Collections.shuffle(samples);
+         input = AudioUtils.class.getResourceAsStream(samples.get(0));
          
-         return audio;
+         return input;
    }
    
-   
- 
-    public void saveAlbumImage(@Observes @Added Audio audio){
-       
-        log.info("SAVE ALBUM IMAGE RECEIVED ADD EVENT...");
-        
-       if(audio.getId3().hasArtWork()){
-           try {
-            byte[] albumImage = audio.getId3().getImage().getImageData();
-            Path imagePath = Paths.get(fileSystemUtils.getAlbumImagePath(audio));
-            Files.write(imagePath, albumImage);
+   public byte[] getDefaultArtWork(){
+        byte[] res = null;
+        try {
+            InputStream  input = AudioUtils.class.getResourceAsStream("/zuch/images/duke.png");
+            res = IOUtils.toByteArray(input);
         } catch (IOException ex) {
             Logger.getLogger(AudioUtils.class.getName()).log(Level.SEVERE, null, ex);
         }
-       }
         
-    }
+        return res;
+   }
+   
+   public String getExtFromMimeType(String mimeType){
+       
+       log.info(String.format("MP3 MIMETYPE %s", mimeType));
+       
+       String res = ".jpg";
+       
+       if(mimeType.contains("jpg")){
+           res = ".jpg";
+       }else if(mimeType.contains("png")){
+           res = ".png";
+       }else if(mimeType.contains("jpeg")){
+           res = ".jpeg";
+       }
+       
+       log.info(String.format("MP3 RETURN EXTENSION %s", res));
+       return res;
+   }
+   
+   public String getNormalizedMimeType(String mimeType){
+       
+       log.info(String.format("RECEIVED MP3 MIMETYPE %s", mimeType));
+       
+       String res = "image/png";
+       
+       if(mimeType.contains("jpg")){
+           res = "image/jpg";
+       }else if(mimeType.contains("png")){
+           res = "image/png";
+       }else if(mimeType.contains("jpeg")){
+           res = "image/jpeg";
+       }
+       
+       log.info(String.format("MP3 RETURN EXTENSION %s", res));
+       return res;
+   }
+ 
+    
    
    
     

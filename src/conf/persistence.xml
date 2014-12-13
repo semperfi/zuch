@@ -6,8 +6,6 @@
     <exclude-unlisted-classes>false</exclude-unlisted-classes>
     <properties>
       <property name="eclipselink.canonicalmodel.subpackage" value="main"/>
-     
-     
     </properties>
   </persistence-unit>
   <persistence-unit name="ZuchTestPU" transaction-type="RESOURCE_LOCAL">
@@ -17,7 +15,6 @@
     <class>zuch.model.Audio</class>
     <class>zuch.model.ID3</class>
     <class>zuch.model.AlbumImage</class>
-    <class>zuch.model.AudioContent</class>
     <class>zuch.model.AudioLending</class>
     <class>zuch.model.AudioRequest</class>
     <properties>

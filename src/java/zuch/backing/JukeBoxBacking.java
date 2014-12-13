@@ -7,6 +7,7 @@
 package zuch.backing;
 
 
+import java.io.InputStream;
 import java.io.Serializable;
 import java.util.List;
 import java.util.UUID;
@@ -18,6 +19,8 @@ import javax.enterprise.event.Event;
 import javax.faces.application.FacesMessage;
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.primefaces.model.DefaultStreamedContent;
+import org.primefaces.model.StreamedContent;
 import zuch.model.Audio;
 import zuch.model.AudioRequestStatus;
 import zuch.model.AudioStatus;
@@ -33,6 +36,7 @@ import zuch.search.Searcher;
 import zuch.service.AudioManagerLocal;
 
 import zuch.service.AudioRequestManagerLocal;
+import zuch.service.ZFileManager;
 import zuch.util.AudioUtils;
 
 /**
@@ -50,6 +54,7 @@ public class JukeBoxBacking extends BaseBacking implements Serializable{
     @Inject PlayTokens playTokens;
     @Inject AudioRequestManagerLocal audioRequestManager;
     @Inject Searcher searcher;
+    @Inject ZFileManager fileManager;
     
    // private List<SearchResult> searchJukeboxResultList = new ArrayList<>();
    // private String searchJukeboxToken;
@@ -230,6 +235,22 @@ public class JukeBoxBacking extends BaseBacking implements Serializable{
                 Logger.getLogger(JukeBoxBacking.class.getName()).info(nMsg);
 
        }
+   }
+   
+   
+   public StreamedContent retrieveArtWork(){
+       StreamedContent image = null;
+       if(selectedAudio != null){
+           InputStream stream = 
+                   fileManager.getArtWorkFileInputStream(selectedAudio, selectedAudio.getId3().getArtWorkHash());
+           image = new DefaultStreamedContent(stream, selectedAudio.getId3().getArtWorkMimeType());
+       }else{
+       
+           InputStream stream = this.getClass().getResourceAsStream("/zuch/images/duke.png");
+           image = new DefaultStreamedContent(stream, "image/png");
+       }
+       
+       return image;
    }
    
    

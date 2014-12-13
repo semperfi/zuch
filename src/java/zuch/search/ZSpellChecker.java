@@ -130,7 +130,7 @@ public class ZSpellChecker {
            SpellChecker spell = new SpellChecker(dir);
            long startTime = System.currentTimeMillis();
            
-           Directory dir2 = FSDirectory.open(new File(systemUtils.getEnSearchIndexPathString()));
+           Directory dir2 = FSDirectory.open(new File(systemUtils.getFrSearchIndexPathString()));
            IndexReader inReader = DirectoryReader.open(dir2);
            try {
                 spell.indexDictionary(new LuceneDictionary(inReader, "contents"),config,true);
@@ -162,7 +162,7 @@ public class ZSpellChecker {
            SpellChecker spell = new SpellChecker(dir);
            long startTime = System.currentTimeMillis();
            
-           Directory dir2 = FSDirectory.open(new File(systemUtils.getEnSearchIndexPathString()));
+           Directory dir2 = FSDirectory.open(new File(systemUtils.getFrSearchIndexPathString()));
            IndexReader inReader = DirectoryReader.open(dir2);
            try {
                 spell.clearIndex();
@@ -196,7 +196,7 @@ public class ZSpellChecker {
            SpellChecker spell = new SpellChecker(dir);
            long startTime = System.currentTimeMillis();
            
-           Directory dir2 = FSDirectory.open(new File(systemUtils.getEnSearchIndexPathString()));
+           Directory dir2 = FSDirectory.open(new File(systemUtils.getSpSearchIndexPathString()));
            IndexReader inReader = DirectoryReader.open(dir2);
            try {
                 spell.indexDictionary(new LuceneDictionary(inReader, "contents"),config,true);
@@ -228,7 +228,7 @@ public class ZSpellChecker {
            SpellChecker spell = new SpellChecker(dir);
            long startTime = System.currentTimeMillis();
            
-           Directory dir2 = FSDirectory.open(new File(systemUtils.getEnSearchIndexPathString()));
+           Directory dir2 = FSDirectory.open(new File(systemUtils.getSpSearchIndexPathString()));
            IndexReader inReader = DirectoryReader.open(dir2);
            try {
                 spell.clearIndex();

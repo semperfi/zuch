@@ -15,6 +15,7 @@ import javax.ejb.Local;
 public interface EncryptionServiceLocal {
     
     String hash(String input);
+    String hash(byte[] input);
     boolean compare(String hash, String input);
     byte[] stringToByteArray(String input);
     String byteArrayToHexString(byte[] input);

@@ -43,9 +43,13 @@ public class ID3 implements Serializable {
     
     private boolean artWork;
     
-    @OneToOne(cascade = CascadeType.ALL)
-    private AlbumImage image;
+    private String artWorkHash;
     
+    private String artWorkMimeType;
+    
+    private String artWorkExt;
+    
+   
     @Version
     private Integer version;
 
@@ -104,6 +108,22 @@ public class ID3 implements Serializable {
         this.artWork = artWork;
     }
 
+    public String getArtWorkHash() {
+        return artWorkHash;
+    }
+
+    public void setArtWorkHash(String artWorkHash) {
+        this.artWorkHash = artWorkHash;
+    }
+
+    public String getArtWorkMimeType() {
+        return artWorkMimeType;
+    }
+
+    public void setArtWorkMimeType(String artWorkMimeType) {
+        this.artWorkMimeType = artWorkMimeType;
+    }
+
     
 
     
@@ -150,13 +170,15 @@ public class ID3 implements Serializable {
         this.id = id;
     }
 
-    public AlbumImage getImage() {
-        return image;
+    public String getArtWorkExt() {
+        return artWorkExt;
     }
 
-    public void setImage(AlbumImage image) {
-        this.image = image;
+    public void setArtWorkExt(String artWorkExt) {
+        this.artWorkExt = artWorkExt;
     }
+
+   
     
     
 

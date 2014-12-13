@@ -18,32 +18,43 @@ xmlns:jsf="http://xmlns.jcp.org/jsf">
           <div align="center">
             
               <h:form id="jukeboxPalyerForm"  prependId="false" >
+                  
+              
                <p:outputPanel id="playerOutputPanel"   >
                       
                <p:panel style="width: 70%;"  >
                   
-                
+               
                   
-                 <p:panelGrid columns="1" > 
-                 <audio jsf:id="zuchAudioPlayer"
-                            src="#{jukeBoxBacking.retrieveAudioSource()}">
-                      <f:passThroughAttribute name="controls" value="true"/>
-                      <f:passThroughAttribute name="autoplay" value="true"/>
-    
-                 </audio>
-                     
-                <canvas jsf:id="canvas" >
-                    <f:passThroughAttribute name="height" value="60"/>
-                    <f:passThroughAttribute name="width" value="330"/>
-                    
-                </canvas>
+                 <p:panelGrid columns="2"  > 
+                     <p:graphicImage id="artWork" value="#{jukeBoxBacking.retrieveArtWork()}" 
+                                     width="120" height="120"  cache="false"/>
+                     <p:panelGrid columns="1" >
+                       <audio jsf:id="zuchAudioPlayer"
+                               src="#{jukeBoxBacking.retrieveAudioSource()}">
+                           <f:passThroughAttribute name="controls" value="true"/>
+                           <f:passThroughAttribute name="autoplay" value="true"/>
+
+                       </audio>
+
+
+                       <canvas jsf:id="canvas" >
+                           <f:passThroughAttribute name="height" value="60"/>
+                           <f:passThroughAttribute name="width" value="330"/>
+
+                       </canvas>
+                       
+                       <h:outputText value=" #{jukeBoxBacking.audioInfo}" />
+            
+                     </p:panelGrid>
+                
+               
+               
                
                </p:panelGrid> 
                    
                
                  
-                 <h:outputText value=" #{jukeBoxBacking.audioInfo}" />
-            
                   <p:growl  id="jukeBoxGrowl" showDetail="true"/>
                </p:panel> 
                       
@@ -65,7 +76,7 @@ xmlns:jsf="http://xmlns.jcp.org/jsf">
                                         value="#{jukeBoxBacking.searchToken}">
                                <f:passThroughAttribute name="placeHolder" value="type search keyword..."/>
                         </p:inputText>
-                      <h:commandButton value="serach" styleClass="btn btn-small btn-primary"
+                      <h:commandButton value="search" styleClass="btn btn-small btn-primary"
                                      action="#{jukeBoxBacking.retrieveSearchedAudioList()}">
                           <f:ajax execute="@form"  render=":audioListForm:audioData  searchGrowl"/>
                      </h:commandButton>

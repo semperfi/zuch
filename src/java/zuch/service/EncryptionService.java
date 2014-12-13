@@ -31,14 +31,33 @@ public class EncryptionService implements EncryptionServiceLocal {
             msgDigest.update(stringToByteArray(input));
             hashPasswd = byteArrayToHexString(msgDigest.digest());
             
-            
-            return hashPasswd;
         } catch (NoSuchAlgorithmException ex) {
             Logger.getLogger(EncryptionService.class.getName()).log(Level.SEVERE, null, ex);
         }
          
         return hashPasswd;
     }
+    
+    @Override
+    public String hash(byte[] input) {
+        
+        String hashResult = "";
+        
+        try {
+             
+            MessageDigest msgDigest = MessageDigest.getInstance("SHA-256");
+            
+            msgDigest.update(input);
+            hashResult = byteArrayToHexString(msgDigest.digest());
+            
+            
+        } catch (NoSuchAlgorithmException ex) {
+            Logger.getLogger(EncryptionService.class.getName()).log(Level.SEVERE, null, ex);
+        }
+         
+        return hashResult;
+    }
+
 
     @Override
     public boolean compare(String hash, String input) {
@@ -64,5 +83,6 @@ public class EncryptionService implements EncryptionServiceLocal {
          return bigInt.toString(16);
     }
 
+    
     
 }

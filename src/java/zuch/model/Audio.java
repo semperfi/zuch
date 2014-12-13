@@ -75,8 +75,8 @@ public class Audio implements Serializable {
     @OneToOne(cascade = CascadeType.ALL)
     private ID3 id3;
     
-    @OneToOne(cascade = CascadeType.ALL)
-    private AudioContent content;
+   // @OneToOne(cascade = CascadeType.ALL)
+   // private AudioContent content;
 
     public Audio() {
         this.audioLendings = new ArrayList<>();
@@ -140,17 +140,7 @@ public class Audio implements Serializable {
         this.audioRequests = audioRequests;
     }
 
-    public AudioContent getContent() {
-        return content;
-    }
-
-    public void setContent(AudioContent content) {
-        this.content = content;
-    }
-
     
-
-   
 
     public ID3 getId3() {
         return id3;
