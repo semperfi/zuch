@@ -285,20 +285,20 @@ public class Indexer {
                     .toString();
                   
             
-            doc.add(new TextField("contents",getFieldVAlue(contents), Field.Store.YES));
-            doc.add(new TextField("title",getFieldVAlue(id3.getTitle()), Field.Store.YES));
-            doc.add(new TextField("artist",getFieldVAlue(id3.getArtist()), Field.Store.YES));
-            doc.add(new TextField("album",getFieldVAlue(id3.getAlbum()), Field.Store.YES));
-            doc.add(new StringField("year",getFieldVAlue(id3.getAudioYear()), Field.Store.YES));
-            doc.add(new StringField("genre",getFieldVAlue(id3.getGenre()), Field.Store.YES));
-            doc.add(new StringField("footprint",getFieldVAlue(id3.getFootPrint()), Field.Store.YES));
+            doc.add(new TextField("contents",getFieldValue(contents), Field.Store.YES));
+            doc.add(new TextField("title",getFieldValue(id3.getTitle()), Field.Store.YES));
+            doc.add(new TextField("artist",getFieldValue(id3.getArtist()), Field.Store.YES));
+            doc.add(new TextField("album",getFieldValue(id3.getAlbum()), Field.Store.YES));
+            doc.add(new StringField("year",getFieldValue(id3.getAudioYear()), Field.Store.YES));
+            doc.add(new StringField("genre",getFieldValue(id3.getGenre()), Field.Store.YES));
+            doc.add(new StringField("footprint",getFieldValue(id3.getFootPrint()), Field.Store.YES));
             doc.add(new IntField("avgRating", audio.getAvgRating(), Field.Store.YES));
             doc.add(new LongField("id", audio.getId(), Field.Store.YES));
        
         return doc;
     }
    
-    private String getFieldVAlue(String value){
+    private String getFieldValue(String value){
         
         return value == null  ? "":value;
     }

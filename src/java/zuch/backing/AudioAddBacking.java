@@ -10,18 +10,15 @@ package zuch.backing;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.logging.Logger;
 import javax.ejb.Asynchronous;
 import javax.enterprise.context.RequestScoped;
-import javax.enterprise.context.SessionScoped;
 import javax.enterprise.event.Event;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import javax.faces.validator.ValidatorException;
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.interceptor.Interceptors;
 import javax.servlet.http.Part;
 import org.apache.commons.io.IOUtils;
 import org.primefaces.event.FileUploadEvent;

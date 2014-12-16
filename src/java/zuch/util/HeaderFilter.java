@@ -33,10 +33,13 @@ public class HeaderFilter implements Filter {
            
 	      request.setCharacterEncoding("UTF-8");
 	      response.setCharacterEncoding("UTF-8");
-                                 
-             // HttpServletResponse httpServletResponse = (HttpServletResponse) response;
+              
                // Set standard HTTP/1.1 no-cache headers.
+              // HttpServletResponse httpServletResponse = (HttpServletResponse) response;
              // httpServletResponse.setHeader("Cache-Control", "private, no-store, no-cache, must-revalidate");
+              
+                                
+             
 		
 	      chain.doFilter(request, response);
 		

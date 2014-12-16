@@ -183,8 +183,9 @@ public class ZFileManager {
     }
     
     
-    public InputStream getArtWorkFileInputStream(Audio audio,String fileHash){
+    public InputStream getArtWorkFileInputStream(Audio audio){
         InputStream inStream = null;
+        String fileHash = audio.getId3().getArtWorkHash();
         try {
             String filePathStr = fileSystemUtils.getArtWorkPathString()
                     + fileHash+ audio.getId3().getArtWorkExt();

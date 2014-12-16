@@ -15,10 +15,16 @@
   </jsp-config>
   
   
-    <context-root>/zuch</context-root>
-    <security-role-mapping>
+  <context-root>/zuch</context-root>
+    
+  <security-role-mapping>
     <role-name>ZUCH_USER</role-name>
     <group-name>ZUCH_USER</group-name>
+  </security-role-mapping>
+  
+   <security-role-mapping>
+    <role-name>ZUCH_ADMIN</role-name>
+    <group-name>ZUCH_ADMIN</group-name>
   </security-role-mapping>
   
    

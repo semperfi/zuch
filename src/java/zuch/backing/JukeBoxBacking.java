@@ -239,10 +239,10 @@ public class JukeBoxBacking extends BaseBacking implements Serializable{
    
    
    public StreamedContent retrieveArtWork(){
-       StreamedContent image = null;
+       StreamedContent image ;
        if(selectedAudio != null){
            InputStream stream = 
-                   fileManager.getArtWorkFileInputStream(selectedAudio, selectedAudio.getId3().getArtWorkHash());
+                   fileManager.getArtWorkFileInputStream(selectedAudio);
            image = new DefaultStreamedContent(stream, selectedAudio.getId3().getArtWorkMimeType());
        }else{
        
