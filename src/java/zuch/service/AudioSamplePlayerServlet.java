@@ -21,7 +21,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import zuch.exception.AudioNotFound;
 import zuch.model.Audio;
-import zuch.model.PlayTokens;
 import zuch.model.ZConstants;
 
 /**
@@ -34,7 +33,7 @@ public class AudioSamplePlayerServlet extends HttpServlet {
    
     
     @Inject AudioManagerLocal audioManager;
-    @Inject PlayTokens playTokens;
+    @Inject PlayToken playTokens;
     @Inject ZFileManager fileManager;
 
     /**

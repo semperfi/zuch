@@ -17,7 +17,7 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import zuch.model.Audio;
 import zuch.model.AudioStatus;
-import zuch.model.PlayTokens;
+import zuch.service.PlayToken;
 import zuch.qualifier.PerformanceMonitor;
 import zuch.service.AudioManagerLocal;
 import zuch.util.AudioUtils;
@@ -32,7 +32,7 @@ import zuch.util.AudioUtils;
 public class AudioBorrowingBacking extends BaseBacking implements Serializable{
     
     @Inject AudioManagerLocal audioManager;
-    @Inject PlayTokens playTokens;
+    @Inject PlayToken playTokens;
     
     private Audio selectedAudio;
     private String audioInfo;

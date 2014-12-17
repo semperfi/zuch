@@ -34,6 +34,8 @@ xmlns:jsf="http://xmlns.jcp.org/jsf">
                                src="#{jukeBoxBacking.retrieveAudioSource()}">
                            <f:passThroughAttribute name="controls" value="true"/>
                            <f:passThroughAttribute name="autoplay" value="true"/>
+                           
+                           
 
                        </audio>
 
@@ -59,7 +61,7 @@ xmlns:jsf="http://xmlns.jcp.org/jsf">
                </p:panel> 
                       
                 </p:outputPanel>
-              
+               
                </h:form>
            
             </div>
@@ -164,16 +166,14 @@ xmlns:jsf="http://xmlns.jcp.org/jsf">
                                     
                                </p:column>
                  
-                             
-                 
-                     <f:ajax event="rowSelect" 
-                             
-                             listener="#{jukeBoxBacking.retrieveAudioInfo()}" 
-                             delay="1500"
-                             render=":jukeboxPalyerForm
-                                     :audioListForm:nextIndex"
-                             
-                             onevent="keepPlaying"/>
+                 <p:ajax update=":jukeboxPalyerForm
+                                 :audioListForm:nextIndex" 
+                                 delay="1500" 
+                                 event="rowSelect"
+                                 oncomplete="resetAnalyzer();"
+                                 
+                                 listener="#{jukeBoxBacking.retrieveAudioInfo()}" />
+                    
                 
              </p:dataTable>
              

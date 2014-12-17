@@ -24,7 +24,7 @@ import zuch.model.Audio;
 import zuch.model.AudioRequest;
 import zuch.model.AudioRequestStatus;
 import zuch.model.AudioStatus;
-import zuch.model.PlayTokens;
+import zuch.service.PlayToken;
 import zuch.model.SearchResult;
 import zuch.model.ZUser;
 import zuch.qualifier.PerformanceMonitor;
@@ -50,7 +50,7 @@ public class AudioSearchBacking extends BaseBacking implements Serializable{
     @Inject AudioManagerLocal audioManager;
     @Inject AudioRequestManagerLocal audioRequestManager;
     @Inject ZUserManagerLocal userManager;
-    @Inject PlayTokens playTokens;
+    @Inject PlayToken playTokens;
     @Inject Searcher searcher;
     @Inject Suggest suggest;
     @Inject SearchUtils searchUtils;

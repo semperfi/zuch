@@ -147,7 +147,19 @@ function jukeBoxPlayerEvent(){
   
 }
 
+function resetAnalyzer(){
+    
+    console.log("Reload analyzer...");
+    jukeBoxPlayerEvent();
+    if(contextClass){
+        initAudioContext();
+        initAnalyser(TIME_TO_WAIT);
+    }
 
+            
+}
+
+//not used in for PF 5.1
 function keepPlaying(data){
     
    // var nextIndex = document.getElementById("jukeBoxForm:nextIndex");
@@ -155,11 +167,12 @@ function keepPlaying(data){
 
     switch (status) {
         case "begin": // Before the ajax request is sent.
-           
+            
             break;
 
         case "complete": // After the ajax response is arrived.
-              
+             
+            
             break;
 
         case "success": // After update of HTML DOM based on ajax response..

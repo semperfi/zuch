@@ -1,15 +1,13 @@
 package zuch.service;
 
 
-import java.io.ByteArrayInputStream;
+
 import java.io.IOException;
 import java.io.InputStream;
-import java.text.DateFormat;
 import java.util.Date;
 import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.enterprise.event.Event;
 import javax.inject.Inject;
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
@@ -20,7 +18,6 @@ import javax.servlet.http.HttpServletResponse;
 import zuch.backing.JukeBoxBacking;
 import zuch.exception.AudioNotFound;
 import zuch.model.Audio;
-import zuch.model.PlayTokens;
 import zuch.model.ZConstants;
 import zuch.util.AudioUtils;
 
@@ -34,7 +31,7 @@ public class AudioPlayerServlet extends HttpServlet {
    
     @Inject AudioManagerLocal audioManager;
     @Inject JukeBoxBacking jukeBacking;
-    @Inject PlayTokens playToken;
+    @Inject PlayToken playToken;
     @Inject AudioUtils audioUtils;
     @Inject ZFileManager fileManager;
     
@@ -65,8 +62,6 @@ public class AudioPlayerServlet extends HttpServlet {
         }
         
         
-        // processNormalRequest(request, response);
-              
        
     }
     
@@ -90,17 +85,14 @@ public class AudioPlayerServlet extends HttpServlet {
             String id = request.getParameter("id");
             String token = request.getParameter("tk");
             
-                      
-            //if( ticketService.getAudioTicket().contains(token) ){
             if( playToken.getToken().equals(token) ){
                 
-                   //ticketService.getAudioTicket().remove(token);
+                   //set to empty to denie downloading
                    playToken.setToken("");
                    response.reset();
                 
                    try(ServletOutputStream outputStream = response.getOutputStream();) {
-               
-                     
+                                    
                        String msg = "TOKEN EXIST: " ;
                        Logger.getLogger(AudioPlayerServlet.class.getName()).info(msg);
                        
@@ -119,16 +111,12 @@ public class AudioPlayerServlet extends HttpServlet {
 
                        String audioFileName = "";
                        if(inputStream != null){
-                          // inputStream = new ByteArrayInputStream(audio.getContent().getContent());
-                          // buffInputStream = new BufferedInputStream(inputStream);
-                         //  inputStream = fileManager.getFileInputStream(audio.getId3().getFootPrint());
-                           if(audio != null){
+                            if(audio != null){
                                audioFileName = audio.getId3().getTitle();
                            }else{
                                audioFileName = "Zuch sample";
                            }
-                           
-                           
+                                                   
                             String attachement = "attachement; filename=\"zuch.mp3\"";
                             String inline = "inline; filename=\"zuch.mp3\"";
                             int fileLength = inputStream.available();
@@ -165,14 +153,13 @@ public class AudioPlayerServlet extends HttpServlet {
                      }finally{
                  
                     if(inputStream != null){
-                               try{
-
-                                   inputStream.close();
-                               }catch(IOException ex){
+                        try{
+                                inputStream.close();
+                        }catch(IOException ex){
                                    Logger.getLogger(AudioPlayerServlet.class.getName()).severe(ex.getMessage());
                                   // ex.printStackTrace();
                                }
-                           }
+                        }
 
                     }
               
@@ -264,10 +251,7 @@ public class AudioPlayerServlet extends HttpServlet {
 
                        String audioFileName = "";
                        if(inputStream != null){
-                          // inputStream = new ByteArrayInputStream(audio.getContent().getContent());
-                          // buffInputStream = new BufferedInputStream(inputStream);
-                          //inputStream = fileManager.getFileInputStream(audio.getId3().getFootPrint());
-                           if(audio != null){
+                            if(audio != null){
                                audioFileName = audio.getId3().getTitle();
                            }else{
                                audioFileName = "Zuch sample";
@@ -349,9 +333,6 @@ public class AudioPlayerServlet extends HttpServlet {
                             
                             inputStream.skip(reqStart);
                             while (((length = inputStream.read(bbuf)) != -1)){
-                               
-                             
-                               
                                outputStream.write(bbuf,0,length);
                                outputStream.flush();
 
@@ -383,53 +364,10 @@ public class AudioPlayerServlet extends HttpServlet {
                          
 
                     }
-              
-         //  }else{
-         //     String msg = "TOKEN HAS BEEN DELETED: " ;
-         //      Logger.getLogger(AudioPlayerServlet.class.getName()).info(msg);
-           
-         //  }
-    
+        
             
     }
-    
    
-    
-    private boolean isRangeRequest(String range){
-        
-        boolean result = false;
-        
-        if(range != null){
-            String sValue[] = range.split("-");
-            for(String val : sValue){
-                 Logger.getLogger(AudioPlayerServlet.class.getName()).info(val);
-            }
-           
-            if(sValue.length == 1){
-                
-                String tVal = sValue[0].split("-")[0].split("=")[1];
-                if(tVal.equals("0")){
-                     Logger.getLogger(AudioPlayerServlet.class.getName()).info("SERVE ENTIRE FILE...");
-                     result = false;
-                }else{
-                    Logger.getLogger(AudioPlayerServlet.class.getName()).info("SERVE FILE RANGE...");
-                    result = true;
-                }
-                
-                  
-            
-            }else if(sValue.length == 2){
-            
-                 Logger.getLogger(AudioPlayerServlet.class.getName()).info("SERVE FILE RANGE...");
-                 result = true;
-            }
-            
-        }
-        
-        return result;
-    }
-    
-    
     
     
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

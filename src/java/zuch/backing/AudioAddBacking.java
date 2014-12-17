@@ -19,7 +19,6 @@ import javax.faces.context.FacesContext;
 import javax.faces.validator.ValidatorException;
 import javax.inject.Inject;
 import javax.inject.Named;
-import javax.servlet.http.Part;
 import org.apache.commons.io.IOUtils;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.model.UploadedFile;
@@ -68,36 +67,9 @@ public class AudioAddBacking extends BaseBacking implements Serializable{
     
     @Inject @Added Event<Audio> addAudio;
     
-    private Part filePart;
-    
-   
-  
-    private UploadedFile uploadedFile;
  
- private boolean isValid(UploadedFile upFile){
-     boolean result = true;
-     if(upFile != null){
-        if (upFile.getSize() > (30*1048576) ) {
-            
-            log.warning("file size must not exceed 30 MB");
-            result = false;
-        
-        }
-        if ( ! ( "audio/mpeg".equals(upFile.getContentType()) ||
-                "audio/mp3".equals(upFile.getContentType()) ) ) {
-             
-             log.warning("File format must be mp3");
-             result = false;
-        }
-        
-      }
-     
-     return result;
- }
-  
-  
   @Asynchronous
-  public void handleFileUpload(FileUploadEvent event){
+  public void handleFileUpload(final FileUploadEvent event){
    
        
        log.info("CALLING HANDLE FILE UPLOAD...");
@@ -108,7 +80,7 @@ public class AudioAddBacking extends BaseBacking implements Serializable{
            
        
        try {
-                uploadedFile = event.getFile();
+                UploadedFile  uploadedFile = event.getFile();
                 
                 if(!isValid(uploadedFile)){
                     FacesMessage msg = new FacesMessage(FacesMessage.SEVERITY_ERROR, 
@@ -140,7 +112,7 @@ public class AudioAddBacking extends BaseBacking implements Serializable{
                 newAudio.setStatus(AudioStatus.IN_JUKEBOX);
 
                 Audio registredAudio = audioManager.registerAudio(newAudio);
-                uploadedFile = null;
+               // uploadedFile = null;
                 
                 //fire event for lucene indexer, spell checker and artwork image saving
                 addAudio.fire(registredAudio);
@@ -163,19 +135,27 @@ public class AudioAddBacking extends BaseBacking implements Serializable{
        
    }
  
+   
+   private boolean isValid(UploadedFile upFile){
+     boolean result = true;
+     if(upFile != null){
+        if (upFile.getSize() > (30*1048576) ) {
+            
+            log.warning("file size must not exceed 30 MB");
+            result = false;
+        
+        }
+        if ( ! ( "audio/mpeg".equals(upFile.getContentType()) ||
+                "audio/mp3".equals(upFile.getContentType()) ) ) {
+             
+             log.warning("File format must be mp3");
+             result = false;
+        }
+        
+      }
      
-    public Part getFilePart() {
-        return filePart;
+     return result;
     }
-
-    public void setFilePart(Part filePart) {
-        this.filePart = filePart;
-    }
-
-    
-    
-
-    
     
     
 }
