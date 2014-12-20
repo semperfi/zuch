@@ -105,7 +105,7 @@ public class AudioUtils {
         Mp3File mp3file = null;
         ID3 id3 = new ID3();
         
-        Path baseDir = FileSystems.getDefault().getPath(fileSystemUtils.getTempMp3UrlString());
+        Path baseDir = FileSystems.getDefault().getPath(fileSystemUtils.getPathString(Folder.TMP));
         String tmpFilePrefix = "up_"; 
         String tmpFileSufix = ".mp3"; 
         Path tmpFile = null;

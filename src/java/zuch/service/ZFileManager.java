@@ -23,6 +23,7 @@ import javax.ejb.Stateless;
 import javax.inject.Inject;
 import zuch.model.Audio;
 import zuch.model.ZConstants;
+import zuch.util.Folder;
 import zuch.util.ZFileSystemUtils;
 
 /**
@@ -36,7 +37,7 @@ public class ZFileManager {
     
     public void saveFile(byte[] input,String fileHash){
         
-        String filePathStr = fileSystemUtils.getTracksPathString() + fileHash + ZConstants.APP_AUDIO_EXT;
+        String filePathStr = fileSystemUtils.getPathString(Folder.TRACK) + fileHash + ZConstants.APP_AUDIO_EXT;
         Path filePath = Paths.get(filePathStr);
         File outputFile = filePath.toFile();
          
@@ -55,7 +56,7 @@ public class ZFileManager {
     
     public void deleteFile(String fileHash){
         try {
-            String filePathStr = fileSystemUtils.getTracksPathString() + fileHash + ZConstants.APP_AUDIO_EXT;
+            String filePathStr = fileSystemUtils.getPathString(Folder.TRACK) + fileHash + ZConstants.APP_AUDIO_EXT;
             Path filePath = Paths.get(filePathStr);
             Files.delete(filePath);
             deleteSample(fileHash);
@@ -66,7 +67,7 @@ public class ZFileManager {
     
     private void deleteSample(String fileHash){
         try {
-            String filePathStr = fileSystemUtils.getSamplesPathString() + fileHash + ZConstants.APP_AUDIO_EXT;
+            String filePathStr = fileSystemUtils.getPathString(Folder.SAMPLE) + fileHash + ZConstants.APP_AUDIO_EXT;
             Path filePath = Paths.get(filePathStr);
             Files.delete(filePath);
         } catch (IOException ex) {
@@ -77,11 +78,11 @@ public class ZFileManager {
     private void saveSample(String fileHash){
         
         try {
-            String filePathStr = fileSystemUtils.getTracksPathString() + fileHash + ZConstants.APP_AUDIO_EXT;
+            String filePathStr = fileSystemUtils.getPathString(Folder.TRACK) + fileHash + ZConstants.APP_AUDIO_EXT;
             Path filePath = Paths.get(filePathStr);
             File sourceFile = filePath.toFile();
             
-            String sampleFilePathStr = fileSystemUtils.getSamplesPathString() + fileHash + ZConstants.APP_AUDIO_EXT;
+            String sampleFilePathStr = fileSystemUtils.getPathString(Folder.SAMPLE) + fileHash + ZConstants.APP_AUDIO_EXT;
             Path sampleFilePath = Paths.get(sampleFilePathStr);
             File sampleOutputFile = sampleFilePath.toFile();
             
@@ -103,7 +104,7 @@ public class ZFileManager {
     
     public void saveArtWork(byte[] input,String fileHash,String extension){
         
-        String filePathStr = fileSystemUtils.getArtWorkPathString() + fileHash +  extension;
+        String filePathStr = fileSystemUtils.getPathString(Folder.IMAGE) + fileHash +  extension;
         Path filePath = Paths.get(filePathStr);
         if(!Files.exists(filePath)){
             File outputFile = filePath.toFile();
@@ -123,7 +124,7 @@ public class ZFileManager {
     
     public void saveDefaultArtWork(byte[] input,String fileHash,String extension){
         
-        String filePathStr = fileSystemUtils.getArtWorkPathString() + fileHash +  extension;
+        String filePathStr = fileSystemUtils.getPathString(Folder.IMAGE) + fileHash +  extension;
         Path filePath = Paths.get(filePathStr);
         if(!Files.exists(filePath)){
             File outputFile = filePath.toFile();
@@ -143,7 +144,7 @@ public class ZFileManager {
     
     public void deleteArtWork(String fileHash,String extension){
         try {
-            String filePathStr = fileSystemUtils.getArtWorkPathString() + fileHash + "." + extension ;
+            String filePathStr = fileSystemUtils.getPathString(Folder.IMAGE) + fileHash + "." + extension ;
             Path filePath = Paths.get(filePathStr);
             Files.delete(filePath);
         } catch (IOException ex) {
@@ -155,7 +156,7 @@ public class ZFileManager {
     public InputStream getFileInputStream(String fileHash){
         InputStream inStream = null;
         try {
-            String filePathStr = fileSystemUtils.getTracksPathString() + fileHash+ ZConstants.APP_AUDIO_EXT;
+            String filePathStr = fileSystemUtils.getPathString(Folder.TRACK) + fileHash+ ZConstants.APP_AUDIO_EXT;
             Path filePath = Paths.get(filePathStr);
             
             inStream = Files.newInputStream(filePath, StandardOpenOption.READ);
@@ -170,7 +171,7 @@ public class ZFileManager {
     public InputStream getSampleFileInputStream(String fileHash){
         InputStream inStream = null;
         try {
-            String filePathStr = fileSystemUtils.getSamplesPathString() + fileHash+ ZConstants.APP_AUDIO_EXT;
+            String filePathStr = fileSystemUtils.getPathString(Folder.SAMPLE) + fileHash+ ZConstants.APP_AUDIO_EXT;
             Path filePath = Paths.get(filePathStr);
             
             inStream = Files.newInputStream(filePath);
@@ -187,7 +188,7 @@ public class ZFileManager {
         InputStream inStream = null;
         String fileHash = audio.getId3().getArtWorkHash();
         try {
-            String filePathStr = fileSystemUtils.getArtWorkPathString()
+            String filePathStr = fileSystemUtils.getPathString(Folder.IMAGE)
                     + fileHash+ audio.getId3().getArtWorkExt();
             Path filePath = Paths.get(filePathStr);
             

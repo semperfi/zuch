@@ -32,6 +32,7 @@ import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.NIOFSDirectory;
 import org.apache.lucene.util.Version;
 import zuch.qualifier.SpellCheckerClear;
+import zuch.util.Folder;
 import zuch.util.ZFileSystemUtils;
 
 /**
@@ -61,13 +62,13 @@ public class ZSpellChecker {
        log.warning("BUILD SPELL CHECKER...");
        
        try {
-           Directory dir = NIOFSDirectory.open(new File(systemUtils.getEnSpellCheckerPathString()));
+           Directory dir = NIOFSDirectory.open(new File(systemUtils.getPathString(Folder.EN_SPELLCHK)));
            Analyzer analyser = new EnglishAnalyzer(Version.LUCENE_4_9, stopWords);
            IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_4_9, analyser);
            SpellChecker spell = new SpellChecker(dir);
            long startTime = System.currentTimeMillis();
            
-           Directory dir2 = FSDirectory.open(new File(systemUtils.getEnSearchIndexPathString()));
+           Directory dir2 = FSDirectory.open(new File(systemUtils.getPathString(Folder.EN_INDEX)));
            IndexReader inReader = DirectoryReader.open(dir2);
            try {
                 spell.indexDictionary(new LuceneDictionary(inReader, "contents"),config,true);
@@ -92,13 +93,13 @@ public class ZSpellChecker {
        log.warning("CLEAR EN SPELL CHECKER...");
        
        try {
-           Directory dir = NIOFSDirectory.open(new File(systemUtils.getEnSpellCheckerPathString()));
+           Directory dir = NIOFSDirectory.open(new File(systemUtils.getPathString(Folder.EN_SPELLCHK)));
            Analyzer analyser = new EnglishAnalyzer(Version.LUCENE_4_9, stopWords);
            IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_4_9, analyser);
            SpellChecker spell = new SpellChecker(dir);
            long startTime = System.currentTimeMillis();
            
-           Directory dir2 = FSDirectory.open(new File(systemUtils.getEnSearchIndexPathString()));
+           Directory dir2 = FSDirectory.open(new File(systemUtils.getPathString(Folder.EN_INDEX)));
            IndexReader inReader = DirectoryReader.open(dir2);
            try {
                 spell.clearIndex();
@@ -124,13 +125,13 @@ public class ZSpellChecker {
        log.warning("BUILD SPELL CHECKER...");
        
        try {
-           Directory dir = NIOFSDirectory.open(new File(systemUtils.getFrSpellCheckerPathString()));
+           Directory dir = NIOFSDirectory.open(new File(systemUtils.getPathString(Folder.FR_SPELLCHK)));
            Analyzer analyser = new ZuchFrenchAnalyzer();
            IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_4_9, analyser);
            SpellChecker spell = new SpellChecker(dir);
            long startTime = System.currentTimeMillis();
            
-           Directory dir2 = FSDirectory.open(new File(systemUtils.getFrSearchIndexPathString()));
+           Directory dir2 = FSDirectory.open(new File(systemUtils.getPathString(Folder.FR_INDEX)));
            IndexReader inReader = DirectoryReader.open(dir2);
            try {
                 spell.indexDictionary(new LuceneDictionary(inReader, "contents"),config,true);
@@ -156,13 +157,13 @@ public class ZSpellChecker {
        log.warning("BUILD FR SPELL CHECKER...");
        
        try {
-           Directory dir = NIOFSDirectory.open(new File(systemUtils.getFrSpellCheckerPathString()));
+           Directory dir = NIOFSDirectory.open(new File(systemUtils.getPathString(Folder.FR_SPELLCHK)));
            Analyzer analyser = new ZuchFrenchAnalyzer();
            IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_4_9, analyser);
            SpellChecker spell = new SpellChecker(dir);
            long startTime = System.currentTimeMillis();
            
-           Directory dir2 = FSDirectory.open(new File(systemUtils.getFrSearchIndexPathString()));
+           Directory dir2 = FSDirectory.open(new File(systemUtils.getPathString(Folder.FR_INDEX)));
            IndexReader inReader = DirectoryReader.open(dir2);
            try {
                 spell.clearIndex();
@@ -190,13 +191,13 @@ public class ZSpellChecker {
        log.warning("BUILD SPELL CHECKER...");
        
        try {
-           Directory dir = NIOFSDirectory.open(new File(systemUtils.getSpSpellCheckerPathString()));
+           Directory dir = NIOFSDirectory.open(new File(systemUtils.getPathString(Folder.SP_SPELLCHK)));
            Analyzer analyser = new SpanishAnalyzer(Version.LUCENE_4_9, stopWords);
            IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_4_9, analyser);
            SpellChecker spell = new SpellChecker(dir);
            long startTime = System.currentTimeMillis();
            
-           Directory dir2 = FSDirectory.open(new File(systemUtils.getSpSearchIndexPathString()));
+           Directory dir2 = FSDirectory.open(new File(systemUtils.getPathString(Folder.SP_INDEX)));
            IndexReader inReader = DirectoryReader.open(dir2);
            try {
                 spell.indexDictionary(new LuceneDictionary(inReader, "contents"),config,true);
@@ -222,13 +223,13 @@ public class ZSpellChecker {
        log.warning("BUILD SPELL CHECKER...");
        
        try {
-           Directory dir = NIOFSDirectory.open(new File(systemUtils.getSpSpellCheckerPathString()));
+           Directory dir = NIOFSDirectory.open(new File(systemUtils.getPathString(Folder.SP_SPELLCHK)));
            Analyzer analyser = new SpanishAnalyzer(Version.LUCENE_4_9, stopWords);
            IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_4_9, analyser);
            SpellChecker spell = new SpellChecker(dir);
            long startTime = System.currentTimeMillis();
            
-           Directory dir2 = FSDirectory.open(new File(systemUtils.getSpSearchIndexPathString()));
+           Directory dir2 = FSDirectory.open(new File(systemUtils.getPathString(Folder.SP_INDEX)));
            IndexReader inReader = DirectoryReader.open(dir2);
            try {
                 spell.clearIndex();

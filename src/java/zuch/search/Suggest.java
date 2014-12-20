@@ -19,6 +19,7 @@ import org.apache.lucene.search.spell.LevensteinDistance;
 import org.apache.lucene.search.spell.SpellChecker;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.NIOFSDirectory;
+import zuch.util.Folder;
 import zuch.util.ZFileSystemUtils;
 
 /**
@@ -40,7 +41,7 @@ public class Suggest {
        
        try {
           
-           Directory dir = NIOFSDirectory.open(new File(systemUtils.getEnSpellCheckerPathString()));
+           Directory dir = NIOFSDirectory.open(new File(systemUtils.getPathString(Folder.EN_SPELLCHK)));
            SpellChecker spell = new SpellChecker(dir);
            spell.setStringDistance(new LevensteinDistance());
            suggestions = spell.suggestSimilar(wordToRespell, 2);
@@ -64,7 +65,7 @@ public class Suggest {
        
        try {
           
-           Directory dir = NIOFSDirectory.open(new File(systemUtils.getEnSpellCheckerPathString()));
+           Directory dir = NIOFSDirectory.open(new File(systemUtils.getPathString(Folder.FR_SPELLCHK)));
            SpellChecker spell = new SpellChecker(dir);
            spell.setStringDistance(new LevensteinDistance());
            suggestions = spell.suggestSimilar(wordToRespell, 2);
@@ -89,7 +90,7 @@ public class Suggest {
        
        try {
           
-           Directory dir = NIOFSDirectory.open(new File(systemUtils.getEnSpellCheckerPathString()));
+           Directory dir = NIOFSDirectory.open(new File(systemUtils.getPathString(Folder.SP_SPELLCHK)));
            SpellChecker spell = new SpellChecker(dir);
            spell.setStringDistance(new LevensteinDistance());
            suggestions = spell.suggestSimilar(wordToRespell, 2);

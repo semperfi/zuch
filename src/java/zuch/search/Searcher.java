@@ -45,6 +45,7 @@ import zuch.exception.AudioNotFound;
 import zuch.model.Audio;
 import zuch.model.SearchResult;
 import zuch.service.AudioManagerLocal;
+import zuch.util.Folder;
 import zuch.util.ZFileSystemUtils;
 
 /**
@@ -54,7 +55,7 @@ import zuch.util.ZFileSystemUtils;
 @RequestScoped
 public class Searcher {
     
-    static final Logger log = Logger.getLogger("zuch.service.Searcher");
+    static final Logger log = Logger.getLogger(Searcher.class.getName());
     
     @Inject ZFileSystemUtils systemUtils;
     @Inject Suggest suggest;
@@ -71,7 +72,7 @@ public class Searcher {
        
         
         try {
-            Directory dir = NIOFSDirectory.open(new File(systemUtils.getEnSearchIndexPathString()));
+            Directory dir = NIOFSDirectory.open(new File(systemUtils.getPathString(Folder.EN_INDEX)));
             
             try (IndexReader indexReader = DirectoryReader.open(dir)) {
                 IndexSearcher indexSearcher = new IndexSearcher(indexReader);
@@ -124,7 +125,7 @@ public class Searcher {
        List<Document> result = new ArrayList<>();
        
         try {
-            Directory dir = NIOFSDirectory.open(new File(systemUtils.getFrSearchIndexPathString()));
+            Directory dir = NIOFSDirectory.open(new File(systemUtils.getPathString(Folder.FR_INDEX)));
             
             try (IndexReader indexReader = DirectoryReader.open(dir)) {
                 IndexSearcher indexSearcher = new IndexSearcher(indexReader);
@@ -170,7 +171,7 @@ public class Searcher {
         List<Document> result = new ArrayList<>();
         
         try {
-            Directory dir = NIOFSDirectory.open(new File(systemUtils.getSpSearchIndexPathString()));
+            Directory dir = NIOFSDirectory.open(new File(systemUtils.getPathString(Folder.SP_INDEX)));
             
             try (IndexReader indexReader = DirectoryReader.open(dir)) {
                 IndexSearcher indexSearcher = new IndexSearcher(indexReader);

@@ -7,7 +7,6 @@
 package zuch.search;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Date;
@@ -20,11 +19,9 @@ import javax.ejb.Asynchronous;
 import javax.ejb.Lock;
 import javax.ejb.LockType;
 import javax.ejb.Singleton;
-import javax.enterprise.context.RequestScoped;
 import javax.enterprise.event.Event;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
-import javax.interceptor.Interceptors;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.en.EnglishAnalyzer;
 import org.apache.lucene.analysis.es.SpanishAnalyzer;
@@ -47,6 +44,7 @@ import zuch.model.ID3;
 import zuch.qualifier.Added;
 import zuch.qualifier.AudioClear;
 import zuch.qualifier.AudioRebuilt;
+import zuch.util.Folder;
 import zuch.util.ZFileSystemUtils;
 
 /**
@@ -113,7 +111,7 @@ public class Indexer {
         IndexWriter writer = null;
         
         try {
-            Directory dir = NIOFSDirectory.open(new File(systemUtils.getEnSearchIndexPathString()));
+            Directory dir = NIOFSDirectory.open(new File(systemUtils.getPathString(Folder.EN_INDEX)));
             Analyzer analyser = new EnglishAnalyzer(Version.LUCENE_4_9, stopWords);
             IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_4_9, analyser);
             config.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
@@ -165,7 +163,7 @@ public class Indexer {
         IndexWriter writer = null;
         
         try {
-            Directory dir = NIOFSDirectory.open(new File(systemUtils.getFrSearchIndexPathString()));
+            Directory dir = NIOFSDirectory.open(new File(systemUtils.getPathString(Folder.FR_INDEX)));
             Analyzer analyser = new ZuchFrenchAnalyzer();
             IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_4_9, analyser);
             config.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
@@ -211,7 +209,7 @@ public class Indexer {
         IndexWriter writer = null;
         
         try {
-            Directory dir = NIOFSDirectory.open(new File(systemUtils.getSpSearchIndexPathString()));
+            Directory dir = NIOFSDirectory.open(new File(systemUtils.getPathString(Folder.SP_INDEX)));
             Analyzer analyser = new SpanishAnalyzer(Version.LUCENE_4_9, stopWords);
            
             IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_4_9, analyser);
@@ -311,7 +309,7 @@ public class Indexer {
         IndexWriter writer = null;
         
        try {
-           Directory dir = NIOFSDirectory.open(new File(systemUtils.getEnSearchIndexPathString()));
+           Directory dir = NIOFSDirectory.open(new File(systemUtils.getPathString(Folder.EN_INDEX)));
            Analyzer analyser = new EnglishAnalyzer(Version.LUCENE_4_9, stopWords);
            IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_4_9, analyser);
            config.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
@@ -342,7 +340,7 @@ public class Indexer {
         IndexWriter writer = null;
         
        try {
-           Directory dir = NIOFSDirectory.open(new File(systemUtils.getFrSearchIndexPathString()));
+           Directory dir = NIOFSDirectory.open(new File(systemUtils.getPathString(Folder.FR_INDEX)));
            Analyzer analyser = new FrenchAnalyzer(Version.LUCENE_4_9, stopWords);
            IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_4_9, analyser);
            config.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
@@ -372,7 +370,7 @@ public class Indexer {
         IndexWriter writer = null;
         
        try {
-           Directory dir = NIOFSDirectory.open(new File(systemUtils.getSpSearchIndexPathString()));
+           Directory dir = NIOFSDirectory.open(new File(systemUtils.getPathString(Folder.SP_INDEX)));
            Analyzer analyser = new SpanishAnalyzer(Version.LUCENE_4_9, stopWords);
            IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_4_9, analyser);
            config.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
@@ -395,8 +393,7 @@ public class Indexer {
         
     }
     
-  
-   
+    
     
     public void checkIndexing(@Observes Date event){
         log.warning("IT'S TIME TO INDEX: ".concat(event.toString()));

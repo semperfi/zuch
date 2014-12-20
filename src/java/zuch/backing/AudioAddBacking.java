@@ -30,7 +30,6 @@ import zuch.model.Audio;
 import zuch.model.AudioStatus;
 import zuch.model.ID3;
 import zuch.qualifier.Added;
-import zuch.search.Content;
 import zuch.search.Indexer;
 import zuch.search.ZSpellChecker;
 import zuch.service.AudioManagerLocal;
@@ -60,7 +59,6 @@ public class AudioAddBacking extends BaseBacking implements Serializable{
     @Inject JukeBoxBacking jukeBoxBacking;
     @Inject AudioUtils audioUtils;
     @Inject ZFileSystemUtils fileSystemUtils;
-    @Inject Content searchContent;
     @Inject Indexer indexer;
     @Inject ZSpellChecker spellChecker;
     @Inject ZFileManager fileManager;

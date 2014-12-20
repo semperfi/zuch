@@ -13,12 +13,10 @@ import java.util.logging.Logger;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Named;
 import javax.faces.application.FacesMessage;
-import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import zuch.model.Audio;
 import zuch.model.AudioStatus;
 import zuch.service.PlayToken;
-import zuch.qualifier.PerformanceMonitor;
 import zuch.service.AudioManagerLocal;
 import zuch.util.AudioUtils;
 
@@ -118,11 +116,7 @@ public class AudioBorrowingBacking extends BaseBacking implements Serializable{
                 String sMsg = "SELECTED AUDIO FILE: " + audioInfo;
                 Logger.getLogger(JukeBoxBacking.class.getName()).info(sMsg);
                 
-               // nextIndex =  audioList.indexOf(selectedAudio) + 1; //datatable indes start from 1 not 0
-           
-               // String nMsg = "NEXT MP3 INDEX: " + nextIndex;
-               // Logger.getLogger(JukeBoxBacking.class.getName()).info(nMsg);
-
+          
        }
    }
 

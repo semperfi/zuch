@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Date;
 import java.util.UUID;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.inject.Inject;
 import javax.servlet.ServletException;
@@ -28,6 +27,7 @@ import zuch.util.AudioUtils;
 @WebServlet(name = "AudioPlayerServlet", urlPatterns = {"/zuchplayer"})
 public class AudioPlayerServlet extends HttpServlet {
     
+    static final Logger log = Logger.getLogger(AudioPlayerServlet.class.getName());
    
     @Inject AudioManagerLocal audioManager;
     @Inject JukeBoxBacking jukeBacking;
@@ -52,7 +52,8 @@ public class AudioPlayerServlet extends HttpServlet {
          
         String range = "";
         range = request.getHeader("Range");
-        Logger.getLogger(AudioPlayerServlet.class.getName()).info(String.format("HEADER RANGE %s",range));
+        log.info(String.format("HEADER RANGE %s",range));
+        
         
         
         if( (range == null) || (range.isEmpty()) ){
@@ -61,26 +62,20 @@ public class AudioPlayerServlet extends HttpServlet {
             processRangeRequest(request, response, range);
         }
         
-        
-       
     }
     
     
      private void processNormalRequest(HttpServletRequest request, HttpServletResponse response){
     
-           Logger.getLogger(AudioPlayerServlet.class.getName()).info("PROCESSING NORMAL REQUEST...");
-           InputStream inputStream = null;
-          // BufferedInputStream buffInputStream = null;
+           log.info("PROCESSING NORMAL REQUEST...");
            
-          
-        
-            System.out.printf("METHOD processRequest() CALLED %s" + 
+           log.warning(String.format("METHOD processNormalRequest() CALLED %s" + 
                 " ON THREAD [%s]\n", getClass().getSimpleName(), 
-            Thread.currentThread().getName());
-
-        
-           // final int BUFFERSIZE = 8 * 1024; //(8K) do not change this value, if so it will causes error in chrome
-            int length = 0;
+                Thread.currentThread().getName()));
+           
+           InputStream inputStream = null;
+           
+           int length = 0;
         
             String id = request.getParameter("id");
             String token = request.getParameter("tk");
@@ -93,8 +88,7 @@ public class AudioPlayerServlet extends HttpServlet {
                 
                    try(ServletOutputStream outputStream = response.getOutputStream();) {
                                     
-                       String msg = "TOKEN EXIST: " ;
-                       Logger.getLogger(AudioPlayerServlet.class.getName()).info(msg);
+                       log.info("TOKEN EXIST: ");
                        
                        Audio audio = null;
                        
@@ -121,11 +115,11 @@ public class AudioPlayerServlet extends HttpServlet {
                             String inline = "inline; filename=\"zuch.mp3\"";
                             int fileLength = inputStream.available();
 
-                             response.setContentType("audio/mpeg");
-                             response.setHeader( "Content-Disposition", inline );
-                             response.setHeader("Accept-Ranges", "bytes");
-                             response.setHeader("Connection", "keep-alive");
-                             response.setContentLength(fileLength);
+                            response.setContentType("audio/mpeg");
+                            response.setHeader( "Content-Disposition", inline );
+                            response.setHeader("Accept-Ranges", "bytes");
+                            response.setHeader("Connection", "keep-alive");
+                            response.setContentLength(fileLength);
 
                             // InputStream in = context.getResourceAsStream("/" + originalFile);
 
@@ -145,21 +139,19 @@ public class AudioPlayerServlet extends HttpServlet {
 
                     
                      }catch(IOException ex){
-                         Logger.getLogger(AudioPlayerServlet.class.getName()).info("---CONNECTION CLOSED---");
-                         // Logger.getLogger(Play.class.getName()).severe(ex.getMessage());
-                        ex.printStackTrace();
-                     } catch (AudioNotFound ex) {
-                           Logger.getLogger(AudioPlayerServlet.class.getName()).log(Level.SEVERE, null, "Audio not found");
+                         log.warning(String.format("---CONNECTION CLOSED---: %s", ex.getMessage()));
+                     }catch (AudioNotFound ex) {
+                           log.severe(ex.getMessage());
                      }finally{
                  
-                    if(inputStream != null){
-                        try{
-                                inputStream.close();
-                        }catch(IOException ex){
-                                   Logger.getLogger(AudioPlayerServlet.class.getName()).severe(ex.getMessage());
-                                  // ex.printStackTrace();
-                               }
-                        }
+                        if(inputStream != null){
+                            try{
+                                    inputStream.close();
+                            }catch(IOException ex){
+
+                                       log.severe(ex.getMessage());
+                                   }
+                            }
 
                     }
               
@@ -176,11 +168,16 @@ public class AudioPlayerServlet extends HttpServlet {
     private void processRangeRequest(HttpServletRequest request, HttpServletResponse response,
             String rangeHeader){
         
-           Logger.getLogger(AudioPlayerServlet.class.getName()).info("PROCESSING RANGE REQUEST...");
+           log.info(String.format("PROCESSING RANGE REQUEST..."));
+           
+           
+           log.warning(String.format("METHOD processRangeRequest() CALLED %s" + 
+                " ON THREAD [%s]\n", getClass().getSimpleName(), 
+            Thread.currentThread().getName()));
+
+           
            InputStream inputStream = null;
-          // BufferedInputStream buffInputStream = null;
-           
-           
+            
              String sValue[] = rangeHeader.split("-");
              String start = "";
              String end = "";
@@ -202,30 +199,17 @@ public class AudioPlayerServlet extends HttpServlet {
             
             int reqStart = Integer.parseInt(start);
             int reqEnd = Integer.parseInt(end);
-            /*
-            int reqEnd = 0;
-            if(!end.isEmpty()){
-                reqEnd = Integer.parseInt(end);
-            }
-            */
-           
             
-             Logger.getLogger(AudioPlayerServlet.class.getName()).info(String.format("REQUEST START: %d",reqStart));
-             Logger.getLogger(AudioPlayerServlet.class.getName()).info(String.format("REQUEST END: %d",reqEnd));
+            log.info(String.format("REQUEST START: %d",reqStart));
+            log.info(String.format("REQUEST END: %d",reqEnd));
         
-            System.out.printf("METHOD processRequest() CALLED %s" + 
-                " ON THREAD [%s]\n", getClass().getSimpleName(), 
-            Thread.currentThread().getName());
-
-         
+           
             String id = request.getParameter("id");
             String token = request.getParameter("tk");
-            String rangeToken = request.getParameter("rtk");
+           // String rangeToken = request.getParameter("rtk");//may be used later
             
-                      
-          // if( ticketService.getAudioRangeTicket().contains(rangeToken) ){
-                
                    //prevent file downloading
+                   //do not check token range request is not a new request 
                    playToken.setRangeToken("");
                    playToken.setToken("");
                    response.reset();
@@ -241,11 +225,7 @@ public class AudioPlayerServlet extends HttpServlet {
                        if(!id.equals("sample")){
                            audio = audioManager.getAudio(Long.valueOf(id));
                            inputStream = fileManager.getFileInputStream(audio.getId3().getFootPrint());
-                            //fire selection audio event
-                           // startIndexingEvent.fire(audio);
-                       }else{
-                       
-                          // audio = audioUtils.getDefaultAudioSample();
+                        }else{
                            inputStream = audioUtils.getDefaultAudioSample();
                        }
 
@@ -290,10 +270,8 @@ public class AudioPlayerServlet extends HttpServlet {
                                 contentLen = reqEnd - reqStart;
                             }
                             
-                            Logger.getLogger(AudioPlayerServlet.class.getName())
-                                    .info(String.format("RANGE START: %d", rangeStart));
-                            Logger.getLogger(AudioPlayerServlet.class.getName())
-                                    .info(String.format("RANGE END: %d", rangeEnd));
+                            log.info(String.format("RANGE START: %d", rangeStart));
+                            log.info(String.format("RANGE END: %d", rangeEnd));
                           
                             
                             String contentRange =  "bytes "+
@@ -324,7 +302,7 @@ public class AudioPlayerServlet extends HttpServlet {
 
                             // InputStream in = context.getResourceAsStream("/" + originalFile);
 
-                            Logger.getLogger(AudioPlayerServlet.class.getName()).info("BEGINING STREAMING...");
+                            log.info("BEGINING STREAMING...");
                             
                             //final int BUFFERSIZE = 8 * 1024 * 1024;
                             int length;
@@ -338,17 +316,15 @@ public class AudioPlayerServlet extends HttpServlet {
 
                              }
 
-                            Logger.getLogger(AudioPlayerServlet.class.getName()).info("STREAMING END...");
+                            log.info("STREAMING END...");
 
                        }
 
                     
                      }catch(IOException ex){
-                         Logger.getLogger(AudioPlayerServlet.class.getName()).info("---RANGE RQ CONNECTION CLOSED---");
-                         // Logger.getLogger(Play.class.getName()).severe(ex.getMessage());
-                        ex.printStackTrace();
+                         log.warning(String.format("---RANGE RQ CONNECTION CLOSED---: %s",ex.getMessage()));
                      } catch (AudioNotFound ex) {
-                           Logger.getLogger(AudioPlayerServlet.class.getName()).log(Level.SEVERE, null, "Audio not found");
+                           log.warning("Audio not found");
                      }finally{
                  
                          if(inputStream != null){
@@ -356,16 +332,13 @@ public class AudioPlayerServlet extends HttpServlet {
 
                                    inputStream.close();
                                }catch(IOException ex){
-                                   Logger.getLogger(AudioPlayerServlet.class.getName()).severe(ex.getMessage());
-                                  // ex.printStackTrace();
+                                   log.severe(ex.getMessage());
                                }
                            }
-                         
-                         
-
+          
                     }
         
-            
+          
     }
    
     

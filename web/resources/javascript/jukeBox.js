@@ -5,7 +5,7 @@
  */
 
 
-    
+ var TIME_TO_WAIT = 1000/40;  //millisecond
 
 var contextClass = (window.AudioContext ||
 window.webkitAudioContext ||
@@ -20,7 +20,6 @@ if (contextClass) {
     console.log("Web Audio API is not available...");
 }
 
-
 window.requestAnimationFrame = (function(){
     return window.requestAnimationFrame  ||
     window.webkitRequestAnimationFrame ||
@@ -28,7 +27,7 @@ window.requestAnimationFrame = (function(){
     window.oRequestAnimationFrame  ||
     window.msRequestAnimationFrame  ||
     function(callback){
-    window.setTimeout(callback, 40);
+        window.setTimeout(callback,TIME_TO_WAIT );
     };
 })();
 
@@ -43,13 +42,25 @@ function initAudioContext(){
 
 }
 
+function onEachStep(){
+     var mediaplayer = document.getElementById("zuchAudioPlayer");
+     if( !(mediaplayer.paused || mediaplayer.ended) ){
+         analyseSound();
+         analyseTimeSound();
+     }
+}
 
-var TIME_TO_WAIT = 50;
+function setAnalyser(){
+      setTimeout(function(){
+      window.requestAnimationFrame(setAnalyser);
+      onEachStep();
+    },TIME_TO_WAIT);
+   
+}
 
-
-
+/*
 function initAnalyser(timeToWait){
-    setTimeout(function() {
+    setInterval(function() {
       var mediaplayer = document.getElementById("zuchAudioPlayer");
       if( !(mediaplayer.paused || mediaplayer.ended) ){
           analyseSound();
@@ -57,7 +68,7 @@ function initAnalyser(timeToWait){
         
     }, timeToWait);  //old value 1000/60
 }
-
+*/
 
 function analyseSound(){
     
@@ -74,6 +85,7 @@ function analyseSound(){
     
    var freqDomain = new Uint8Array(analyser.frequencyBinCount);
    analyser.getByteFrequencyData(freqDomain);
+   //analyser.getByteTimeDomainData(freqDomain);
     
     canvasContext.clearRect(0,0,canvas.width,canvas.height);
     
@@ -85,11 +97,11 @@ function analyseSound(){
         var barWidth = WIDTH/analyser.frequencyBinCount;
         var hue = i/analyser.frequencyBinCount * 360;
         canvasContext.fillStyle = 'hsl(' + hue + ', 100%, 50%)';
-        canvasContext.fillRect(i * barWidth, offset, barWidth, height);
+        canvasContext.fillRect(i * barWidth, offset, barWidth , 5); //replae height by 5 to get line effect
         
     }
     
-    initAnalyser(TIME_TO_WAIT);
+    //initAnalyser(TIME_TO_WAIT);
 }
 
 
@@ -103,7 +115,8 @@ function jukeBoxPlayerEvent(){
     
     mediaplayer.addEventListener("playing", function() { 
         //document.getElementById("music").play();
-        initAnalyser(TIME_TO_WAIT);
+        //initAnalyser(TIME_TO_WAIT);
+        setAnalyser();
         console.log("mp3 playing...");
         var nextIndex = document.getElementById("nextIndex");
         console.log("next mp3 index: "+ nextIndex.value); 
@@ -130,8 +143,8 @@ function jukeBoxPlayerEvent(){
         console.log("next mp3 index: "+ nextIndex.value); 
         if(nextIndex.value !== "-1"){
             console.log("index is different... "); 
-            audioTableWidget.unselectAllRows();
-            audioTableWidget.selectRow(+nextIndex.value, false);
+            PF('audioTableWidget').unselectAllRows();
+            PF('audioTableWidget').selectRow(+nextIndex.value, false);
         }
         
     
@@ -153,7 +166,8 @@ function resetAnalyzer(){
     jukeBoxPlayerEvent();
     if(contextClass){
         initAudioContext();
-        initAnalyser(TIME_TO_WAIT);
+       // initAnalyser(TIME_TO_WAIT);
+       setAnalyser();
     }
 
             
@@ -180,7 +194,8 @@ function keepPlaying(data){
             jukeBoxPlayerEvent();
             if(contextClass){
                 initAudioContext();
-                initAnalyser(TIME_TO_WAIT);
+               // initAnalyser(TIME_TO_WAIT);
+               setAnalyser();
             }
             
             break;
@@ -194,7 +209,8 @@ function keepPlaying(data){
 document.addEventListener("DOMContentLoaded", jukeBoxPlayerEvent, false);
 if(contextClass){
     document.addEventListener("DOMContentLoaded", initAudioContext, false);
-    document.addEventListener("DOMContentLoaded", initAnalyser(TIME_TO_WAIT), false);
+   // document.addEventListener("DOMContentLoaded", initAnalyser(TIME_TO_WAIT), false);
+   document.addEventListener("DOMContentLoaded", setAnalyser(), false);
 }
 
 
