@@ -14,6 +14,7 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
@@ -32,6 +33,8 @@ import zuch.util.ZFileSystemUtils;
  */
 @Stateless
 public class ZFileManager {
+    
+    static final Logger log = Logger.getLogger(ZFileManager.class.getName());
     
     @Inject ZFileSystemUtils fileSystemUtils;
     
@@ -185,7 +188,7 @@ public class ZFileManager {
     
     
     public InputStream getArtWorkFileInputStream(Audio audio){
-        InputStream inStream = null;
+        InputStream inStream =  this.getClass().getResourceAsStream(ZConstants.ARTWORK_DEFAULT_PATH);;
         String fileHash = audio.getId3().getArtWorkHash();
         try {
             String filePathStr = fileSystemUtils.getPathString(Folder.IMAGE)
@@ -194,9 +197,9 @@ public class ZFileManager {
             
             inStream = Files.newInputStream(filePath, StandardOpenOption.READ);
                  
-        } catch (IOException ex) {
-            Logger.getLogger(ZFileManager.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        } catch ( IOException ex) {
+            log.warning(ex.getMessage());
+        } 
         
         return inStream;
     }

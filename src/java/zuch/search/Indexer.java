@@ -99,60 +99,25 @@ public class Indexer {
        deleteSpDocument(audio);
    }
    
+   
     @Asynchronous
-   // @Lock(LockType.WRITE)
     public void buildEnIndex(@Observes @Added Audio audio){
         
        log.warning("ADD AUDIO OBSERVER RECEIVED EVENT...");
         
        log.info(String.format("METHOD buildEnIndex(Audio audio,ID3 id3) ON THREAD [%s]", 
                 Thread.currentThread().getName()));  
+       
+       Analyzer analyser = new EnglishAnalyzer(Version.LUCENE_4_9, stopWords);
+       buildIndex(audio, Folder.EN_INDEX, analyser);
+       
+       //build spell checker
+       spellChecker.buildEnSpellChecker();
+            
         
-        IndexWriter writer = null;
-        
-        try {
-            Directory dir = NIOFSDirectory.open(new File(systemUtils.getPathString(Folder.EN_INDEX)));
-            Analyzer analyser = new EnglishAnalyzer(Version.LUCENE_4_9, stopWords);
-            IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_4_9, analyser);
-            config.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
-            writer = new IndexWriter(dir,config);
-            
-            
-           // String filePath = id3.getFootPrint() + ".txt";
-        
-            long start = System.currentTimeMillis();
-            
-           // ID3 id3 = audio.getId3();
-            
-            indexFile(writer,audio);
-            long end = System.currentTimeMillis();
-
-            log.info(String.format("EN Indexing %s files took %d milliseconds",
-                    writer.numDocs(),(end - start) ));
-            
-            writer.close();
-            
-            //build spell checker
-            spellChecker.buildEnSpellChecker();
-            
-           // startIndexingEvent.fire(new Date());
-            
-            
-        } catch (IOException ex) {
-            if(writer != null){
-                try {
-                    writer.close();
-                } catch (IOException ex1) {
-                    Logger.getLogger(Indexer.class.getName()).log(Level.SEVERE, null, ex1);
-                }
-            }
-            Logger.getLogger(Indexer.class.getName()).log(Level.SEVERE, null, ex);
-        }
     }
     
-    
-    
-    
+     
     @Asynchronous
     //@Lock(LockType.WRITE)
     public void buildFrIndex(@Observes @Added Audio audio){
@@ -160,42 +125,14 @@ public class Indexer {
         log.info(String.format("METHOD buildFrIndex(Audio audio,ID3 id3) ON THREAD [%s]", 
                 Thread.currentThread().getName()));  
         
-        IndexWriter writer = null;
+        Analyzer analyser = new FrenchAnalyzer(Version.LUCENE_4_9, stopWords);
+        buildIndex(audio, Folder.FR_INDEX, analyser);
+            
+        //build spell checker
+         spellChecker.buildFrSpellChecker();
+            
+            
         
-        try {
-            Directory dir = NIOFSDirectory.open(new File(systemUtils.getPathString(Folder.FR_INDEX)));
-            Analyzer analyser = new ZuchFrenchAnalyzer();
-            IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_4_9, analyser);
-            config.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
-            writer = new IndexWriter(dir,config);
-            
-           // String filePath = id3.getFootPrint() + ".txt";
-        
-            long start = System.currentTimeMillis();
-            ID3 id3 = audio.getId3();
-            indexFile(writer,audio);
-            long end = System.currentTimeMillis();
-
-            log.info(String.format("FR Indexing %s files took %d milliseconds",
-                    writer.numDocs(),(end - start) ));
-            
-            
-            writer.close();
-            
-            //build spell checker
-            spellChecker.buildFrSpellChecker();
-            
-            
-        } catch (IOException ex) {
-            if(writer != null){
-                try {
-                    writer.close();
-                } catch (IOException ex1) {
-                    Logger.getLogger(Indexer.class.getName()).log(Level.SEVERE, null, ex1);
-                }
-            }
-            Logger.getLogger(Indexer.class.getName()).log(Level.SEVERE, null, ex);
-        }
     }
     
    
@@ -206,44 +143,13 @@ public class Indexer {
        log.info(String.format("METHOD buildSpIndex(Audio audio,ID3 id3) ON THREAD [%s]", 
                 Thread.currentThread().getName()));  
         
-        IndexWriter writer = null;
+      
+       Analyzer analyser = new SpanishAnalyzer(Version.LUCENE_4_9, stopWords);
+       buildIndex(audio, Folder.SP_INDEX, analyser);
+            
+       //build spell checker
+       spellChecker.buildSpSpellChecker();
         
-        try {
-            Directory dir = NIOFSDirectory.open(new File(systemUtils.getPathString(Folder.SP_INDEX)));
-            Analyzer analyser = new SpanishAnalyzer(Version.LUCENE_4_9, stopWords);
-           
-            IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_4_9, analyser);
-            config.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
-            writer = new IndexWriter(dir,config);
-            
-           // String filePath = id3.getFootPrint() + ".txt";
-        
-            long start = System.currentTimeMillis();
-            ID3 id3 = audio.getId3();
-            indexFile(writer,audio);
-            
-            long end = System.currentTimeMillis();
-
-            log.info(String.format("SP Indexing %s files took %d milliseconds",
-                    writer.numDocs(),(end - start) ));
-           
-            writer.close();
-            
-             
-            //build spell checker
-            spellChecker.buildSpSpellChecker();
-            
-            
-        } catch (IOException ex) {
-            if(writer != null ){
-                try {
-                    writer.close();
-                } catch (IOException ex1) {
-                    Logger.getLogger(Indexer.class.getName()).log(Level.SEVERE, null, ex1);
-                }
-            }
-            Logger.getLogger(Indexer.class.getName()).log(Level.SEVERE, null, ex);
-        }
     }
     
     
@@ -302,64 +208,22 @@ public class Indexer {
     }
     
    
+   
     //@Lock(LockType.WRITE)
     public void deleteEnDocument(Audio audio){
         
         log.info("DELETING FROM ENGLISH INDEX...");
-        IndexWriter writer = null;
         
-       try {
-           Directory dir = NIOFSDirectory.open(new File(systemUtils.getPathString(Folder.EN_INDEX)));
-           Analyzer analyser = new EnglishAnalyzer(Version.LUCENE_4_9, stopWords);
-           IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_4_9, analyser);
-           config.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
-           writer = new IndexWriter(dir,config);
-          
-           
-           writer.deleteDocuments(new Term("footprint", audio.getFootPrint()));
-           
-           writer.close();
-           
-       } catch (IOException ex) {
-           if(writer != null){
-               try {
-                   writer.close();
-               } catch (IOException ex1) {
-                   Logger.getLogger(Indexer.class.getName()).log(Level.SEVERE, null, ex1);
-               }
-           }
-           Logger.getLogger(Indexer.class.getName()).log(Level.SEVERE, null, ex);
-       }
-        
+        Analyzer analyser = new EnglishAnalyzer(Version.LUCENE_4_9, stopWords);
+        deleteDocument(audio, Folder.EN_INDEX, analyser);
     }
     
    // @Lock(LockType.WRITE)
     public void deleteFrDocument(Audio audio){
         
         log.info("DELETING FROM FRENCH INDEX...");
-        IndexWriter writer = null;
-        
-       try {
-           Directory dir = NIOFSDirectory.open(new File(systemUtils.getPathString(Folder.FR_INDEX)));
-           Analyzer analyser = new FrenchAnalyzer(Version.LUCENE_4_9, stopWords);
-           IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_4_9, analyser);
-           config.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
-           writer = new IndexWriter(dir,config);
-          
-           
-           writer.deleteDocuments(new Term("footprint", audio.getFootPrint()));
-           writer.close();
-           
-       } catch (IOException ex) {
-           if(writer != null){
-               try {
-                   writer.close();
-               } catch (IOException ex1) {
-                   Logger.getLogger(Indexer.class.getName()).log(Level.SEVERE, null, ex1);
-               }
-           }
-           Logger.getLogger(Indexer.class.getName()).log(Level.SEVERE, null, ex);
-       }
+        Analyzer analyser = new FrenchAnalyzer(Version.LUCENE_4_9, stopWords);
+        deleteDocument(audio, Folder.FR_INDEX, analyser);
         
     }
     
@@ -367,17 +231,74 @@ public class Indexer {
     public void deleteSpDocument(Audio audio){
         
         log.info("DELETING FROM SPANISH INDEX...");
-        IndexWriter writer = null;
+        Analyzer analyser = new SpanishAnalyzer(Version.LUCENE_4_9, stopWords);
+        deleteDocument(audio, Folder.SP_INDEX, analyser);
+        
+        
+    }
+    
+    
+    private IndexWriter getIndexWriter(Folder folder, Analyzer analyser){
+       
+       IndexWriter writer = null;
+        
+        try {
+            Directory dir = NIOFSDirectory.open(new File(systemUtils.getPathString(folder)));
+            IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_4_9, analyser);
+            config.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
+            writer = new IndexWriter(dir,config);
+        }catch(IOException ex){
+            
+            Logger.getLogger(Indexer.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        return writer;
+   }
+   
+    private void buildIndex(Audio audio,Folder folder, Analyzer analyser){
+       
+      IndexWriter writer = null;
+        
+        try {
+            
+            writer = getIndexWriter(folder, analyser);
+            long start = System.currentTimeMillis();
+            
+             
+            indexFile(writer,audio);
+            long end = System.currentTimeMillis();
+
+            log.info(String.format("%s Indexing %s files took %d milliseconds",folder.name(),
+                    writer.numDocs(),(end - start) ));
+            
+            writer.close();
+            
+                        
+        }catch(IOException ex){
+            if(writer != null){
+                try {
+                    writer.close();
+                } catch (IOException ex1) {
+                    Logger.getLogger(Indexer.class.getName()).log(Level.SEVERE, null, ex1);
+                }
+            }
+            Logger.getLogger(Indexer.class.getName()).log(Level.SEVERE, null, ex);
+        }
+   }
+   
+   private void deleteDocument(Audio audio,Folder folder, Analyzer analyser){
+        
+       IndexWriter writer = null;
         
        try {
-           Directory dir = NIOFSDirectory.open(new File(systemUtils.getPathString(Folder.SP_INDEX)));
-           Analyzer analyser = new SpanishAnalyzer(Version.LUCENE_4_9, stopWords);
+           Directory dir = NIOFSDirectory.open(new File(systemUtils.getPathString(folder)));
            IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_4_9, analyser);
            config.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
            writer = new IndexWriter(dir,config);
           
            
            writer.deleteDocuments(new Term("footprint", audio.getFootPrint()));
+           
            writer.close();
            
        } catch (IOException ex) {
@@ -391,9 +312,7 @@ public class Indexer {
            Logger.getLogger(Indexer.class.getName()).log(Level.SEVERE, null, ex);
        }
         
-    }
-    
-    
+   }
     
     public void checkIndexing(@Observes Date event){
         log.warning("IT'S TIME TO INDEX: ".concat(event.toString()));

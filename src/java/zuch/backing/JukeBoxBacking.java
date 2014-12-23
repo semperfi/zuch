@@ -29,6 +29,7 @@ import zuch.model.AudioStatus;
 
 import zuch.model.LogEvent;
 import zuch.model.LogEventType;
+import zuch.model.ZConstants;
 import zuch.service.PlayToken;
 
 import zuch.qualifier.LogSessionCreated;
@@ -248,7 +249,7 @@ public class JukeBoxBacking extends BaseBacking implements Serializable{
            image = new DefaultStreamedContent(stream, selectedAudio.getId3().getArtWorkMimeType());
        }else{
        
-           InputStream stream = this.getClass().getResourceAsStream("/zuch/images/duke.png");
+           InputStream stream = this.getClass().getResourceAsStream(ZConstants.ARTWORK_DEFAULT_PATH);
            image = new DefaultStreamedContent(stream, "image/png");
        }
        
