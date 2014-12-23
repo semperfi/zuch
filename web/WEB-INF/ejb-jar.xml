@@ -19,7 +19,7 @@
         
     </enterprise-beans> 
     
-    
+   <!-- 
     
     <interceptors> 
         <interceptor>
@@ -36,7 +36,7 @@
             </interceptor-class>
         </interceptor-binding>
     </assembly-descriptor>
-   
+ --> 
     
 
 </ejb-jar>

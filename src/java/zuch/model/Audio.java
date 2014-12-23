@@ -60,6 +60,11 @@ public class Audio implements Serializable {
     @NotNull
     private ZUser owner;
     
+    @NotNull
+    @Column(unique = true)
+    private String footPrint;
+   
+    
     
     @OneToMany(mappedBy = "requestedAudio",  cascade = CascadeType.ALL)
     private List<AudioRequest> audioRequests;
@@ -181,6 +186,14 @@ public class Audio implements Serializable {
 
     public void setRatings(List<Rating> ratings) {
         this.ratings = ratings;
+    }
+
+    public String getFootPrint() {
+        return footPrint;
+    }
+
+    public void setFootPrint(String footPrint) {
+        this.footPrint = footPrint;
     }
 
     

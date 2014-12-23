@@ -81,7 +81,7 @@ public class AudioSamplePlayerServlet extends HttpServlet {
                String audioFileName = "";
                if(audio != null){
                   // inputStream = new ByteArrayInputStream(audio.getContent().getContentSample());
-                   inputStream = fileManager.getSampleFileInputStream(audio.getId3().getFootPrint());
+                   inputStream = fileManager.getSampleFileInputStream(audio.getFootPrint());
                    audioFileName = audio.getId3().getTitle();
                 
                }

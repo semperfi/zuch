@@ -39,8 +39,7 @@ public class ID3 implements Serializable {
     private String genre;
     private String comment;
      
-    private String footPrint;
-    
+     
     private boolean artWork;
     
     private String artWorkHash;
@@ -146,13 +145,7 @@ public class ID3 implements Serializable {
         this.comment = comment;
     }
 
-    public String getFootPrint() {
-        return footPrint;
-    }
-
-    public void setFootPrint(String footPrint) {
-        this.footPrint = footPrint;
-    }
+   
 
     public Integer getVersion() {
         return version;
@@ -178,14 +171,12 @@ public class ID3 implements Serializable {
         this.artWorkExt = artWorkExt;
     }
 
-   
+     
     
-    
-
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (footPrint != null ? footPrint.hashCode() : 0);
+        hash += (id != null ? id.hashCode() : 0);
         return hash;
     }
 

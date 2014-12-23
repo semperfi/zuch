@@ -87,7 +87,7 @@ public class Searcher {
                 TopDocs hits = indexSearcher.search(booleanQuery, 15);
                 long end = System.currentTimeMillis();
                 
-                System.out.println("_____English index search_________");
+                log.info("_____English index search_________");
                 String msg = "Found " + hits.totalHits +
                         " hits(s) (in " + (end - start) +
                         " milliseconds) that matched query '" +
@@ -99,9 +99,9 @@ public class Searcher {
                for(ScoreDoc scoreDoc : hits.scoreDocs){
                     Document doc  = indexSearcher.doc(scoreDoc.doc);
                     searchResult.add(doc);
-                    System.out.println(doc.get("artist"));
-                    System.out.println(doc.get("title"));
-                    System.out.println("----------------------------------");
+                    log.info(doc.get("artist"));
+                    log.info(doc.get("title"));
+                    log.info("----------------------------------");
                   
                 }
             }  
@@ -141,7 +141,7 @@ public class Searcher {
                 long end = System.currentTimeMillis();
                 
                  
-                System.out.println("_____French index search_________");
+                log.info("_____French index search_________");
                 
                 String msg = "Found " + hits.totalHits +
                         " hits(s) (in " + (end - start) +
@@ -153,9 +153,9 @@ public class Searcher {
                 for(ScoreDoc scoreDoc : hits.scoreDocs){
                     Document doc  = indexSearcher.doc(scoreDoc.doc);
                     result.add(doc);
-                    System.out.println(doc.get("artist"));
-                    System.out.println(doc.get("title"));
-                    System.out.println("----------------------------------");
+                    log.info(doc.get("artist"));
+                    log.info(doc.get("title"));
+                    log.info("----------------------------------");
                   
                 }
             }  
@@ -187,7 +187,7 @@ public class Searcher {
                 long end = System.currentTimeMillis();
                 
                  
-                System.out.println("_____Spanish index search_________");
+                log.info("_____Spanish index search_________");
                 
                 String msg = "Found " + hits.totalHits +
                         " hits(s) (in " + (end - start) +
@@ -199,9 +199,9 @@ public class Searcher {
                 for(ScoreDoc scoreDoc : hits.scoreDocs){
                     Document doc  = indexSearcher.doc(scoreDoc.doc);
                     result.add(doc);
-                    System.out.println(doc.get("artist"));
-                    System.out.println(doc.get("title"));
-                    System.out.println("----------------------------------");
+                    log.info(doc.get("artist"));
+                    log.info(doc.get("title"));
+                    log.info("----------------------------------");
                   
                 }
             }  
@@ -294,10 +294,10 @@ public class Searcher {
             Audio audio = audioManager.getAudio(audioId);
             owner = audio.getOwner().getId();
         } catch (AudioNotFound ex) {
-            Logger.getLogger(AudioSearchBacking.class.getName()).log(Level.SEVERE, null, ex);
+            log.severe(ex.getMessage());
         }
         
-        return owner;
+        return owner; 
     }
 
     

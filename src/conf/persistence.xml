@@ -6,6 +6,7 @@
     <exclude-unlisted-classes>false</exclude-unlisted-classes>
     <properties>
       <property name="eclipselink.canonicalmodel.subpackage" value="main"/>
+      <property name="eclipselink.logging.level" value="SEVERE"/>
     </properties>
   </persistence-unit>
   <persistence-unit name="ZuchTestPU" transaction-type="RESOURCE_LOCAL">

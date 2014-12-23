@@ -63,7 +63,7 @@ public class AudioDownloadServlet extends HttpServlet {
                 String audioFileName = "";
                 if(audio != null){
                    // inputStream = new ByteArrayInputStream(audio.getContent().getContent());
-                    inputStream = fileManager.getFileInputStream(audio.getId3().getFootPrint());
+                    inputStream = fileManager.getFileInputStream(audio.getFootPrint());
                     audioFileName = audio.getId3().getTitle();
                     
                     String attachement = "attachment; filename=\"" 

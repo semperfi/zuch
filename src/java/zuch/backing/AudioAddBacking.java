@@ -10,6 +10,7 @@ package zuch.backing;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.sql.SQLException;
 import java.util.logging.Logger;
 import javax.ejb.Asynchronous;
 import javax.enterprise.context.RequestScoped;
@@ -19,6 +20,7 @@ import javax.faces.context.FacesContext;
 import javax.faces.validator.ValidatorException;
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.persistence.PersistenceException;
 import org.apache.commons.io.IOUtils;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.model.UploadedFile;
@@ -94,7 +96,6 @@ public class AudioAddBacking extends BaseBacking implements Serializable{
                 Audio newAudio = new Audio();
                
                 ID3 id3 = audioUtils.getID3Tag(content, uploadedFile.getFileName());
-                
                
                 if(id3.getTitle() == null){
                     id3.setTitle(fileSystemUtils.normalizeFileName(uploadedFile.getFileName()));
@@ -103,7 +104,7 @@ public class AudioAddBacking extends BaseBacking implements Serializable{
                 }
 
                 String footPrint = audioUtils.getAudioFootPrint(content);
-                id3.setFootPrint(footPrint);
+                newAudio.setFootPrint(footPrint);
                 newAudio.setId3(id3);
                 String currentUser = getCurrentUser();
                 newAudio.setOwner(userManager.getZuchUser(currentUser));
@@ -111,21 +112,26 @@ public class AudioAddBacking extends BaseBacking implements Serializable{
 
                 Audio registredAudio = audioManager.registerAudio(newAudio);
                // uploadedFile = null;
+                if(registredAudio != null){
+                     //fire event for lucene indexer, spell checker and artwork image saving
+                    addAudio.fire(registredAudio);
+                   //save file on physical disk
+                    fileManager.saveFile(content, footPrint);
+                }
+               
                 
-                //fire event for lucene indexer, spell checker and artwork image saving
-                addAudio.fire(registredAudio);
-               //save file on physical disk
-                fileManager.saveFile(content, footPrint);
+            }catch ( UserNotFound | AudioAlreadyExists ex) {
                 
-            } catch ( AudioAlreadyExists | UserNotFound ex) {
-                
-                 log.warning("This audio file already exists in your jukebox!");
-            } catch (IOException ex) {
+               log.warning(ex.getMessage());
+               
+            }catch (IOException ex) {
                
                log.severe(ex.getMessage());
+               
            }catch(ValidatorException ex){
                log.warning("Invalid file format or size.");
            }
+
 
       
        //refresh audio list to get latest tracks in view

@@ -6,9 +6,11 @@
 
 package zuch.service;
 
+import java.sql.SQLException;
 import java.util.List;
 import javax.ejb.Asynchronous;
 import javax.ejb.Local;
+import javax.persistence.PersistenceException;
 import zuch.exception.AudioAlreadyExists;
 import zuch.exception.AudioNotFound;
 import zuch.model.Audio;
@@ -21,7 +23,7 @@ import zuch.model.Audio;
 public interface AudioManagerLocal {
     
   
-    public Audio registerAudio(Audio audio) throws AudioAlreadyExists;
+    public Audio registerAudio(Audio audio) throws AudioAlreadyExists, PersistenceException ;
     public Audio updateAudio(Audio audio);
     public Audio getAudio(Long id) throws AudioNotFound;
     public void removeAudio(Long id) throws AudioNotFound;

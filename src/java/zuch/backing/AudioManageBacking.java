@@ -29,6 +29,7 @@ import zuch.model.ID3;
 import zuch.model.ZConstants;
 import zuch.qualifier.PerformanceMonitor;
 import zuch.search.Indexer;
+import zuch.search.ZSpellChecker;
 import zuch.service.AudioManagerLocal;
 import zuch.service.ZFileManager;
 
@@ -45,6 +46,7 @@ public class AudioManageBacking extends BaseBacking implements Serializable{
      @Inject JukeBoxBacking jukeBoxBacking;
      @Inject Indexer indexer;
      @Inject ZFileManager fileManager;
+     @Inject ZSpellChecker spellChecker;
      
      private Audio selectedAudio;
 
@@ -60,7 +62,7 @@ public class AudioManageBacking extends BaseBacking implements Serializable{
         
         Logger.getLogger(AudioAddBacking.class.getName()).info("CALLING DOWNLOAD AUDIO...");
        // byte[] content = audio.getContent().getContent();
-        InputStream audioInputStream = fileManager.getFileInputStream(audio.getId3().getFootPrint());
+        InputStream audioInputStream = fileManager.getFileInputStream(audio.getFootPrint());
         
         //ExternalContext externalContext = getContext().getExternalContext();
         
@@ -133,8 +135,11 @@ public class AudioManageBacking extends BaseBacking implements Serializable{
                              + " has been deleted!";
                     getContext().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, 
                     msg, ""));
-                    deleteId3FromIndex(selectedAudio.getId3());
-                    fileManager.deleteFile(selectedAudio.getId3().getFootPrint());
+                    deleteId3FromIndex(selectedAudio);
+                    //rebuild spell chercker
+                    rebuildSpellChecker();
+                    //dont remove file cause many user could use the same file
+                    //fileManager.deleteFile(selectedAudio.getId3().getFootPrint());
                    
               }else{
             
@@ -149,8 +154,10 @@ public class AudioManageBacking extends BaseBacking implements Serializable{
                          + " has been deleted!";
                 getContext().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, 
                 msg, ""));
-                deleteId3FromIndex(selectedAudio.getId3());
-                fileManager.deleteFile(selectedAudio.getId3().getFootPrint());
+                deleteId3FromIndex(selectedAudio);
+               
+                rebuildSpellChecker();
+                //fileManager.deleteFile(selectedAudio.getId3().getFootPrint());
 
             }
             
@@ -166,15 +173,27 @@ public class AudioManageBacking extends BaseBacking implements Serializable{
    }
     
    @Asynchronous
-   private void deleteId3FromIndex(ID3 id3){
+   private void deleteId3FromIndex(Audio audio){
        
-       indexer.deleteEnDocument(id3);
-       indexer.deleteFrDocument(id3);
-       indexer.deleteSpDocument(id3);
+       indexer.deleteEnDocument(audio);
+       indexer.deleteFrDocument(audio);
+       indexer.deleteSpDocument(audio);
      
             
    }
-    
+   
+   @Asynchronous
+   private void rebuildSpellChecker(){
+        spellChecker.clearEnSpellChecker();
+        spellChecker.buildEnSpellChecker();
+        
+        spellChecker.clearFrSpellChecker();
+        spellChecker.buildFrSpellChecker();
+        
+        spellChecker.clearSpSpellChecker();
+        spellChecker.buildSpSpellChecker();
+   }
+   
      public List<Audio> retrieveManagableAudioList(){
          return audioManager.getAllUserAudiosInJukebox(getCurrentUser());
      }

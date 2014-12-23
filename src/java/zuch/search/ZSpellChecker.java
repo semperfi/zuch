@@ -10,12 +10,14 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.ejb.AccessTimeout;
+import javax.ejb.Asynchronous;
 import javax.ejb.Lock;
 import javax.ejb.LockType;
 import javax.ejb.Singleton;
-import javax.ejb.Stateless;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import org.apache.lucene.analysis.Analyzer;
@@ -40,6 +42,8 @@ import zuch.util.ZFileSystemUtils;
  * @author florent
  */
 @Singleton
+@Lock(LockType.WRITE)
+@AccessTimeout(value=30,unit=TimeUnit.MINUTES)
 public class ZSpellChecker {
 
    static final Logger log = Logger.getLogger("zuch.service.ZSpellCheker");
@@ -49,14 +53,16 @@ public class ZSpellChecker {
    private static final CharArraySet stopWords = 
            new CharArraySet(Version.LUCENE_4_9, words, true);
    
-   @Lock(LockType.WRITE)
+   //@Lock(LockType.WRITE)
+   @Asynchronous
    public void clearSpellCheckers(@Observes @SpellCheckerClear String value){
        clearEnSpellChecker();
        clearFrSpellChecker();
        clearSpSpellChecker();
    }
    
-   @Lock(LockType.WRITE)
+  // @Lock(LockType.WRITE)
+   @Asynchronous
    public void buildEnSpellChecker(){
        
        log.warning("BUILD SPELL CHECKER...");
@@ -69,12 +75,9 @@ public class ZSpellChecker {
            long startTime = System.currentTimeMillis();
            
            Directory dir2 = FSDirectory.open(new File(systemUtils.getPathString(Folder.EN_INDEX)));
-           IndexReader inReader = DirectoryReader.open(dir2);
-           try {
+           try (IndexReader inReader = DirectoryReader.open(dir2)) {
                 spell.indexDictionary(new LuceneDictionary(inReader, "contents"),config,true);
-               
-           } finally {
-                inReader.close();
+                
            }
            
            dir.close();
@@ -88,7 +91,8 @@ public class ZSpellChecker {
    
    }
    
-   @Lock(LockType.WRITE)
+   //@Lock(LockType.WRITE)
+   @Asynchronous
    public void clearEnSpellChecker(){
        log.warning("CLEAR EN SPELL CHECKER...");
        
@@ -119,7 +123,8 @@ public class ZSpellChecker {
        }
    }
    
-   @Lock(LockType.WRITE)
+  // @Lock(LockType.WRITE)
+   @Asynchronous
    public void buildFrSpellChecker(){
        
        log.warning("BUILD SPELL CHECKER...");
@@ -151,7 +156,8 @@ public class ZSpellChecker {
    }
    
    
-   @Lock(LockType.WRITE)
+  // @Lock(LockType.WRITE)
+   @Asynchronous
    public void clearFrSpellChecker(){
        
        log.warning("BUILD FR SPELL CHECKER...");
@@ -167,6 +173,7 @@ public class ZSpellChecker {
            IndexReader inReader = DirectoryReader.open(dir2);
            try {
                 spell.clearIndex();
+                
            } finally {
                 inReader.close();
            }
@@ -185,7 +192,8 @@ public class ZSpellChecker {
    
    
    
-   @Lock(LockType.WRITE)
+  // @Lock(LockType.WRITE)
+   @Asynchronous
    public void buildSpSpellChecker(){
        
        log.warning("BUILD SPELL CHECKER...");
@@ -217,7 +225,8 @@ public class ZSpellChecker {
    }
    
    
-   @Lock(LockType.WRITE)
+  // @Lock(LockType.WRITE)
+   @Asynchronous
    public void clearSpSpellChecker(){
        
        log.warning("BUILD SPELL CHECKER...");

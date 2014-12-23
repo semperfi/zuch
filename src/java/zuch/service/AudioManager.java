@@ -7,26 +7,26 @@
 package zuch.service;
 
 
-import zuch.qualifier.PerformanceMonitor;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
+import javax.ejb.EJBTransactionRolledbackException;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-
-import javax.interceptor.Interceptors;
 
 import javax.persistence.CacheRetrieveMode;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
+import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 import zuch.exception.AudioAlreadyExists;
 import zuch.exception.AudioNotFound;
 import zuch.model.Audio;
 import zuch.model.AudioLendStatus;
-import zuch.model.AudioRequestStatus;
+
 import zuch.model.AudioStatus;
 import zuch.model.Rating;
 
@@ -34,8 +34,9 @@ import zuch.model.Rating;
  *
  * @author florent
  */
-@Stateless
+
 //@PerformanceMonitor
+@Stateless
 public class AudioManager implements AudioManagerLocal{
     
     static final Logger log = Logger.getLogger("zuch.service.AudioManager");
@@ -50,36 +51,36 @@ public class AudioManager implements AudioManagerLocal{
     public Audio registerAudio(Audio audio) throws AudioAlreadyExists {
         
        // String msg = "LINK TO RETRIEVE: " + selectedMp3Link;
-        Logger.getLogger(AudioManager.class.getName()).info("CALLING REGISTER AUDIO...");
+        Logger.getLogger(AudioManager.class.getName()).info("REGISTERING AUDIO...");
         
         Query query = em.createQuery("SELECT aud FROM Audio aud WHERE "
-                            + "aud.id3.footPrint = :footPrint AND "
-                            + "aud.owner.id = :owner");
+                + " aud.footPrint = :footprint");
         
-        query.setParameter("footPrint", audio.getId3().getFootPrint());
-        query.setParameter("owner", audio.getOwner().getId());
-        
+        query.setParameter("footprint", audio.getFootPrint());
         
         try{
             query.getSingleResult();
             throw new AudioAlreadyExists();
-        }catch(NoResultException ex){
-           
-            log.fine("No similar audio file found");
+        }catch(NoResultException exception){
+            log.finer("No similar audio files found. ");
         }
         
         try{
-            
             em.persist(audio);
             em.flush();
-            em.clear();
-            //String msg = "LINK TO RETRIEVE: " + selectedMp3Link;
+        }catch(PersistenceException  ex){//
+            log.warning("CONSTRAINTE VIOLATION...");
+            //set audio to null to check his value before saving file
+            audio = null;
+            Throwable t = null;
+            for(t = ex.getCause(); t != null; t = t.getCause()){
+                log.warning(String.format("___EXCEPTION : %s", t.getClass().toString()));
+            }  
             
-        }catch(Exception ex){
-            
-            log.severe(ex.getMessage());
-        }
-        return audio;
+        }   
+        
+        
+       return audio;
     }
 
     @Override

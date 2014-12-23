@@ -94,7 +94,7 @@ public class AudioPlayerServlet extends HttpServlet {
                        
                        if(!id.equals("sample")){
                            audio = audioManager.getAudio(Long.valueOf(id));
-                           inputStream = fileManager.getFileInputStream(audio.getId3().getFootPrint());
+                           inputStream = fileManager.getFileInputStream(audio.getFootPrint());
                            //fire selection audio event
                          //  startIndexingEvent.fire(audio);
                        }else{
@@ -224,7 +224,7 @@ public class AudioPlayerServlet extends HttpServlet {
                        
                        if(!id.equals("sample")){
                            audio = audioManager.getAudio(Long.valueOf(id));
-                           inputStream = fileManager.getFileInputStream(audio.getId3().getFootPrint());
+                           inputStream = fileManager.getFileInputStream(audio.getFootPrint());
                         }else{
                            inputStream = audioUtils.getDefaultAudioSample();
                        }
@@ -280,7 +280,7 @@ public class AudioPlayerServlet extends HttpServlet {
                             String ETag;
                             if(audio != null){
                                 lastModified = audio.getCreated().toString();
-                                ETag = audio.getId3().getFootPrint();
+                                ETag = audio.getFootPrint();
                             }else{
                                 lastModified = new Date().toString();
                                 ETag = UUID.randomUUID().toString();

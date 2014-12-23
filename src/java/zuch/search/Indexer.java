@@ -81,11 +81,11 @@ public class Indexer {
    @Asynchronous
    public void deleteAndRebuild(@Observes @AudioRebuilt Audio audio){
        
-       ID3 currentId3 = audio.getId3();
-       log.info(String.format("--> Current ID3 ID: %d", currentId3.getId()));
-       deleteEnDocument(currentId3);
-       deleteFrDocument(currentId3);
-       deleteSpDocument(currentId3);
+      // ID3 currentId3 = audio.getId3();
+      // log.info(String.format("--> Current ID3 ID: %d", currentId3.getId()));
+       deleteEnDocument(audio);
+       deleteFrDocument(audio);
+       deleteSpDocument(audio);
        
        addAudioEvent.fire(audio);
    
@@ -93,10 +93,10 @@ public class Indexer {
    
    @Asynchronous
    public void clearSearchIndex(@Observes @AudioClear Audio audio){
-       ID3 currentId3 = audio.getId3();
-       deleteEnDocument(currentId3);
-       deleteFrDocument(currentId3);
-       deleteSpDocument(currentId3);
+     //  ID3 currentId3 = audio.getId3();
+       deleteEnDocument(audio);
+       deleteFrDocument(audio);
+       deleteSpDocument(audio);
    }
    
     @Asynchronous
@@ -122,9 +122,9 @@ public class Indexer {
         
             long start = System.currentTimeMillis();
             
-            ID3 id3 = audio.getId3();
+           // ID3 id3 = audio.getId3();
             
-            indexFile(writer,audio,id3);
+            indexFile(writer,audio);
             long end = System.currentTimeMillis();
 
             log.info(String.format("EN Indexing %s files took %d milliseconds",
@@ -173,7 +173,7 @@ public class Indexer {
         
             long start = System.currentTimeMillis();
             ID3 id3 = audio.getId3();
-            indexFile(writer,audio,id3);
+            indexFile(writer,audio);
             long end = System.currentTimeMillis();
 
             log.info(String.format("FR Indexing %s files took %d milliseconds",
@@ -220,7 +220,7 @@ public class Indexer {
         
             long start = System.currentTimeMillis();
             ID3 id3 = audio.getId3();
-            indexFile(writer,audio,id3);
+            indexFile(writer,audio);
             
             long end = System.currentTimeMillis();
 
@@ -248,12 +248,12 @@ public class Indexer {
     
     
    @Asynchronous
-    private void indexFile(IndexWriter inWriter,Audio audio,ID3 id3) {
+    private void indexFile(IndexWriter inWriter,Audio audio) {
         try {
            
-            
+            ID3 id3 = audio.getId3();
             log.info(String.format("Indexing %s : %s",id3.getArtist(),id3.getTitle() ));
-            Document doc = getDocument(audio,id3);
+            Document doc = getDocument(audio);
             inWriter.addDocument(doc);
         } catch (IOException ex) {
             Logger.getLogger(Indexer.class.getName()).log(Level.SEVERE, null, ex);
@@ -261,10 +261,10 @@ public class Indexer {
         
     }
      
-    private Document getDocument(Audio audio,ID3 id3) {
+    private Document getDocument(Audio audio) {
         
         Document doc = new Document();
-        
+        ID3 id3 = audio.getId3();
                
             String contents = new StringBuilder()
                     .append(id3.getTitle())
@@ -289,7 +289,7 @@ public class Indexer {
             doc.add(new TextField("album",getFieldValue(id3.getAlbum()), Field.Store.YES));
             doc.add(new StringField("year",getFieldValue(id3.getAudioYear()), Field.Store.YES));
             doc.add(new StringField("genre",getFieldValue(id3.getGenre()), Field.Store.YES));
-            doc.add(new StringField("footprint",getFieldValue(id3.getFootPrint()), Field.Store.YES));
+            doc.add(new StringField("footprint",getFieldValue(audio.getFootPrint()), Field.Store.YES));
             doc.add(new IntField("avgRating", audio.getAvgRating(), Field.Store.YES));
             doc.add(new LongField("id", audio.getId(), Field.Store.YES));
        
@@ -303,7 +303,7 @@ public class Indexer {
     
    
     //@Lock(LockType.WRITE)
-    public void deleteEnDocument(ID3 id3){
+    public void deleteEnDocument(Audio audio){
         
         log.info("DELETING FROM ENGLISH INDEX...");
         IndexWriter writer = null;
@@ -316,7 +316,7 @@ public class Indexer {
            writer = new IndexWriter(dir,config);
           
            
-           writer.deleteDocuments(new Term("footprint", id3.getFootPrint()));
+           writer.deleteDocuments(new Term("footprint", audio.getFootPrint()));
            
            writer.close();
            
@@ -334,7 +334,7 @@ public class Indexer {
     }
     
    // @Lock(LockType.WRITE)
-    public void deleteFrDocument(ID3 id3){
+    public void deleteFrDocument(Audio audio){
         
         log.info("DELETING FROM FRENCH INDEX...");
         IndexWriter writer = null;
@@ -347,7 +347,7 @@ public class Indexer {
            writer = new IndexWriter(dir,config);
           
            
-           writer.deleteDocuments(new Term("footprint", id3.getFootPrint()));
+           writer.deleteDocuments(new Term("footprint", audio.getFootPrint()));
            writer.close();
            
        } catch (IOException ex) {
@@ -364,7 +364,7 @@ public class Indexer {
     }
     
     //@Lock(LockType.WRITE)
-    public void deleteSpDocument(ID3 id3){
+    public void deleteSpDocument(Audio audio){
         
         log.info("DELETING FROM SPANISH INDEX...");
         IndexWriter writer = null;
@@ -377,7 +377,7 @@ public class Indexer {
            writer = new IndexWriter(dir,config);
           
            
-           writer.deleteDocuments(new Term("footprint", id3.getFootPrint()));
+           writer.deleteDocuments(new Term("footprint", audio.getFootPrint()));
            writer.close();
            
        } catch (IOException ex) {
