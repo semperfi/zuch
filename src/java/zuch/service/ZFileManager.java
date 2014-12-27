@@ -21,9 +21,13 @@ import java.nio.file.StandardOpenOption;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.Stateless;
+import javax.enterprise.event.Observes;
 import javax.inject.Inject;
+import zuch.event.AudioAddedPayload;
 import zuch.model.Audio;
 import zuch.model.ZConstants;
+import zuch.qualifier.ContentReceived;
+import zuch.util.AudioUtils;
 import zuch.util.Folder;
 import zuch.util.ZFileSystemUtils;
 
@@ -37,8 +41,12 @@ public class ZFileManager {
     static final Logger log = Logger.getLogger(ZFileManager.class.getName());
     
     @Inject ZFileSystemUtils fileSystemUtils;
+    @Inject AudioUtils audioUtils;
     
-    public void saveFile(byte[] input,String fileHash){
+    
+    public void OnContentReceived(@Observes @ContentReceived AudioAddedPayload payload){
+        
+        String fileHash  = payload.getFileHash();
         
         String filePathStr = fileSystemUtils.getPathString(Folder.TRACK) + fileHash + ZConstants.APP_AUDIO_EXT;
         Path filePath = Paths.get(filePathStr);
@@ -46,7 +54,7 @@ public class ZFileManager {
          
         try(FileChannel fileChannel = new  FileOutputStream(outputFile).getChannel()){
             
-            ByteBuffer buffer = ByteBuffer.wrap(input);
+            ByteBuffer buffer = ByteBuffer.wrap(payload.getContent());
             fileChannel.write(buffer);
             
             //create sample file

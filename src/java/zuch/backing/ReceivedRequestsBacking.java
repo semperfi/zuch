@@ -35,6 +35,7 @@ public class ReceivedRequestsBacking extends BaseBacking implements Serializable
     
     @Inject AudioRequestManagerLocal audioRequestManager;
     @Inject AudioManagerLocal audioManager;
+    @Inject JukeBoxBacking jukeBoxbacking;
 
     
     public void ReceivedRequestsBackingg() {
@@ -59,8 +60,6 @@ public class ReceivedRequestsBacking extends BaseBacking implements Serializable
         Audio audio = request.getRequestedAudio();
         audio.setStatus(AudioStatus.LENT);
        
-        //audio.getAudioRequests().add(request);
-        
         audioLending.setAudio(audio);
         audioLending.setLender(audio.getOwner());
         audioLending.setTempOwner(request.getRequester());
@@ -74,6 +73,9 @@ public class ReceivedRequestsBacking extends BaseBacking implements Serializable
         
         audioManager.updateAudio(audio);
         audioRequestManager.updateAudioRequest(request);
+        
+        //update jukebox to reflect audio status change (IN_JUKEBOX to LENT)
+        jukeBoxbacking.retrieveAudioList();
         
         String acceptMsg = request.getRequester().getId() + " request has been accepted!";
         getContext().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, 

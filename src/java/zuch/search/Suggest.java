@@ -29,92 +29,55 @@ import zuch.util.ZFileSystemUtils;
 @Stateless
 public class Suggest {
     
-   static final Logger log = Logger.getLogger("zuch.service.ZSpellCheker");
+   static final Logger log = Logger.getLogger(Suggest.class.getName());
+   
    @Inject ZFileSystemUtils systemUtils;
-   
-   
-
-   public List<String> buildEnSuggestions(String wordToRespell){
+  
+   private List<String> buildEnSuggestions(String wordToRespell){
        
-        String[] suggestions = null;
-        List<String> result = new ArrayList<>();
+       log.info("------ENGLISH------");
+       return doSuggest(Folder.EN_SPELLCHK, wordToRespell);
        
-       try {
-          
-           Directory dir = NIOFSDirectory.open(new File(systemUtils.getPathString(Folder.EN_SPELLCHK)));
-           SpellChecker spell = new SpellChecker(dir);
-           spell.setStringDistance(new LevensteinDistance());
-           suggestions = spell.suggestSimilar(wordToRespell, 2);
-           System.out.println(suggestions.length +  " English suggestions for '" +  wordToRespell + "':");
-           for(String suggestion : suggestions){
-                System.out.println(" " + suggestion);
-                result.add(suggestion);
-            }
-           
-       } catch (IOException ex) {
-           Logger.getLogger(Suggest.class.getName()).log(Level.SEVERE, null, ex);
-       }
        
-       return result;
    }
    
-    public List<String> buildFrSuggestions(String wordToRespell){
-       
-        String[] suggestions = null;
-        List<String> result = new ArrayList<>();
-       
-       try {
-          
-           Directory dir = NIOFSDirectory.open(new File(systemUtils.getPathString(Folder.FR_SPELLCHK)));
-           SpellChecker spell = new SpellChecker(dir);
-           spell.setStringDistance(new LevensteinDistance());
-           suggestions = spell.suggestSimilar(wordToRespell, 2);
-           System.out.println(suggestions.length +  " French suggestions for '" +  wordToRespell + "':");
-           for(String suggestion : suggestions){
-                System.out.println(" " + suggestion);
-                result.add(suggestion);
-            }
-           
-       } catch (IOException ex) {
-           Logger.getLogger(Suggest.class.getName()).log(Level.SEVERE, null, ex);
-       }
-       
-       return result;
-   }
-    
-    
-    public List<String> buildSpSuggestions(String wordToRespell){
-       
-        String[] suggestions = null;
-        List<String> result = new ArrayList<>();
-       
-       try {
-          
-           Directory dir = NIOFSDirectory.open(new File(systemUtils.getPathString(Folder.SP_SPELLCHK)));
-           SpellChecker spell = new SpellChecker(dir);
-           spell.setStringDistance(new LevensteinDistance());
-           suggestions = spell.suggestSimilar(wordToRespell, 2);
-           System.out.println(suggestions.length +  " Spanish suggestions for '" +  wordToRespell + "':");
-           for(String suggestion : suggestions){
-                System.out.println(" " + suggestion);
-                result.add(suggestion);
-            }
-           
-       } catch (IOException ex) {
-           Logger.getLogger(Suggest.class.getName()).log(Level.SEVERE, null, ex);
-       }
-       
-       return result;
-   }
-   
-   public String buildSuggestions(String wordToRespell){
-       //List<String> resultList = new ArrayList<>();
-       // Map<String,Integer> docs = new HashMap<>();
-        List<String> docList = new ArrayList<>();
+    private List<String> buildFrSuggestions(String wordToRespell){
         
+        log.info("------FRENCH------");
+        return doSuggest(Folder.FR_SPELLCHK, wordToRespell);
+      
+   }
+    
+    
+   private List<String> doSuggest(Folder folder,String wordToRespell){
+       
+        String[] suggestions = null;
+        List<String> result = new ArrayList<>();
+       
+       try {
+          
+           Directory dir = NIOFSDirectory.open(new File(systemUtils.getPathString(folder)));
+           SpellChecker spell = new SpellChecker(dir);
+           spell.setStringDistance(new LevensteinDistance());
+           suggestions = spell.suggestSimilar(wordToRespell, 2);
+           log.info(String.format("___ %d suggestions for : %s ___",suggestions.length, wordToRespell));
+           for(String suggestion : suggestions){
+                log.info(String.format("%s ",suggestion));
+                result.add(suggestion);
+            }
+           
+       } catch (IOException ex) {
+           log.severe(ex.getMessage());
+       }
+       
+       return result;
+   }
+    
+   public String buildSuggestions(String wordToRespell){
+       
+        List<String> docList = new ArrayList<>();
         List<String> englishDoc = buildEnSuggestions(wordToRespell);
         List<String> frenchDoc = buildFrSuggestions(wordToRespell);
-        List<String> spanishDoc = buildSpSuggestions(wordToRespell);
         
         if(!englishDoc.isEmpty()){
              docList.add(englishDoc.get(0));
@@ -122,10 +85,7 @@ public class Suggest {
         if(!frenchDoc.isEmpty()){
             docList.add(frenchDoc.get(0));
         }
-        if(!spanishDoc.isEmpty()){
-            docList.add(spanishDoc.get(0));
-        }
-        
+       
        // String selectedText = max(docList); //get list with max size cause it likely has best hits
         
         return max(docList);

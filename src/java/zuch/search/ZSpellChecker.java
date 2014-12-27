@@ -22,7 +22,8 @@ import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.en.EnglishAnalyzer;
-import org.apache.lucene.analysis.es.SpanishAnalyzer;
+import org.apache.lucene.analysis.fr.FrenchAnalyzer;
+
 import org.apache.lucene.analysis.util.CharArraySet;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
@@ -33,7 +34,9 @@ import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.store.NIOFSDirectory;
 import org.apache.lucene.util.Version;
-import zuch.qualifier.SpellCheckerClear;
+import zuch.qualifier.AudioIndexed;
+import zuch.qualifier.AudioRemovedFromIndex;
+
 import zuch.util.Folder;
 import zuch.util.ZFileSystemUtils;
 
@@ -46,216 +49,82 @@ import zuch.util.ZFileSystemUtils;
 @AccessTimeout(value=30,unit=TimeUnit.MINUTES)
 public class ZSpellChecker {
 
-   static final Logger log = Logger.getLogger("zuch.service.ZSpellCheker");
+   static final Logger log = Logger.getLogger(ZSpellChecker.class.getName());
+   
    @Inject ZFileSystemUtils systemUtils;
    
    private static  final List<String> words = Arrays.asList("a","à");
    private static final CharArraySet stopWords = 
            new CharArraySet(Version.LUCENE_4_9, words, true);
    
-   //@Lock(LockType.WRITE)
+   
    @Asynchronous
-   public void clearSpellCheckers(@Observes @SpellCheckerClear String value){
-       clearEnSpellChecker();
-       clearFrSpellChecker();
-       clearSpSpellChecker();
+   public void OnAudioIndexed(@Observes @AudioIndexed String dummyPayload){
+       buildEnSpellChecker();
+       buildFrSpellChecker();
+       
    }
    
-  // @Lock(LockType.WRITE)
    @Asynchronous
-   public void buildEnSpellChecker(){
-       
-       log.warning("BUILD SPELL CHECKER...");
-       
-       try {
-           Directory dir = NIOFSDirectory.open(new File(systemUtils.getPathString(Folder.EN_SPELLCHK)));
-           Analyzer analyser = new EnglishAnalyzer(Version.LUCENE_4_9, stopWords);
-           IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_4_9, analyser);
-           SpellChecker spell = new SpellChecker(dir);
-           long startTime = System.currentTimeMillis();
-           
-           Directory dir2 = FSDirectory.open(new File(systemUtils.getPathString(Folder.EN_INDEX)));
-           try (IndexReader inReader = DirectoryReader.open(dir2)) {
-                spell.indexDictionary(new LuceneDictionary(inReader, "contents"),config,true);
-                
-           }
-           
-           dir.close();
-           dir2.close();
-           long endTime = System.currentTimeMillis();
-           System.out.println(" took " + (endTime-startTime) + " milliseconds");
-
-       } catch (IOException ex) {
-           Logger.getLogger(ZSpellChecker.class.getName()).log(Level.SEVERE, null, ex);
-       }
-   
-   }
-   
-   //@Lock(LockType.WRITE)
-   @Asynchronous
-   public void clearEnSpellChecker(){
-       log.warning("CLEAR EN SPELL CHECKER...");
-       
-       try {
-           Directory dir = NIOFSDirectory.open(new File(systemUtils.getPathString(Folder.EN_SPELLCHK)));
-           Analyzer analyser = new EnglishAnalyzer(Version.LUCENE_4_9, stopWords);
-           IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_4_9, analyser);
-           SpellChecker spell = new SpellChecker(dir);
-           long startTime = System.currentTimeMillis();
-           
-           Directory dir2 = FSDirectory.open(new File(systemUtils.getPathString(Folder.EN_INDEX)));
-           IndexReader inReader = DirectoryReader.open(dir2);
-           try {
-                spell.clearIndex();
-               
-               
-           } finally {
-                inReader.close();
-           }
-           
-           dir.close();
-           dir2.close();
-           long endTime = System.currentTimeMillis();
-           System.out.println(" took " + (endTime-startTime) + " milliseconds");
-
-       } catch (IOException ex) {
-           Logger.getLogger(ZSpellChecker.class.getName()).log(Level.SEVERE, null, ex);
-       }
-   }
-   
-  // @Lock(LockType.WRITE)
-   @Asynchronous
-   public void buildFrSpellChecker(){
-       
-       log.warning("BUILD SPELL CHECKER...");
-       
-       try {
-           Directory dir = NIOFSDirectory.open(new File(systemUtils.getPathString(Folder.FR_SPELLCHK)));
-           Analyzer analyser = new ZuchFrenchAnalyzer();
-           IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_4_9, analyser);
-           SpellChecker spell = new SpellChecker(dir);
-           long startTime = System.currentTimeMillis();
-           
-           Directory dir2 = FSDirectory.open(new File(systemUtils.getPathString(Folder.FR_INDEX)));
-           IndexReader inReader = DirectoryReader.open(dir2);
-           try {
-                spell.indexDictionary(new LuceneDictionary(inReader, "contents"),config,true);
-           } finally {
-                inReader.close();
-           }
-           
-           dir.close();
-           dir2.close();
-           long endTime = System.currentTimeMillis();
-           System.out.println(" took " + (endTime-startTime) + " milliseconds");
-
-       } catch (IOException ex) {
-           Logger.getLogger(ZSpellChecker.class.getName()).log(Level.SEVERE, null, ex);
-       }
-   
+   public void OnAudioRemovedFromIndex(@Observes @AudioRemovedFromIndex String dummyPayload){
+       buildEnSpellChecker();
+       buildFrSpellChecker();
    }
    
    
-  // @Lock(LockType.WRITE)
-   @Asynchronous
-   public void clearFrSpellChecker(){
+  
+   
+   private void buildEnSpellChecker(){
+       
+       log.warning("BUILD EN SPELL CHECKER...");
+       
+       Analyzer analyser = new EnglishAnalyzer(Version.LUCENE_4_9, stopWords);
+       buildSpellChecker(Folder.EN_SPELLCHK, Folder.EN_INDEX, analyser);
+       
+      
+   }
+   
+   
+  
+   
+   private void buildFrSpellChecker(){
        
        log.warning("BUILD FR SPELL CHECKER...");
-       
-       try {
-           Directory dir = NIOFSDirectory.open(new File(systemUtils.getPathString(Folder.FR_SPELLCHK)));
-           Analyzer analyser = new ZuchFrenchAnalyzer();
-           IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_4_9, analyser);
-           SpellChecker spell = new SpellChecker(dir);
-           long startTime = System.currentTimeMillis();
-           
-           Directory dir2 = FSDirectory.open(new File(systemUtils.getPathString(Folder.FR_INDEX)));
-           IndexReader inReader = DirectoryReader.open(dir2);
-           try {
-                spell.clearIndex();
-                
-           } finally {
-                inReader.close();
-           }
-           
-           dir.close();
-           dir2.close();
-           long endTime = System.currentTimeMillis();
-           System.out.println(" took " + (endTime-startTime) + " milliseconds");
-
-       } catch (IOException ex) {
-           Logger.getLogger(ZSpellChecker.class.getName()).log(Level.SEVERE, null, ex);
-       }
-   
+       Analyzer analyser = new FrenchAnalyzer(Version.LUCENE_4_9, stopWords);
+       buildSpellChecker(Folder.FR_SPELLCHK, Folder.FR_INDEX, analyser);
+    
    }
    
    
+  
    
    
-  // @Lock(LockType.WRITE)
-   @Asynchronous
-   public void buildSpSpellChecker(){
+    private void buildSpellChecker(Folder spellFolder,Folder indexFolder,Analyzer analyzer){
        
        log.warning("BUILD SPELL CHECKER...");
        
        try {
-           Directory dir = NIOFSDirectory.open(new File(systemUtils.getPathString(Folder.SP_SPELLCHK)));
-           Analyzer analyser = new SpanishAnalyzer(Version.LUCENE_4_9, stopWords);
-           IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_4_9, analyser);
+           Directory dir = NIOFSDirectory.open(new File(systemUtils.getPathString(spellFolder)));
+           IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_4_9, analyzer);
            SpellChecker spell = new SpellChecker(dir);
-           long startTime = System.currentTimeMillis();
            
-           Directory dir2 = FSDirectory.open(new File(systemUtils.getPathString(Folder.SP_INDEX)));
-           IndexReader inReader = DirectoryReader.open(dir2);
-           try {
+           Directory dir2 = FSDirectory.open(new File(systemUtils.getPathString(indexFolder)));
+           try (IndexReader inReader = DirectoryReader.open(dir2)) {
+                spell.clearIndex();
                 spell.indexDictionary(new LuceneDictionary(inReader, "contents"),config,true);
-           } finally {
-                inReader.close();
+                
            }
            
            dir.close();
            dir2.close();
-           long endTime = System.currentTimeMillis();
-           System.out.println(" took " + (endTime-startTime) + " milliseconds");
-
+          
        } catch (IOException ex) {
            Logger.getLogger(ZSpellChecker.class.getName()).log(Level.SEVERE, null, ex);
        }
    
-   }
+   } 
    
    
-  // @Lock(LockType.WRITE)
-   @Asynchronous
-   public void clearSpSpellChecker(){
-       
-       log.warning("BUILD SPELL CHECKER...");
-       
-       try {
-           Directory dir = NIOFSDirectory.open(new File(systemUtils.getPathString(Folder.SP_SPELLCHK)));
-           Analyzer analyser = new SpanishAnalyzer(Version.LUCENE_4_9, stopWords);
-           IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_4_9, analyser);
-           SpellChecker spell = new SpellChecker(dir);
-           long startTime = System.currentTimeMillis();
-           
-           Directory dir2 = FSDirectory.open(new File(systemUtils.getPathString(Folder.SP_INDEX)));
-           IndexReader inReader = DirectoryReader.open(dir2);
-           try {
-                spell.clearIndex();
-           } finally {
-                inReader.close();
-           }
-           
-           dir.close();
-           dir2.close();
-           long endTime = System.currentTimeMillis();
-           System.out.println(" took " + (endTime-startTime) + " milliseconds");
-
-       } catch (IOException ex) {
-           Logger.getLogger(ZSpellChecker.class.getName()).log(Level.SEVERE, null, ex);
-       }
-   
-   }
-   
+  
    
 }

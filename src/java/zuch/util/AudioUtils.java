@@ -37,7 +37,7 @@ import zuch.model.Audio;
 
 import zuch.model.ID3;
 import zuch.model.ZConstants;
-import zuch.qualifier.Added;
+import zuch.qualifier.AudioAdded;
 import zuch.service.EncryptionServiceLocal;
 import zuch.service.ZFileManager;
 
@@ -296,7 +296,7 @@ public class AudioUtils {
    public byte[] getDefaultArtWork(){
         byte[] res = null;
         try {
-            InputStream  input = AudioUtils.class.getResourceAsStream("/zuch/images/duke.png");
+            InputStream  input = AudioUtils.class.getResourceAsStream(ZConstants.ARTWORK_DEFAULT_PATH);
             res = IOUtils.toByteArray(input);
         } catch (IOException ex) {
             Logger.getLogger(AudioUtils.class.getName()).log(Level.SEVERE, null, ex);

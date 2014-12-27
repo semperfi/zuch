@@ -23,11 +23,13 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import javax.servlet.http.HttpServletResponse;
+import zuch.event.EventService;
 import zuch.exception.AudioNotFound;
 import zuch.model.Audio;
-import zuch.model.ID3;
+import zuch.model.AudioStatus;
+
 import zuch.model.ZConstants;
-import zuch.qualifier.PerformanceMonitor;
+
 import zuch.search.Indexer;
 import zuch.search.ZSpellChecker;
 import zuch.service.AudioManagerLocal;
@@ -47,6 +49,7 @@ public class AudioManageBacking extends BaseBacking implements Serializable{
      @Inject Indexer indexer;
      @Inject ZFileManager fileManager;
      @Inject ZSpellChecker spellChecker;
+     @Inject EventService eventService;
      
      private Audio selectedAudio;
 
@@ -133,13 +136,14 @@ public class AudioManageBacking extends BaseBacking implements Serializable{
                     audioManager.removeAudio(selectedAudio.getId());
                     String msg = "'"+selectedAudio.getId3().getTitle()+"'"
                              + " has been deleted!";
+                    
                     getContext().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, 
                     msg, ""));
-                    deleteId3FromIndex(selectedAudio);
-                    //rebuild spell chercker
-                    rebuildSpellChecker();
-                    //dont remove file cause many user could use the same file
-                    //fileManager.deleteFile(selectedAudio.getId3().getFootPrint());
+                    /*
+                    * event received by indexer
+                    */
+                    eventService.getAudioDeletedEvent().fire(selectedAudio);
+                   
                    
               }else{
             
@@ -154,10 +158,8 @@ public class AudioManageBacking extends BaseBacking implements Serializable{
                          + " has been deleted!";
                 getContext().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, 
                 msg, ""));
-                deleteId3FromIndex(selectedAudio);
-               
-                rebuildSpellChecker();
-                //fileManager.deleteFile(selectedAudio.getId3().getFootPrint());
+                
+               eventService.getAudioDeletedEvent().fire(selectedAudio);
 
             }
             
@@ -172,29 +174,10 @@ public class AudioManageBacking extends BaseBacking implements Serializable{
         }
    }
     
-   @Asynchronous
-   private void deleteId3FromIndex(Audio audio){
-       
-       indexer.deleteEnDocument(audio);
-       indexer.deleteFrDocument(audio);
-       indexer.deleteSpDocument(audio);
-     
-            
-   }
-   
-   @Asynchronous
-   private void rebuildSpellChecker(){
-        spellChecker.clearEnSpellChecker();
-        spellChecker.buildEnSpellChecker();
-        
-        spellChecker.clearFrSpellChecker();
-        spellChecker.buildFrSpellChecker();
-        
-        spellChecker.clearSpSpellChecker();
-        spellChecker.buildSpSpellChecker();
-   }
-   
-     public List<Audio> retrieveManagableAudioList(){
+    
+  
+  
+   public List<Audio> retrieveManagableAudioList(){
          return audioManager.getAllUserAudiosInJukebox(getCurrentUser());
      }
 

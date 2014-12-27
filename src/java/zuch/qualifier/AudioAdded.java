@@ -3,6 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package zuch.qualifier;
 
 import static java.lang.annotation.ElementType.TYPE;
@@ -21,5 +22,5 @@ import javax.inject.Qualifier;
 @Qualifier
 @Retention(RUNTIME)
 @Target({METHOD, FIELD, PARAMETER, TYPE})
-public @interface SpellCheckerClear {
+public @interface AudioAdded {
 }

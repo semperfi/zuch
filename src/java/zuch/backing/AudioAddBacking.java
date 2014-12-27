@@ -25,16 +25,19 @@ import org.apache.commons.io.IOUtils;
 import org.primefaces.event.FileUploadEvent;
 import org.primefaces.model.UploadedFile;
 
+
 import zuch.exception.AudioAlreadyExists;
 import zuch.exception.UserNotFound;
 import zuch.model.Audio;
 
 import zuch.model.AudioStatus;
 import zuch.model.ID3;
-import zuch.qualifier.Added;
+
 import zuch.search.Indexer;
 import zuch.search.ZSpellChecker;
 import zuch.service.AudioManagerLocal;
+import zuch.event.EventService;
+import zuch.event.AudioAddedPayload;
 
 import zuch.service.ZFileManager;
 import zuch.service.ZUserManagerLocal;
@@ -64,8 +67,8 @@ public class AudioAddBacking extends BaseBacking implements Serializable{
     @Inject Indexer indexer;
     @Inject ZSpellChecker spellChecker;
     @Inject ZFileManager fileManager;
+    @Inject EventService eventService;
     
-    @Inject @Added Event<Audio> addAudio;
     
  
   @Asynchronous
@@ -113,10 +116,18 @@ public class AudioAddBacking extends BaseBacking implements Serializable{
                 Audio registredAudio = audioManager.registerAudio(newAudio);
                // uploadedFile = null;
                 if(registredAudio != null){
-                     //fire event for lucene indexer, spell checker and artwork image saving
-                    addAudio.fire(registredAudio);
-                   //save file on physical disk
-                    fileManager.saveFile(content, footPrint);
+                   
+                    /*
+                    * event received by lucene indexer, 
+                    * spell checker and artwork image saving
+                    */
+                    eventService.getAudioAddedEvent().fire(registredAudio);
+                    /*
+                    * save file on physical disk
+                    * event received by zuch.service.ZFileManager
+                    */
+                    AudioAddedPayload payload = new AudioAddedPayload(content, footPrint);
+                    eventService.getContentReceivedEvent().fire(payload);
                 }
                
                 

@@ -23,7 +23,7 @@ public interface ZConstants {
     public static int STREAM_BUFFERSIZE = 8 * 1024; //(8K) do not change this value, if so it will causes error in chrome
     public static int PART_FOR_FOOTPRINT = 5;
     
-    public static String ARTWORK_DEFAULT_PATH = "/zuch/images/duke.png";
+    public static String ARTWORK_DEFAULT_PATH = "/zuch/images/artwork.png";
     
     //system folders
     public static String WIN_TMP_PATH= "C:/zuch/tmp/";

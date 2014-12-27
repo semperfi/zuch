@@ -9,7 +9,7 @@ package zuch.search;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.Date;
+
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
@@ -19,12 +19,12 @@ import javax.ejb.Asynchronous;
 import javax.ejb.Lock;
 import javax.ejb.LockType;
 import javax.ejb.Singleton;
-import javax.enterprise.event.Event;
+
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.en.EnglishAnalyzer;
-import org.apache.lucene.analysis.es.SpanishAnalyzer;
+
 import org.apache.lucene.analysis.fr.FrenchAnalyzer;
 import org.apache.lucene.analysis.util.CharArraySet;
 import org.apache.lucene.document.Document;
@@ -41,9 +41,9 @@ import org.apache.lucene.store.NIOFSDirectory;
 import org.apache.lucene.util.Version;
 import zuch.model.Audio;
 import zuch.model.ID3;
-import zuch.qualifier.Added;
-import zuch.qualifier.AudioClear;
-import zuch.qualifier.AudioRebuilt;
+import zuch.qualifier.AudioAdded;
+import zuch.event.EventService;
+import zuch.qualifier.AudioDeleted;
 import zuch.util.Folder;
 import zuch.util.ZFileSystemUtils;
 
@@ -56,52 +56,46 @@ import zuch.util.ZFileSystemUtils;
 @AccessTimeout(value=30,unit=TimeUnit.MINUTES)
 public class Indexer {
     
-   static final Logger log = Logger.getLogger("zuch.service.Indexer");
+   static final Logger log = Logger.getLogger(Indexer.class.getName());
    
    @Inject ZFileSystemUtils systemUtils;
    @Inject ZSpellChecker spellChecker;
-  // private IndexWriter writer;
-  // private IndexWriter frWriter;
+   
+   @Inject EventService eventService;
    
    private static  final List<String> words = Arrays.asList("a","à");
    
    private static final CharArraySet stopWords = 
            new CharArraySet(Version.LUCENE_4_9, words, true);
    
-   @Inject
-   private Event<Date> startIndexingEvent;
-   
-   @Inject
-   private @Added Event<Audio>  addAudioEvent; //use to rebuild index
+  
    
    
-   /*
-    * delete current document from from index 
-    */
    @Asynchronous
-   public void deleteAndRebuild(@Observes @AudioRebuilt Audio audio){
+   public void OnAudioAdded(@Observes @AudioAdded Audio audio){
+       buildEnIndex(audio);
+       buildFrIndex(audio);
+      
        
-      // ID3 currentId3 = audio.getId3();
-      // log.info(String.format("--> Current ID3 ID: %d", currentId3.getId()));
-       deleteEnDocument(audio);
-       deleteFrDocument(audio);
-       deleteSpDocument(audio);
-       
-       addAudioEvent.fire(audio);
-   
+       /*
+       * used by zuch.search.ZSpellChecker 
+       */
+       eventService.getAudioIndexedEvent().fire("indexed");
    }
    
    @Asynchronous
-   public void clearSearchIndex(@Observes @AudioClear Audio audio){
-     //  ID3 currentId3 = audio.getId3();
+   public void OnAudioDeleted(@Observes @AudioDeleted Audio audio){
        deleteEnDocument(audio);
        deleteFrDocument(audio);
-       deleteSpDocument(audio);
+       
+       /*
+       * used by zuch.search.ZSpellChecker 
+       */
+       eventService.getAudioRemovedFromIndexEvent().fire("removedFromIndex");
    }
    
-   
-    @Asynchronous
-    public void buildEnIndex(@Observes @Added Audio audio){
+     
+    private void buildEnIndex(Audio audio){
         
        log.warning("ADD AUDIO OBSERVER RECEIVED EVENT...");
         
@@ -111,16 +105,13 @@ public class Indexer {
        Analyzer analyser = new EnglishAnalyzer(Version.LUCENE_4_9, stopWords);
        buildIndex(audio, Folder.EN_INDEX, analyser);
        
-       //build spell checker
-       spellChecker.buildEnSpellChecker();
             
         
     }
     
-     
-    @Asynchronous
-    //@Lock(LockType.WRITE)
-    public void buildFrIndex(@Observes @Added Audio audio){
+   
+    
+    private void buildFrIndex(Audio audio){
         
         log.info(String.format("METHOD buildFrIndex(Audio audio,ID3 id3) ON THREAD [%s]", 
                 Thread.currentThread().getName()));  
@@ -128,29 +119,10 @@ public class Indexer {
         Analyzer analyser = new FrenchAnalyzer(Version.LUCENE_4_9, stopWords);
         buildIndex(audio, Folder.FR_INDEX, analyser);
             
-        //build spell checker
-         spellChecker.buildFrSpellChecker();
-            
-            
+      
         
     }
     
-   
-    @Asynchronous
-   // @Lock(LockType.WRITE)
-    public void buildSpIndex(@Observes @Added Audio audio){
-        
-       log.info(String.format("METHOD buildSpIndex(Audio audio,ID3 id3) ON THREAD [%s]", 
-                Thread.currentThread().getName()));  
-        
-      
-       Analyzer analyser = new SpanishAnalyzer(Version.LUCENE_4_9, stopWords);
-       buildIndex(audio, Folder.SP_INDEX, analyser);
-            
-       //build spell checker
-       spellChecker.buildSpSpellChecker();
-        
-    }
     
     
    @Asynchronous
@@ -210,7 +182,7 @@ public class Indexer {
    
    
     //@Lock(LockType.WRITE)
-    public void deleteEnDocument(Audio audio){
+  private void deleteEnDocument(Audio audio){
         
         log.info("DELETING FROM ENGLISH INDEX...");
         
@@ -219,7 +191,7 @@ public class Indexer {
     }
     
    // @Lock(LockType.WRITE)
-    public void deleteFrDocument(Audio audio){
+   private void deleteFrDocument(Audio audio){
         
         log.info("DELETING FROM FRENCH INDEX...");
         Analyzer analyser = new FrenchAnalyzer(Version.LUCENE_4_9, stopWords);
@@ -227,15 +199,7 @@ public class Indexer {
         
     }
     
-    //@Lock(LockType.WRITE)
-    public void deleteSpDocument(Audio audio){
-        
-        log.info("DELETING FROM SPANISH INDEX...");
-        Analyzer analyser = new SpanishAnalyzer(Version.LUCENE_4_9, stopWords);
-        deleteDocument(audio, Folder.SP_INDEX, analyser);
-        
-        
-    }
+    
     
     
     private IndexWriter getIndexWriter(Folder folder, Analyzer analyser){
@@ -314,11 +278,6 @@ public class Indexer {
         
    }
     
-    public void checkIndexing(@Observes Date event){
-        log.warning("IT'S TIME TO INDEX: ".concat(event.toString()));
-        
-    }
-
-  
+   
      
 }

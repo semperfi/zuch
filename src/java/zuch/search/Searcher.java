@@ -7,22 +7,15 @@
 package zuch.search;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.ejb.Stateless;
 import javax.enterprise.context.RequestScoped;
-import javax.faces.context.FacesContext;
 import javax.inject.Inject;
+import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.en.EnglishAnalyzer;
-import org.apache.lucene.analysis.es.SpanishAnalyzer;
 import org.apache.lucene.analysis.fr.FrenchAnalyzer;
-
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.analysis.util.CharArraySet;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
@@ -33,14 +26,10 @@ import org.apache.lucene.search.IndexSearcher;
 
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
-
-
 import org.apache.lucene.store.Directory;
-
 import org.apache.lucene.store.NIOFSDirectory;
 import org.apache.lucene.util.QueryBuilder;
 import org.apache.lucene.util.Version;
-import zuch.backing.AudioSearchBacking;
 import zuch.exception.AudioNotFound;
 import zuch.model.Audio;
 import zuch.model.SearchResult;
@@ -61,23 +50,41 @@ public class Searcher {
     @Inject Suggest suggest;
     @Inject AudioManagerLocal audioManager;
     
-   private static  final List<String> words = Arrays.asList("a","à");
+    private static  final List<String> words = Arrays.asList("a","à");
    
-   private static final CharArraySet stopWords = 
+    private static final CharArraySet stopWords = 
            new CharArraySet(Version.LUCENE_4_9, words, true);
 
-    public List<Document> searchEn(String q){
+    private List<Document> searchEn(String q){
         
+        log.info("------ENGLISH------");
+        Analyzer analyser = new EnglishAnalyzer(Version.LUCENE_4_9, stopWords);
+        return search(Folder.EN_INDEX, analyser, q);
+       
+    }
+    
+    
+    private List<Document> searchFr(String q){
+        
+        log.info("------FRENCH------");
+        Analyzer analyser = new FrenchAnalyzer(Version.LUCENE_4_9, stopWords);
+        return  search(Folder.FR_INDEX, analyser, q);
+        
+    }
+   
+   
+    private List<Document> search(Folder folder,Analyzer analyser,String q){
+       
         List<Document> searchResult = new ArrayList<>();
        
         
         try {
-            Directory dir = NIOFSDirectory.open(new File(systemUtils.getPathString(Folder.EN_INDEX)));
+            Directory dir = NIOFSDirectory.open(new File(systemUtils.getPathString(folder)));
             
             try (IndexReader indexReader = DirectoryReader.open(dir)) {
                 IndexSearcher indexSearcher = new IndexSearcher(indexReader);
                 
-                QueryBuilder stdBuilder = new QueryBuilder(new EnglishAnalyzer(Version.LUCENE_4_9, stopWords));
+                QueryBuilder stdBuilder = new QueryBuilder(analyser);
                  
                 BooleanQuery booleanQuery = new BooleanQuery();
                 booleanQuery.add(stdBuilder.createBooleanQuery("contents", q), BooleanClause.Occur.MUST);
@@ -87,7 +94,7 @@ public class Searcher {
                 TopDocs hits = indexSearcher.search(booleanQuery, 15);
                 long end = System.currentTimeMillis();
                 
-                log.info("_____English index search_________");
+                log.info("_____Index search_________");
                 String msg = "Found " + hits.totalHits +
                         " hits(s) (in " + (end - start) +
                         " milliseconds) that matched query '" +
@@ -117,103 +124,9 @@ public class Searcher {
            
         }
         return searchResult;
-    }
-    
-    
-   public List<Document> searchFr(String q){
-       
-       List<Document> result = new ArrayList<>();
-       
-        try {
-            Directory dir = NIOFSDirectory.open(new File(systemUtils.getPathString(Folder.FR_INDEX)));
-            
-            try (IndexReader indexReader = DirectoryReader.open(dir)) {
-                IndexSearcher indexSearcher = new IndexSearcher(indexReader);
-                
-                QueryBuilder stdBuilder = new QueryBuilder(new ZuchFrenchAnalyzer());
-                 
-                BooleanQuery booleanQuery = new BooleanQuery();
-                booleanQuery.add(stdBuilder.createBooleanQuery("contents", q), BooleanClause.Occur.MUST);
-                
-                
-                long start = System.currentTimeMillis();
-                TopDocs hits = indexSearcher.search(booleanQuery, 15);
-                long end = System.currentTimeMillis();
-                
-                 
-                log.info("_____French index search_________");
-                
-                String msg = "Found " + hits.totalHits +
-                        " hits(s) (in " + (end - start) +
-                        " milliseconds) that matched query '" +
-                        q + "':";
-                
-               log.warning(msg);
-                
-                for(ScoreDoc scoreDoc : hits.scoreDocs){
-                    Document doc  = indexSearcher.doc(scoreDoc.doc);
-                    result.add(doc);
-                    log.info(doc.get("artist"));
-                    log.info(doc.get("title"));
-                    log.info("----------------------------------");
-                  
-                }
-            }  
-            
-        }   catch (IOException ex) {
-            Logger.getLogger(Searcher.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return result;
-    }
+   }
    
-    public List<Document> searchSp(String q){
-        
-        List<Document> result = new ArrayList<>();
-        
-        try {
-            Directory dir = NIOFSDirectory.open(new File(systemUtils.getPathString(Folder.SP_INDEX)));
-            
-            try (IndexReader indexReader = DirectoryReader.open(dir)) {
-                IndexSearcher indexSearcher = new IndexSearcher(indexReader);
-                
-                QueryBuilder stdBuilder = new QueryBuilder(new SpanishAnalyzer(Version.LUCENE_4_9, stopWords));
-                 
-                BooleanQuery booleanQuery = new BooleanQuery();
-                booleanQuery.add(stdBuilder.createBooleanQuery("contents", q), BooleanClause.Occur.MUST);
-                
-                
-                long start = System.currentTimeMillis();
-                TopDocs hits = indexSearcher.search(booleanQuery, 15);
-                long end = System.currentTimeMillis();
-                
-                 
-                log.info("_____Spanish index search_________");
-                
-                String msg = "Found " + hits.totalHits +
-                        " hits(s) (in " + (end - start) +
-                        " milliseconds) that matched query '" +
-                        q + "':";
-                
-               log.warning(msg);
-                
-                for(ScoreDoc scoreDoc : hits.scoreDocs){
-                    Document doc  = indexSearcher.doc(scoreDoc.doc);
-                    result.add(doc);
-                    log.info(doc.get("artist"));
-                    log.info(doc.get("title"));
-                    log.info("----------------------------------");
-                  
-                }
-            }  
-            
-        }   catch (IOException ex) {
-            Logger.getLogger(Searcher.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
-        return result;
-    }
-     
-    
+   
     public List<SearchResult> luceneSearchForAudio(String searchToken){
         
         long start = System.currentTimeMillis();
@@ -224,21 +137,18 @@ public class Searcher {
         
         List<Document> englishDoc = searchEn(searchToken);
         List<Document> frenchDoc = searchFr(searchToken);
-        List<Document> spanishDoc = searchSp(searchToken);
         
        
         docList.add(frenchDoc);
         docList.add(englishDoc);
-        docList.add(spanishDoc);
         
-        List<Document> selectedList = max(docList); //get list with max size cause it likely has best hits
+        List<Document> selectedList = max(docList); //get list with max size cause it's likely has best hits
         
         for(Document doc : selectedList){
             resultList.add(toSearchResult(doc));
         }
         
-      // resultList = filterCurrentUserAudios(resultList);
-       
+          
        long end = System.currentTimeMillis();
 
       log.info(String.format("Search %s files took %d milliseconds",
@@ -251,15 +161,16 @@ public class Searcher {
     
     private List<Document> max(List<List<Document>> docs){
         
-        List<Document> max = docs.get(0);
+        List<Document> maximum = docs.get(0);
         for(List<Document> lDoc : docs){
             
-            if(lDoc.size() > max.size() ){
-                max = lDoc;
+            if(lDoc.size() > maximum.size() ){
+                maximum = lDoc;
             }
         }
         
-        return max;
+        
+        return maximum;
     }
     
     public SearchResult toSearchResult(Document doc){

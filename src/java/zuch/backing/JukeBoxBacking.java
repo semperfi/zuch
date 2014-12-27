@@ -17,27 +17,22 @@ import javax.annotation.PreDestroy;
 import javax.enterprise.context.SessionScoped;
 import javax.enterprise.event.Event;
 import javax.faces.application.FacesMessage;
+import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
-
 import zuch.model.Audio;
 import zuch.model.AudioRequestStatus;
 import zuch.model.AudioStatus;
-
 import zuch.model.LogEvent;
 import zuch.model.LogEventType;
 import zuch.model.ZConstants;
 import zuch.service.PlayToken;
-
 import zuch.qualifier.LogSessionCreated;
 import zuch.qualifier.LogSessionDestroyed;
-
 import zuch.search.Searcher;
 import zuch.service.AudioManagerLocal;
-
 import zuch.service.AudioRequestManagerLocal;
 import zuch.service.ZFileManager;
 import zuch.util.AudioUtils;
@@ -66,9 +61,7 @@ public class JukeBoxBacking extends BaseBacking implements Serializable{
    // private String rangeToken;
     
     private int nextIndex = -1;
-    
-    
-    
+     
     private List<Audio> audioList;
     
     @Inject @LogSessionCreated Event<LogEvent> createLogEvent;
