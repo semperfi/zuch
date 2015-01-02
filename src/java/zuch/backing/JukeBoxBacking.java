@@ -9,7 +9,9 @@ package zuch.backing;
 
 import java.io.InputStream;
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
@@ -20,6 +22,7 @@ import javax.faces.application.FacesMessage;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.primefaces.context.RequestContext;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
 import zuch.model.Audio;
@@ -119,6 +122,15 @@ public class JukeBoxBacking extends BaseBacking implements Serializable{
     }
    
   
+    public void viewRatings(){
+        Map<String,Object> options = new HashMap<>();
+        options.put("modal", true);
+        options.put("draggable", false);
+        options.put("resizable", false);
+        options.put("contentHeight", 320);
+        RequestContext.getCurrentInstance().openDialog("rating.xhtml",options,null);
+    }
+    
     
   private String receivedReqMessage;
   private long receivedReqCount;

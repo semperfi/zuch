@@ -46,7 +46,7 @@ function onEachStep(){
      var mediaplayer = document.getElementById("zuchAudioPlayer");
      if( !(mediaplayer.paused || mediaplayer.ended) ){
          analyseSound();
-         analyseTimeSound();
+         //analyseTimeSound();
      }
 }
 

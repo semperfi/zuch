@@ -16,6 +16,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
+import javax.validation.constraints.Size;
 
 /**
  *
@@ -43,6 +44,9 @@ public class Rating implements Serializable {
     
     @Column(name = "RATING_VALUE")
     private int ratingValue;
+    
+    @Size(max = 140,message = "Comment should be less than {max} characters long.")
+    private String comment;
 
     public Long getId() {
         return id;
@@ -82,6 +86,14 @@ public class Rating implements Serializable {
 
     public void setRatingValue(int ratingValue) {
         this.ratingValue = ratingValue;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
     }
 
     

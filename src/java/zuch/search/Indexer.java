@@ -73,8 +73,8 @@ public class Indexer {
    
    @Asynchronous
    public void OnAudioAdded(@Observes @AudioAdded Audio audio){
-       buildEnIndex(audio);
-       buildFrIndex(audio);
+       addToEnIndex(audio);
+       addToFrIndex(audio);
       
        
        /*
@@ -95,7 +95,7 @@ public class Indexer {
    }
    
      
-    private void buildEnIndex(Audio audio){
+    private void addToEnIndex(Audio audio){
         
        log.warning("ADD AUDIO OBSERVER RECEIVED EVENT...");
         
@@ -103,7 +103,7 @@ public class Indexer {
                 Thread.currentThread().getName()));  
        
        Analyzer analyser = new EnglishAnalyzer(Version.LUCENE_4_9, stopWords);
-       buildIndex(audio, Folder.EN_INDEX, analyser);
+       addToIndex(audio, Folder.EN_INDEX, analyser);
        
             
         
@@ -111,13 +111,13 @@ public class Indexer {
     
    
     
-    private void buildFrIndex(Audio audio){
+    private void addToFrIndex(Audio audio){
         
         log.info(String.format("METHOD buildFrIndex(Audio audio,ID3 id3) ON THREAD [%s]", 
                 Thread.currentThread().getName()));  
         
         Analyzer analyser = new FrenchAnalyzer(Version.LUCENE_4_9, stopWords);
-        buildIndex(audio, Folder.FR_INDEX, analyser);
+        addToIndex(audio, Folder.FR_INDEX, analyser);
             
       
         
@@ -219,7 +219,7 @@ public class Indexer {
         return writer;
    }
    
-    private void buildIndex(Audio audio,Folder folder, Analyzer analyser){
+    private void addToIndex(Audio audio,Folder folder, Analyzer analyser){
        
       IndexWriter writer = null;
         

@@ -11,14 +11,10 @@ package zuch.service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
-import javax.ejb.EJBTransactionRolledbackException;
-
 import javax.ejb.Stateless;
 import javax.inject.Inject;
-
 import javax.persistence.CacheRetrieveMode;
 import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
@@ -53,30 +49,13 @@ public class AudioManager implements AudioManagerLocal{
        // String msg = "LINK TO RETRIEVE: " + selectedMp3Link;
         Logger.getLogger(AudioManager.class.getName()).info("REGISTERING AUDIO...");
         
-        Query query = em.createQuery("SELECT aud FROM Audio aud WHERE "
-                + " aud.footPrint = :footprint");
-        
-        query.setParameter("footprint", audio.getFootPrint());
-        
-        try{
-            query.getSingleResult();
-            throw new AudioAlreadyExists();
-        }catch(NoResultException exception){
-            log.finer("No similar audio files found. ");
-        }
-        
+       
         try{
             em.persist(audio);
             em.flush();
         }catch(PersistenceException  ex){//
             log.warning("CONSTRAINTE VIOLATION...");
-            //set audio to null to check his value before saving file
-            audio = null;
-            Throwable t = null;
-            for(t = ex.getCause(); t != null; t = t.getCause()){
-                log.warning(String.format("___EXCEPTION : %s", t.getClass().toString()));
-            }  
-            
+            throw new AudioAlreadyExists();
         }   
         
         
@@ -312,7 +291,7 @@ public class AudioManager implements AudioManagerLocal{
     
     
     @Override
-    public Audio updateAudio(Audio audio) {
+    public Audio updateAudio(Audio audio) { 
        Audio updatedAudio = em.merge(audio);
        em.flush();
        log.info(String.format("UPDATED AUDIO STATUS %s", updatedAudio.getStatus()));

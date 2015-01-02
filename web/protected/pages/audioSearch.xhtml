@@ -138,14 +138,14 @@ xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
                                   
                                </p:column>
                            
-                              		  
+                          
 				<p:column>
                                 <f:facet name="header">
                                     SAMPLE
                                 </f:facet>
                                   <p:commandButton update=":audioSearchForm:sampleAudioPanel 
                                                    :audioSearchDataForm:searchAudioInfo"
-                                                   icon="ui-icon-play"
+                                                   icon="ui-icon-play" 
                                                    action="#{audioSearchBacking.retrieveAudioInfo()}">
                                       <f:setPropertyActionListener 
                                           value="#{currentResult}"

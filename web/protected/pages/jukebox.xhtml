@@ -149,7 +149,7 @@ xmlns:jsf="http://xmlns.jcp.org/jsf">
                                     #{audio.id3.audioYear}
                                </p:column>
                                
-                                <p:column>
+                              <p:column>
                                 <f:facet name="header">
                                     RATING
                                 </f:facet>
@@ -158,7 +158,23 @@ xmlns:jsf="http://xmlns.jcp.org/jsf">
                                   </p:rating> 
                                   
                                </p:column>
-                             
+                 
+                               <p:column>
+                                <f:facet name="header">
+                                 
+                                </f:facet>
+                                  
+                                   <p:commandButton  onclick="PF('ratingDlg').show()" 
+                                                    update=":ratingForm" icon="ui-icon-pencil"
+                                                    title="Comment and rating." >
+                                       <f:setPropertyActionListener 
+                                           value="#{audio}" 
+                                           target="#{ratingBacking.selectedAudio}" /> 
+                                   </p:commandButton>
+                                  
+                               </p:column>
+                               
+                                                          
                                <p:column >
                                    <h:outputText rendered="#{jukeBoxBacking.isPlayable(audio)}" 
                                                  value="#{audio.status.value}" 
@@ -181,6 +197,45 @@ xmlns:jsf="http://xmlns.jcp.org/jsf">
              
          </h:form>
           <h:outputScript  library="javascript"  name="jukeBox.js"/>  
+          
+          <p:dialog header="Comments and Ratings" widgetVar="ratingDlg" dynamic="true" 
+                    closeOnEscape="true"  
+                    resizable="false" position="top" fitViewport="true"  >
+              
+                <h:form id="ratingForm"  >
+                    <p:panelGrid columns="1"  >
+                       <p:graphicImage id="artWork" value="#{ratingBacking.retrieveArtWork()}" 
+                                     width="120" height="120"  cache="false" />
+                      <p:rating value="#{ratingBacking.selectedAudio.avgRating}"  readonly="true"/>
+                      <h:outputText value=" #{ratingBacking.selectedAudio.id3.title}" />
+                      <p:inputTextarea id="audioComment" cols="40" value="#{ratingBacking.comment}"    >     
+                                       
+                               <f:passThroughAttribute name="placeHolder" value="type your comment..."/>
+                        </p:inputTextarea>
+                      <p:rating value="#{ratingBacking.ratingValue}"  readonly="false"/>
+                      <p:commandButton value="submit" actionListener="#{ratingBacking.saveRating()}" 
+                                       update=":ratingForm"/>
+
+                    </p:panelGrid>
+                    <p:spacer height="20" />
+                    <p:scrollPanel style="width:280px;height:200px">
+                      <p:dataScroller value="#{ratingBacking.retrieveRatings()}" var="rating" 
+                                    
+                                    mode="inline" chunkSize="10">
+                       Author: #{rating.ratingAuthor.id} <br/>
+                       Rating: <p:rating value="#{rating.audio.avgRating}" readonly="true"/><br/>
+                       <h:outputText value="Comment: #{rating.comment}"  />
+                      <p:separator />
+                     </p:dataScroller>
+                     
+                    </p:scrollPanel>
+                     
+                </h:form>
+             <p:ajax event="close" listener="#{ratingBacking.handleClose()}" 
+                     update=":audioListForm"/>
+           </p:dialog>
+          
+        
         </ui:define>
         
         
@@ -188,7 +243,7 @@ xmlns:jsf="http://xmlns.jcp.org/jsf">
         
     </ui:composition>
         
-
+    
     
 </html>
            

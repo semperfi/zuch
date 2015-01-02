@@ -46,3 +46,8 @@ body{
     background-color:  #f6f9f9;
     width: 60%;
 }
+
+.zuch-command-link{
+    color: #189807; 
+    font-weight: bolder;
+}
