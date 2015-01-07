@@ -138,7 +138,8 @@ xmlns:jsf="http://xmlns.jcp.org/jsf">
                                      width="120" height="120"  cache="false" />
                       <p:rating value="#{ratingBacking.selectedAudio.avgRating}"  readonly="true"/>
                       <h:outputText value=" #{ratingBacking.selectedAudio.id3.title}" />
-                      <p:inputTextarea id="audioComment" cols="40" value="#{ratingBacking.comment}"    >     
+                      <p:inputTextarea id="audioComment" cols="40" value="#{ratingBacking.comment}"  
+                                       autoResize="false"  maxlength="140">     
                                        
                                <f:passThroughAttribute name="placeHolder" value="type your comment..."/>
                         </p:inputTextarea>
@@ -153,7 +154,7 @@ xmlns:jsf="http://xmlns.jcp.org/jsf">
                                     
                                     mode="inline" chunkSize="10">
                        Author: #{rating.ratingAuthor.id} <br/>
-                       Rating: <p:rating value="#{rating.audio.avgRating}" readonly="true"/><br/>
+                       Rating: <p:rating value="#{rating.ratingValue}" readonly="true"/><br/>
                        <h:outputText value="Comment: #{rating.comment}"  />
                       <p:separator />
                      </p:dataScroller>

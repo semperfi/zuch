@@ -46,7 +46,7 @@ xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
                         <audio jsf:id="audioSample"
                                controls="controls"
                                autoplay="true"
-                               src="#{audioSearchBacking.retrieveAudioResultSampleSource()}">
+                               src="#{audioSearchBacking.retrieveAudioResultSource()}">
                         </audio>
                         
                       
@@ -82,7 +82,8 @@ xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
                         <br/>
                         <br/>
                        
-                       <h:outputText id="searchAudioInfo" value="#{audioSearchBacking.audioInfo}" />
+                       <h:outputText id="searchAudioInfo" value="#{audioSearchBacking.audioInfo}" 
+                                     style="color: #189807; font-weight: bolder;"/>
                        
                        <p:dataTable value="#{audioSearchBacking.searchResultList}"
                                         id="audioSearchListTable"
@@ -141,7 +142,7 @@ xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
                           
 				<p:column>
                                 <f:facet name="header">
-                                    SAMPLE
+                                    LISTEN
                                 </f:facet>
                                   <p:commandButton update=":audioSearchForm:sampleAudioPanel 
                                                    :audioSearchDataForm:searchAudioInfo"

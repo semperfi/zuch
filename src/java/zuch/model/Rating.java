@@ -16,6 +16,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
+import javax.persistence.Version;
 import javax.validation.constraints.Size;
 
 /**
@@ -29,6 +30,9 @@ public class Rating implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+    
+    @Version
+    private Integer version;
     
     @Column(name = "CREATED")
     @Temporal(javax.persistence.TemporalType.DATE)
@@ -94,6 +98,14 @@ public class Rating implements Serializable {
 
     public void setComment(String comment) {
         this.comment = comment;
+    }
+
+    public Integer getVersion() {
+        return version;
+    }
+
+    public void setVersion(Integer version) {
+        this.version = version;
     }
 
     

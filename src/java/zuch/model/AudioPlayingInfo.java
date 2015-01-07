@@ -3,36 +3,24 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package zuch.model;
 
 import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
 import javax.persistence.Temporal;
-import javax.persistence.UniqueConstraint;
 import javax.persistence.Version;
-import javax.xml.bind.annotation.XmlRootElement;
-
 
 /**
  *
  * @author florent
  */
 @Entity
-@XmlRootElement
-@Table( uniqueConstraints = @UniqueConstraint( columnNames = {"ZUSER","ZROLE"}))
-public class ZGroup implements Serializable {
-   
+public class AudioPlayingInfo implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -40,21 +28,15 @@ public class ZGroup implements Serializable {
     
     @Version
     private Integer version;
-   
+    
     @Column(name = "CREATED")
     @Temporal(javax.persistence.TemporalType.DATE)
     private Date created = new Date();
     
-    
-    @ManyToOne
-    @JoinColumn( name = "ZUSER")
-    private ZUser zUser;
-    
-    @Column(name = "ZROLE")
-    @Enumerated(EnumType.STRING)
-    private ZGroupRole role;
-    
-    
+    private String zUser;
+    private String footPrint;
+    private String title;
+    private String album;
 
     public Long getId() {
         return id;
@@ -62,22 +44,6 @@ public class ZGroup implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public ZUser getzUser() {
-        return zUser;
-    }
-
-    public void setzUser(ZUser zUser) {
-        this.zUser = zUser;
-    }
-
-    public ZGroupRole getRole() {
-        return role;
-    }
-
-    public void setRole(ZGroupRole role) {
-        this.role = role;
     }
 
     public Integer getVersion() {
@@ -96,8 +62,37 @@ public class ZGroup implements Serializable {
         this.created = created;
     }
 
-   
-    
+    public String getzUser() {
+        return zUser;
+    }
+
+    public void setzUser(String zUser) {
+        this.zUser = zUser;
+    }
+
+    public String getFootPrint() {
+        return footPrint;
+    }
+
+    public void setFootPrint(String footPrint) {
+        this.footPrint = footPrint;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getAlbum() {
+        return album;
+    }
+
+    public void setAlbum(String album) {
+        this.album = album;
+    }
     
     
 
@@ -111,10 +106,10 @@ public class ZGroup implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof ZGroup)) {
+        if (!(object instanceof AudioPlayingInfo)) {
             return false;
         }
-        ZGroup other = (ZGroup) object;
+        AudioPlayingInfo other = (AudioPlayingInfo) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
@@ -123,7 +118,7 @@ public class ZGroup implements Serializable {
 
     @Override
     public String toString() {
-        return "zuch.model.ZGroup[ id=" + id + " ]";
+        return "zuch.model.AudioPlaying[ id=" + id + " ]";
     }
     
 }

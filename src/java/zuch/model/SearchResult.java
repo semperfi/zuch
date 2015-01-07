@@ -7,10 +7,14 @@
 package zuch.model;
 
 import java.io.Serializable;
+import java.util.Date;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Temporal;
+import javax.persistence.Version;
 
 /**
  *
@@ -22,6 +26,13 @@ public class SearchResult implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+    
+    @Version
+    private Integer version;
+    
+    @Column(name = "CREATED")
+    @Temporal(javax.persistence.TemporalType.DATE)
+    private Date created = new Date();
     
     private String contents;
     private String artist;
@@ -114,6 +125,22 @@ public class SearchResult implements Serializable {
 
     public void setAvgRating(int avgRating) {
         this.avgRating = avgRating;
+    }
+
+    public Integer getVersion() {
+        return version;
+    }
+
+    public void setVersion(Integer version) {
+        this.version = version;
+    }
+
+    public Date getCreated() {
+        return created;
+    }
+
+    public void setCreated(Date created) {
+        this.created = created;
     }
 
     

@@ -257,7 +257,7 @@ public class AudioSearchBacking extends BaseBacking implements Serializable{
         return selectedAudioLink;
    }
    
-    public String retrieveAudioResultSampleSource(){
+    public String retrieveAudioResultSource(){
        
        String smsg = "SELCTED MP3: " + selectedResult;
         Logger.getLogger(JukeBoxBacking.class.getName()).info(smsg);
@@ -278,7 +278,7 @@ public class AudioSearchBacking extends BaseBacking implements Serializable{
             playTokens.setToken(token);
             playTokens.setRangeToken(rangeToken);
 
-            selectedAudioLink =  AudioUtils.getAudioSampleStreamBaseLink()
+            selectedAudioLink =  AudioUtils.getAudioStreamBaseLink()
                     +"?id="+currentId+"&tk="+token
                     +"&rtk="+rangeToken;
 

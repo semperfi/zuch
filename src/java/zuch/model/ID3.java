@@ -7,12 +7,15 @@
 package zuch.model;
 
 import java.io.Serializable;
+import java.util.Date;
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
+import javax.persistence.Temporal;
 import javax.persistence.Version;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -30,6 +33,14 @@ public class ID3 implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+    
+    @Version
+    private Integer version;
+        
+    @Column(name = "CREATED")
+    @Temporal(javax.persistence.TemporalType.DATE)
+    private Date created = new Date();
+
      
     private String track;
     private String artist;
@@ -49,9 +60,6 @@ public class ID3 implements Serializable {
     private String artWorkExt;
     
    
-    @Version
-    private Integer version;
-
     public ID3() {
         artWork = false;
     }
@@ -169,6 +177,14 @@ public class ID3 implements Serializable {
 
     public void setArtWorkExt(String artWorkExt) {
         this.artWorkExt = artWorkExt;
+    }
+
+    public Date getCreated() {
+        return created;
+    }
+
+    public void setCreated(Date created) {
+        this.created = created;
     }
 
      

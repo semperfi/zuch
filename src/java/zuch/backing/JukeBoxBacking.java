@@ -15,11 +15,8 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 import javax.enterprise.context.SessionScoped;
-import javax.enterprise.event.Event;
 import javax.faces.application.FacesMessage;
-import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.primefaces.context.RequestContext;
@@ -28,12 +25,8 @@ import org.primefaces.model.StreamedContent;
 import zuch.model.Audio;
 import zuch.model.AudioRequestStatus;
 import zuch.model.AudioStatus;
-import zuch.model.LogEvent;
-import zuch.model.LogEventType;
 import zuch.model.ZConstants;
 import zuch.service.PlayToken;
-import zuch.qualifier.LogSessionCreated;
-import zuch.qualifier.LogSessionDestroyed;
 import zuch.search.Searcher;
 import zuch.service.AudioManagerLocal;
 import zuch.service.AudioRequestManagerLocal;
@@ -67,9 +60,7 @@ public class JukeBoxBacking extends BaseBacking implements Serializable{
      
     private List<Audio> audioList;
     
-    @Inject @LogSessionCreated Event<LogEvent> createLogEvent;
-    @Inject @LogSessionDestroyed Event<LogEvent> destroyLogEvent;
-    
+     
     private String currentUser;  //because we cannot get user from facescontext in predestroy
     
     @PostConstruct
@@ -77,24 +68,11 @@ public class JukeBoxBacking extends BaseBacking implements Serializable{
        
        audioList = audioManager.getAllUserAudios(getCurrentUser());
        buildReceivedReqMsg();
-       //fire login event
-       log.info("JUKEBOX SESSION BEAN CREATED...");
-       LogEvent lEvent = new LogEvent();
-       lEvent.setType(LogEventType.LOGIN);
-       currentUser = getCurrentUser();
-       lEvent.setZuser(currentUser);
-       createLogEvent.fire(lEvent);
+       
      }
      
     
-    @PreDestroy
-    public void onDestroy(){
-       log.info("JUKEBOX SESSION WILL BE DESTROYED...");
-       LogEvent lEvent = new LogEvent();
-       lEvent.setType(LogEventType.LOGOUT);
-       lEvent.setZuser(currentUser);
-       destroyLogEvent.fire(lEvent);
-    }
+    
     
     
     private String searchToken;

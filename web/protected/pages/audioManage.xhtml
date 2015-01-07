@@ -70,16 +70,7 @@ xmlns:p="http://primefaces.org/ui">
                                </p:column>
                         
                         
-                               <p:column>
-                                <f:facet name="header">
-                                    EDIT RATING
-                                </f:facet>
-                                   <p:rating value="#{ratingBacking.ratingValue}" >
-                                       <p:ajax event="rate"   listener="#{ratingBacking.handleRate(audio)}"  />
-                                   <p:ajax event="cancel" listener="#{ratingBacking.handleCancel}"  />
-                                  </p:rating> 
-                                  
-                               </p:column>
+                              
                              
                                <p:column>
                                 <f:facet name="header">

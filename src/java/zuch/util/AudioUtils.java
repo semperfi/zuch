@@ -31,6 +31,7 @@ import javax.faces.context.FacesContext;
 import javax.inject.Inject;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.SystemUtils;
 
 import zuch.model.Audio;
@@ -82,21 +83,31 @@ public class AudioUtils {
         return hash;
     }
      
-   public String getAudioFootPrint(byte[] content){
+   public String getAudioFootPrint(byte[] content,String userId){
+       
+       if(content == null){
+           throw new IllegalArgumentException();
+       }
+       if(userId == null || userId.isEmpty()){
+           throw new IllegalArgumentException();
+       }
        
         String hash ="";
         try {
            
             int part = content.length/ZConstants.PART_FOR_FOOTPRINT;
             byte[] tmpPart = Arrays.copyOfRange(content, 2*part, 3*part);
+            //add user id for multitenency purpose
+            byte[] userIdPart = userId.getBytes();
+            byte[] wholePart = ArrayUtils.addAll(tmpPart, userIdPart);
             MessageDigest msgDigest = MessageDigest.getInstance("SHA-256");
-            byte[] hashVal = msgDigest.digest(tmpPart);
+            byte[] hashVal = msgDigest.digest(wholePart);
             hash = Hex.encodeHexString(hashVal);
         } catch (NoSuchAlgorithmException ex) {
             log.severe(ex.getMessage());
         }
        
-        return hash;
+        return userId + "_" + hash;
    }
      
    public ID3 getID3Tag(byte[] fileContent,String fileName){
@@ -251,7 +262,7 @@ public class AudioUtils {
             
         }else if(SystemUtils.IS_OS_UNIX){
             
-            path = "http://homefleet.cloudapp.net/Zuch/zuchplayer";
+            path = "http://homefleet.cloudapp.net/zuch/zuchplayer";  //carefully check spelling Zuch vs zuch
         }
        
        return path;
@@ -267,7 +278,7 @@ public class AudioUtils {
             
         }else if(SystemUtils.IS_OS_UNIX){
             
-            path = "http://homefleet.cloudapp.net/Zuch/zuchplayer";  //to be changed
+            path = "http://homefleet.cloudapp.net/zuch/zuchsampleplayer";  //carefully check spelling Zuch vs zuch
         }
        
        return path;

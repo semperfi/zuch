@@ -7,11 +7,14 @@
 package zuch.model;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.Temporal;
 import javax.persistence.Transient;
 import javax.persistence.Version;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -40,6 +43,10 @@ public class ZUser implements Serializable {
     
     @Version
     private Integer version;
+        
+    @Column(name = "CREATED")
+    @Temporal(javax.persistence.TemporalType.DATE)
+    private Date created = new Date();
     
     @OneToMany(mappedBy = "zUser", cascade = CascadeType.ALL)
     private List<ZGroup> groupList;
@@ -136,6 +143,14 @@ public class ZUser implements Serializable {
 
     public void setRatings(List<Rating> ratings) {
         this.ratings = ratings;
+    }
+
+    public Date getCreated() {
+        return created;
+    }
+
+    public void setCreated(Date created) {
+        this.created = created;
     }
 
     

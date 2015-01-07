@@ -12,6 +12,7 @@ import zuch.model.Audio;
 import zuch.qualifier.AudioAdded;
 import zuch.qualifier.AudioDeleted;
 import zuch.qualifier.AudioIndexed;
+import zuch.qualifier.AudioPlaying;
 import zuch.qualifier.AudioRemovedFromIndex;
 import zuch.qualifier.ContentReceived;
 
@@ -38,7 +39,9 @@ public class EventService {
     @AudioRemovedFromIndex
     private Event<String> AudioRemovedFromIndexEvent;
     
-   
+    @Inject 
+    @AudioPlaying
+    private Event<Audio> AudioPlayingEvent;
     
     @Inject
     @ContentReceived
@@ -67,6 +70,10 @@ public class EventService {
 
     public Event<String> getAudioRemovedFromIndexEvent() {
         return AudioRemovedFromIndexEvent;
+    }
+
+    public Event<Audio> getAudioPlayingEvent() {
+        return AudioPlayingEvent;
     }
 
     

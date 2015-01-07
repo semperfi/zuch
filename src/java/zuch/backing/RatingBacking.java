@@ -10,10 +10,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
-import javax.inject.Named;
-import javax.enterprise.context.RequestScoped;
 import javax.enterprise.context.SessionScoped;
-import javax.faces.view.ViewScoped;
+import javax.inject.Named;
+
 import javax.inject.Inject;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
@@ -101,7 +100,7 @@ public class RatingBacking extends BaseBacking implements Serializable{
             
             ratingValue = 0;
             comment = "";
-            //selectedAudio = null;
+            //selectedAudio = registeredAudio;
 
             //refresh jukebox (playlist) to reflect rating changes
             jukeBoxBacking.retrieveAudioList();
@@ -113,6 +112,7 @@ public class RatingBacking extends BaseBacking implements Serializable{
     
     public void handleClose(){
         log.info("CLEANING BEAN ON CLOSING...");
+        
         ratingValue = 0;
         comment = "";
         selectedAudio = null;

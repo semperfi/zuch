@@ -105,8 +105,10 @@ public class AudioAddBacking extends BaseBacking implements Serializable{
                 }else if(id3.getTitle().isEmpty()){
                     id3.setTitle(fileSystemUtils.normalizeFileName(uploadedFile.getFileName()));
                 }
+                
+                String userId = getCurrentUser();
 
-                String footPrint = audioUtils.getAudioFootPrint(content);
+                String footPrint = audioUtils.getAudioFootPrint(content,userId);
                 newAudio.setFootPrint(footPrint);
                 newAudio.setId3(id3);
                 String currentUser = getCurrentUser();

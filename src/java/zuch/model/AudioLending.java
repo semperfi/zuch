@@ -7,6 +7,8 @@
 package zuch.model;
 
 import java.io.Serializable;
+import java.util.Date;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -15,6 +17,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
+import javax.persistence.Temporal;
 import javax.persistence.Version;
 
 /**
@@ -32,6 +35,10 @@ public class AudioLending implements Serializable {
     @Version
     private Integer version;
     
+    @Column(name = "CREATED")
+    @Temporal(javax.persistence.TemporalType.DATE)
+    private Date created = new Date();
+
     
     @ManyToOne
     private Audio audio;
@@ -112,6 +119,14 @@ public class AudioLending implements Serializable {
 
     public void setVersion(Integer version) {
         this.version = version;
+    }
+
+    public Date getCreated() {
+        return created;
+    }
+
+    public void setCreated(Date created) {
+        this.created = created;
     }
     
     

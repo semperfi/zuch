@@ -5,7 +5,7 @@
  */
 
 
- var TIME_TO_WAIT = 1000/40;  //millisecond
+ var TIME_TO_WAIT = 1000/15;  //millisecond
 
 var contextClass = (window.AudioContext ||
 window.webkitAudioContext ||

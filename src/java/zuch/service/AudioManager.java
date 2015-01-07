@@ -10,11 +10,14 @@ package zuch.service;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import java.util.OptionalDouble;
 import java.util.logging.Logger;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.CacheRetrieveMode;
 import javax.persistence.EntityManager;
+
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
@@ -55,6 +58,7 @@ public class AudioManager implements AudioManagerLocal{
             em.flush();
         }catch(PersistenceException  ex){//
             log.warning("CONSTRAINTE VIOLATION...");
+            
             throw new AudioAlreadyExists();
         }   
         
@@ -71,7 +75,7 @@ public class AudioManager implements AudioManagerLocal{
         
         query.setParameter("userID", userID);
         //query.setParameter("status", AudioStatus.IN_JUKEBOX);
-        query.setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS);
+       // query.setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS);
         
         List<Audio> audioList = (List<Audio>)query.getResultList();
         
@@ -343,24 +347,25 @@ public class AudioManager implements AudioManagerLocal{
     }
 
     @Override
-    public int updateAudioAvgRating(Audio audio) {
+    public Audio updateAudioAvgRating(final Audio audio) {
         List<Rating> ratingList = ratingManager.getAudioRating(audio.getId());
-        int res = 0;
+        
+        Audio mergedAudio = null;
         if(ratingList.size() > 0){
-            int sum = 0;
-            for(Rating rat : ratingList){
-                sum += rat.getRatingValue();
-            }
             
-            res = sum/ratingList.size();
-            
-            audio.setAvgRating(res);
-            em.merge(audio);
-            em.flush();
-        }
-        
-        
-        return res;
+          
+        final OptionalDouble avg = ratingList
+                    .stream()
+                    .filter((rat) -> rat.getRatingValue() > 0 )
+                    .mapToInt((rat) -> rat.getRatingValue())
+                    .average();
+           
+           int intAvg = (int)avg.getAsDouble();
+           Audio savedAudio = em.find(Audio.class, audio.getId());
+           savedAudio.setAvgRating(intAvg);
+         }
+         
+         return mergedAudio;
     }
     
    

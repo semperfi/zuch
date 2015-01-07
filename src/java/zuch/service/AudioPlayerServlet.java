@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import zuch.backing.JukeBoxBacking;
+import zuch.event.EventService;
 import zuch.exception.AudioNotFound;
 import zuch.model.Audio;
 import zuch.model.ZConstants;
@@ -34,6 +35,7 @@ public class AudioPlayerServlet extends HttpServlet {
     @Inject PlayToken playToken;
     @Inject AudioUtils audioUtils;
     @Inject ZFileManager fileManager;
+    @Inject EventService eventService;
     
    // @Inject
    // Event<Audio> startIndexingEvent;
@@ -106,6 +108,10 @@ public class AudioPlayerServlet extends HttpServlet {
                        String audioFileName = "";
                        if(inputStream != null){
                             if(audio != null){
+                               /* fire audioPlayingEvent for play trace history
+                               * this event is received by zuch.audit.PlayingHistory class 
+                               */
+                               eventService.getAudioPlayingEvent().fire(audio);
                                audioFileName = audio.getId3().getTitle();
                            }else{
                                audioFileName = "Zuch sample";
@@ -232,6 +238,10 @@ public class AudioPlayerServlet extends HttpServlet {
                        String audioFileName = "";
                        if(inputStream != null){
                             if(audio != null){
+                               /* fire audioPlayingEvent for play trace history
+                               * this event is received by zuch.audit.PlayingHistory class 
+                               */
+                               eventService.getAudioPlayingEvent().fire(audio);
                                audioFileName = audio.getId3().getTitle();
                            }else{
                                audioFileName = "Zuch sample";

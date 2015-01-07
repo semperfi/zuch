@@ -203,27 +203,35 @@ xmlns:jsf="http://xmlns.jcp.org/jsf">
                     resizable="false" position="top" fitViewport="true"  >
               
                 <h:form id="ratingForm"  >
-                    <p:panelGrid columns="1"  >
-                       <p:graphicImage id="artWork" value="#{ratingBacking.retrieveArtWork()}" 
-                                     width="120" height="120"  cache="false" />
-                      <p:rating value="#{ratingBacking.selectedAudio.avgRating}"  readonly="true"/>
-                      <h:outputText value=" #{ratingBacking.selectedAudio.id3.title}" />
-                      <p:inputTextarea id="audioComment" cols="40" value="#{ratingBacking.comment}"    >     
-                                       
-                               <f:passThroughAttribute name="placeHolder" value="type your comment..."/>
-                        </p:inputTextarea>
-                      <p:rating value="#{ratingBacking.ratingValue}"  readonly="false"/>
-                      <p:commandButton value="submit" actionListener="#{ratingBacking.saveRating()}" 
-                                       update=":ratingForm"/>
+                   <p:scrollPanel style="width:300px;height:300px">
+                    <p:panelGrid columns="2"  >
+                         <p:graphicImage id="artWork" value="#{ratingBacking.retrieveArtWork()}" 
+                                       width="120" height="120"  cache="false" />
+                        <h:outputText value=" #{ratingBacking.selectedAudio.id3.title}"  />  
+                     </p:panelGrid>
+                     <p:panelGrid columns="1"  >
+                        
+                        <p:rating value="#{ratingBacking.selectedAudio.avgRating}"  readonly="true"/>
+
+                        <p:inputTextarea id="audioComment" cols="40" value="#{ratingBacking.comment}" 
+                                         autoResize="false"  maxlength="140"  >     
+
+                                 <f:passThroughAttribute name="placeHolder" value="type your comment..."/>
+                          </p:inputTextarea>
+                        <p:rating value="#{ratingBacking.ratingValue}"  readonly="false"/>
+                        <p:commandButton value="post" actionListener="#{ratingBacking.saveRating()}" 
+                                         update=":ratingForm" />
 
                     </p:panelGrid>
+                    </p:scrollPanel> 
+                   
                     <p:spacer height="20" />
                     <p:scrollPanel style="width:280px;height:200px">
                       <p:dataScroller value="#{ratingBacking.retrieveRatings()}" var="rating" 
                                     
                                     mode="inline" chunkSize="10">
                        Author: #{rating.ratingAuthor.id} <br/>
-                       Rating: <p:rating value="#{rating.audio.avgRating}" readonly="true"/><br/>
+                       Rating: <p:rating value="#{rating.ratingValue}" readonly="true"/><br/>
                        <h:outputText value="Comment: #{rating.comment}"  />
                       <p:separator />
                      </p:dataScroller>
