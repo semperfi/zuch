@@ -54,6 +54,7 @@ public class RatingBacking extends BaseBacking implements Serializable{
     public RatingBacking() {
     }
     
+    /*
     public void handleRate(Audio audio) throws UserNotFound{
         
         log.info(String.format("USER RATING: %d", ratingValue));
@@ -74,7 +75,7 @@ public class RatingBacking extends BaseBacking implements Serializable{
        
         
     }
-    
+    */
     
     public void handleCancel(){
     

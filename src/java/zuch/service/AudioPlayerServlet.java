@@ -332,7 +332,7 @@ public class AudioPlayerServlet extends HttpServlet {
 
                     
                      }catch(IOException ex){
-                         log.warning(String.format("---RANGE RQ CONNECTION CLOSED---: %s",ex.getMessage()));
+                         log.warning(String.format("---RANGE RQ CONNECTION CLOSED---"));
                      } catch (AudioNotFound ex) {
                            log.warning("Audio not found");
                      }finally{

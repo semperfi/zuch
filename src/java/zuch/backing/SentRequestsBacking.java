@@ -8,12 +8,12 @@ package zuch.backing;
 
 import java.io.Serializable;
 import java.util.List;
+import javax.annotation.PostConstruct;
+import javax.enterprise.context.RequestScoped;
 import javax.inject.Named;
-import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import zuch.model.AudioRequest;
 import zuch.model.AudioRequestStatus;
-import zuch.qualifier.PerformanceMonitor;
 import zuch.service.AudioManagerLocal;
 import zuch.service.AudioRequestManagerLocal;
 
@@ -22,7 +22,7 @@ import zuch.service.AudioRequestManagerLocal;
  * @author florent
  */
 @Named(value = "sentRequestsBacking")
-@ViewScoped
+@RequestScoped
 //@PerformanceMonitor
 public class SentRequestsBacking extends BaseBacking implements Serializable{
     
@@ -32,12 +32,37 @@ public class SentRequestsBacking extends BaseBacking implements Serializable{
     /**
      * Creates a new instance of SentRequestsBacking
      */
+    
     public SentRequestsBacking() {
     }
     
-     public List<AudioRequest> retrieveSentPendingRequests(){
+  
+    @PostConstruct
+    public void init(){
+        sentReqCount  = retrieveSentPendingRequests().size();
+        
+    }
+    
+   
+    private long sentReqCount = 0;
+   
+
+    public List<AudioRequest> retrieveSentPendingRequests(){
         return audioRequestManager.viewSentRequests(getCurrentUser(),
                 AudioRequestStatus.PENDING);
+        
     }
+
+    
+
+    public long getSentReqCount() {
+        return sentReqCount;
+    }
+
+    public void setSentReqCount(long sentReqCount) {
+        this.sentReqCount = sentReqCount;
+    }
+     
+     
     
 }

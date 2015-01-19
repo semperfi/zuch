@@ -85,10 +85,16 @@ public class ReceivedRequestsBacking extends BaseBacking implements Serializable
     
     public void rejectRequest(AudioRequest request){
         
-        request.setStatus(AudioRequestStatus.APPROVED);
+        request.setStatus(AudioRequestStatus.REJECTED);
         request.setResponseTime(System.currentTimeMillis());
         
+        Audio audio = request.getRequestedAudio();
+        audio.setStatus(AudioStatus.LENT);
+        
+         
         audioRequestManager.updateAudioRequest(request);
+        audioManager.updateAudio(audio);
+        
         String acceptMsg = request.getRequester().getId() + " request has been rejected!";
         getContext().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, 
                     acceptMsg, ""));

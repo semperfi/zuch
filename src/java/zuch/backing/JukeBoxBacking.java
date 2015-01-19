@@ -61,7 +61,7 @@ public class JukeBoxBacking extends BaseBacking implements Serializable{
     private List<Audio> audioList;
     
      
-    private String currentUser;  //because we cannot get user from facescontext in predestroy
+   // private String currentUser;  //because we cannot get user from facescontext in predestroy
     
     @PostConstruct
     public void retrieveAudioList(){
@@ -70,10 +70,6 @@ public class JukeBoxBacking extends BaseBacking implements Serializable{
        buildReceivedReqMsg();
        
      }
-     
-    
-    
-    
     
     private String searchToken;
     private String infoMessage;
@@ -100,18 +96,10 @@ public class JukeBoxBacking extends BaseBacking implements Serializable{
     }
    
   
-    public void viewRatings(){
-        Map<String,Object> options = new HashMap<>();
-        options.put("modal", true);
-        options.put("draggable", false);
-        options.put("resizable", false);
-        options.put("contentHeight", 320);
-        RequestContext.getCurrentInstance().openDialog("rating.xhtml",options,null);
-    }
-    
+   
     
   private String receivedReqMessage;
-  private long receivedReqCount;
+  private long receivedReqCount = 0;
   
   public void buildReceivedReqMsg(){
      
@@ -209,14 +197,10 @@ public class JukeBoxBacking extends BaseBacking implements Serializable{
                 
                 String sMsg = "SELECTED AUDIO FILE: " + audioInfo;
                 Logger.getLogger(JukeBoxBacking.class.getName()).info(sMsg);
-                
-               
-                
+                 
                  // nextIndex =  audioList.indexOf(selectedAudio) + 1; 
                  nextIndex = (audioList.indexOf(selectedAudio)% 20) + 1;
-                
-               
-           
+             
                 String nMsg = "NEXT MP3 INDEX: " + nextIndex;
                 Logger.getLogger(JukeBoxBacking.class.getName()).info(nMsg);
 
@@ -245,18 +229,7 @@ public class JukeBoxBacking extends BaseBacking implements Serializable{
        return audio.getStatus().equals(AudioStatus.LENT);
    }
    
-   public void download(){
-       Logger.getLogger(JukeBoxBacking.class.getName()).info("DOWNLOADING FILE...");
-   }
    
-   
-    public void downloadAudio(Audio audio){
-
-    }
-
-    public void removeAudio(Audio audio){
-
-    }
 
     public String getAudioInfo() {
         return audioInfo;

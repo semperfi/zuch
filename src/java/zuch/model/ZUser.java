@@ -25,7 +25,6 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author florent
  */
 @Entity
-@XmlRootElement
 public class ZUser implements Serializable {
     private static final long serialVersionUID = 1L;
     

@@ -132,6 +132,23 @@ public class AudioRequestManager implements AudioRequestManagerLocal{
         
     }
     
+    
+    @Override
+    public long viewSentRequestsCount(String zuserName, AudioRequestStatus status) {
+        Query query = em.createQuery("SELECT COUNT(audioRequest) FROM AudioRequest audioRequest "
+                + " WHERE audioRequest.requestedAudio.owner.id = :id AND "
+                + " audioRequest.status = :status");
+        
+        query.setParameter("id", zuserName);
+        query.setParameter("status", status);
+        
+        long result = (long)query.getSingleResult();
+        
+        return result;
+        
+    }
+    
+    
      @Override
     public List<AudioRequest> viewSentRequests(String zuserName, AudioRequestStatus status) {
         Query query = em.createQuery("SELECT audioRequest FROM AudioRequest audioRequest "

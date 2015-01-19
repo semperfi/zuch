@@ -10,7 +10,20 @@ xmlns:f="http://xmlns.jcp.org/jsf/core">
         
         <div align="center">
        
-       <p:messages globalOnly="true" showDetail="true" showSummary="true"/>    
+       <p:messages globalOnly="true" showDetail="true" showSummary="true"/>   
+       
+      
+       
+       <div align="center" style="font-size: 28px; color: #1a884c">
+           Create your account.
+           Upload your mp3 to your playlist.
+           Search and discover music from other users playlist.
+           Borrowed mp3 track.
+           Enjoy!
+       </div>
+       
+       
+       <p:spacer height="10"/>
             
         <form action="j_security_check" method="POST" class="form-center">
             <p:panel style=" width: 25%;">
@@ -18,7 +31,7 @@ xmlns:f="http://xmlns.jcp.org/jsf/core">
              <p:panelGrid columns="2"  style=" width: 100%;">
               
               <f:facet name="header">  
-                  Authentication
+                  Login
               </f:facet> 
             
             
@@ -54,7 +67,15 @@ xmlns:f="http://xmlns.jcp.org/jsf/core">
         <h:link value="Not registered? Register now"
             styleClass="input-block-level"
             outcome="/public/pages/register"/>
+        
+       
+        
        </div>
+        
+        
+       
+        
+        
     </ui:define>
     </ui:composition>
 </html>

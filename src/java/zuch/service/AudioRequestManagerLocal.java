@@ -27,6 +27,7 @@ public interface AudioRequestManagerLocal {
     public void rejectAudioRequest(AudioRequest audioRequest) throws AudioRequestNotFound;
     public List<AudioRequest> viewReceivedRequests(String zuserName, AudioRequestStatus status);
     public long viewReceivedRequestsCount(String zuserName, AudioRequestStatus status);
+    public long viewSentRequestsCount(String zuserName, AudioRequestStatus status);
     public List<AudioRequest> viewSentRequests(String zuserName, AudioRequestStatus status);
     
 }

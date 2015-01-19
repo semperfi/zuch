@@ -9,7 +9,6 @@ import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.Stateless;
 
@@ -19,6 +18,8 @@ import javax.ejb.Stateless;
  */
 @Stateless
 public class EncryptionService implements EncryptionServiceLocal {
+    
+    private static final Logger log = Logger.getLogger(EncryptionService.class.getName());
 
     @Override
     public String hash(final String input) {
@@ -32,7 +33,7 @@ public class EncryptionService implements EncryptionServiceLocal {
             hashPasswd = byteArrayToHexString(msgDigest.digest());
             
         } catch (NoSuchAlgorithmException ex) {
-            Logger.getLogger(EncryptionService.class.getName()).log(Level.SEVERE, null, ex);
+            log.severe(ex.getMessage());
         }
          
         return hashPasswd;
@@ -52,7 +53,7 @@ public class EncryptionService implements EncryptionServiceLocal {
             
             
         } catch (NoSuchAlgorithmException ex) {
-            Logger.getLogger(EncryptionService.class.getName()).log(Level.SEVERE, null, ex);
+            log.severe(ex.getMessage());
         }
          
         return hashResult;
@@ -70,7 +71,7 @@ public class EncryptionService implements EncryptionServiceLocal {
         try {
             result = input.getBytes("UTF-8");
         } catch (UnsupportedEncodingException ex) {
-            Logger.getLogger(EncryptionService.class.getName()).log(Level.SEVERE, null, ex);
+            log.severe(ex.getMessage());
         }
         
         return result;

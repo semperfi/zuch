@@ -73,15 +73,16 @@ xmlns:jsf="http://xmlns.jcp.org/jsf">
                
                <div align="right">
                 
-                        <p:inputText id="searchPlayList" size="30"
+                       <p:inputText id="searchPlayList" size="30"
                                         
                                         value="#{jukeBoxBacking.searchToken}">
                                <f:passThroughAttribute name="placeHolder" value="type search keyword..."/>
-                        </p:inputText>
+                       </p:inputText>
                       <h:commandButton value="search" styleClass="btn btn-small btn-primary"
                                      action="#{jukeBoxBacking.retrieveSearchedAudioList()}">
                           <f:ajax execute="@form"  render=":audioListForm:audioData  searchGrowl"/>
                      </h:commandButton>
+                 
                  
                 </div>
                 
@@ -178,7 +179,8 @@ xmlns:jsf="http://xmlns.jcp.org/jsf">
                                <p:column >
                                    <h:outputText rendered="#{jukeBoxBacking.isPlayable(audio)}" 
                                                  value="#{audio.status.value}" 
-                                                  style="color: #ce0612; font-weight: bolder;" />
+                                                  style="color: #ce0612; font-weight: bolder;"/>
+                                  
                                     
                                </p:column>
                  

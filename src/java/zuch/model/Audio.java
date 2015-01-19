@@ -19,6 +19,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
@@ -32,7 +34,17 @@ import javax.xml.bind.annotation.XmlTransient;
  * @author florent
  */
 @Entity
-@XmlRootElement
+@NamedQueries({
+    @NamedQuery(name = "Audio.getAllUserAudiosInJukebox",
+            query = "SELECT cAudio FROM Audio cAudio WHERE "
+                + " cAudio.owner.id = :userID "
+                + "AND cAudio.status = :status "
+                + " ORDER BY cAudio.id3.album"),
+    @NamedQuery(name = "Audio.getAllUserAudios",
+            query = "SELECT cAudio FROM Audio cAudio WHERE "
+                + " cAudio.owner.id = :userID "
+                + " ORDER BY cAudio.id3.album")
+})
 public class Audio implements Serializable {
     
     private static final long serialVersionUID = 1L;

@@ -64,29 +64,35 @@ public class AudioSearchBacking extends BaseBacking implements Serializable{
    // private List<String> sugestionResultList = new ArrayList<>();
     private String currentSuggestion = "";
     private String infoMessage;
-    private Audio selectedAudio;
+   // private Audio selectedAudio;
     private SearchResult selectedResult;
     private String audioInfo;
     
     
-    
-    public String retrieveLuceneSearchAudios(){
-        if(searchUtils.isSearchTokenValid(searchToken)){
+    //used with search input text
+    public void retrieveLuceneSearchAudios(){
+        
+        luceneSearchAudios(searchToken);
+     
+    }
+   
+   //used for search anchor link 
+   public void luceneSearchAudios(String token){
+       
+        if(searchUtils.isSearchTokenValid(token)){
          
-          searchResultList = searcher.luceneSearchForAudio(searchToken);
-          currentSuggestion  = suggest.buildSuggestions(searchToken);
+          searchResultList = searcher.luceneSearchForAudio(token);
+          currentSuggestion  = suggest.buildSuggestions(token);
           infoMessage = searchResultList.size() + " audio file(s) found ";             
-          
+          searchToken = token;
         
       }else{
             infoMessage = "No results found";
       }
        
-       
-        return null;
-    }
-    
+     
    
+   }
     
     
    public String luceneSuggestAudios(){
@@ -208,17 +214,18 @@ public class AudioSearchBacking extends BaseBacking implements Serializable{
         return result;
     }
     
+    /*
     public String retrieveAudioSampleSource(){
        
-       String smsg = "SELCTED MP3: " + selectedAudio;
+       String smsg = "SELCTED MP3: " + selectedResult;
         Logger.getLogger(JukeBoxBacking.class.getName()).info(smsg);
         
         String selectedAudioLink = "";
        
         long currentId = -1;
         
-        if(selectedAudio != null){
-            currentId = selectedAudio.getId();
+        if(selectedResult != null){
+            currentId = selectedResult.getId();
             
             String token = UUID.randomUUID().toString();
             String rangeToken = UUID.randomUUID().toString();
@@ -256,7 +263,7 @@ public class AudioSearchBacking extends BaseBacking implements Serializable{
         
         return selectedAudioLink;
    }
-   
+   */
     public String retrieveAudioResultSource(){
        
        String smsg = "SELCTED MP3: " + selectedResult;
@@ -278,7 +285,7 @@ public class AudioSearchBacking extends BaseBacking implements Serializable{
             playTokens.setToken(token);
             playTokens.setRangeToken(rangeToken);
 
-            selectedAudioLink =  AudioUtils.getAudioStreamBaseLink()
+            selectedAudioLink =  AudioUtils.getAudioSampleStreamBaseLink()
                     +"?id="+currentId+"&tk="+token
                     +"&rtk="+rangeToken;
 
@@ -365,6 +372,7 @@ public class AudioSearchBacking extends BaseBacking implements Serializable{
         this.infoMessage = infoMessage;
     }
 
+    /*
     public Audio getSelectedAudio() {
         return selectedAudio;
     }
@@ -372,7 +380,7 @@ public class AudioSearchBacking extends BaseBacking implements Serializable{
     public void setSelectedAudio(Audio selectedAudio) {
         this.selectedAudio = selectedAudio;
     }
-
+    */
     public SearchResult getSelectedResult() {
         return selectedResult;
     }

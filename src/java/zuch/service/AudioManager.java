@@ -21,6 +21,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 import zuch.exception.AudioAlreadyExists;
 import zuch.exception.AudioNotFound;
 import zuch.model.Audio;
@@ -69,15 +70,12 @@ public class AudioManager implements AudioManagerLocal{
     @Override
     public List<Audio> getAllUserAudios(String userID) {
         
-        Query query = em.createQuery("SELECT cAudio FROM Audio cAudio WHERE "
-                + " cAudio.owner.id = :userID "
-                + " ORDER BY cAudio.id3.album");
+       
+        TypedQuery<Audio> query = em.createNamedQuery("Audio.getAllUserAudios", Audio.class);
         
         query.setParameter("userID", userID);
-        //query.setParameter("status", AudioStatus.IN_JUKEBOX);
        // query.setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS);
-        
-        List<Audio> audioList = (List<Audio>)query.getResultList();
+        List<Audio> audioList = query.getResultList();
         
         if(audioList == null){
             return new ArrayList<>();
@@ -89,14 +87,13 @@ public class AudioManager implements AudioManagerLocal{
     @Override
     public List<Audio> getAllUserAudiosInJukebox(String userID) {
         
-        Query query = em.createQuery("SELECT cAudio FROM Audio cAudio WHERE "
-                + " cAudio.owner.id = :userID AND cAudio.status = :status "
-                + " ORDER BY cAudio.id3.album");
+        TypedQuery<Audio> query = em.createNamedQuery("Audio.getAllUserAudiosInJukebox",
+                Audio.class);
         
         query.setParameter("userID", userID);
         query.setParameter("status", AudioStatus.IN_JUKEBOX);
-        query.setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS);
-        List<Audio> audioList = (List<Audio>)query.getResultList();
+        //query.setHint("javax.persistence.cache.retrieveMode", CacheRetrieveMode.BYPASS);
+        List<Audio> audioList = query.getResultList();
         
         if(audioList == null){
             return new ArrayList<>();
@@ -113,8 +110,7 @@ public class AudioManager implements AudioManagerLocal{
                 + " audio.id3.title = :title");
         
         query.setParameter("title", title);
-       
-        
+            
         List<Audio> audioList = (List<Audio>)query.getResultList();
         
         if(audioList == null){
@@ -152,75 +148,7 @@ public class AudioManager implements AudioManagerLocal{
     }
     
     
-    
-
-    
-
-    @Override
-    public List<Audio> searchForAudio(String searchToken) {
-        
-        searchToken = searchToken.toLowerCase();
-        String[] tokens = searchToken.split(" ");
-        
-        List<Audio> result = new ArrayList<>();
-        
-        for(String token : tokens){
-             Query titleQuery = em.createQuery("SELECT audio FROM Audio audio WHERE "
-                + " LOWER(audio.id3.title) LIKE :title");
-        
-            titleQuery.setParameter("title", "%" + token + "%");
-            List<Audio> tmpResult = titleQuery.getResultList();
-            for(Audio audio : tmpResult){
-                if(!result.contains(audio)){
-                    result.add(audio);
-                }
-                
-            }
-            
-            Query artistQuery = em.createQuery("SELECT audio FROM Audio audio WHERE "
-                + " LOWER(audio.id3.artist) LIKE :artist");
-        
-            artistQuery.setParameter("artist", "%" + token + "%");
-            tmpResult = artistQuery.getResultList();
-            for(Audio audio : tmpResult){
-               if(!result.contains(audio)){
-                   result.add(audio);
-               }
-
-            }
-            
-           Query albumQuery = em.createQuery("SELECT audio FROM Audio audio WHERE "
-                + " LOWER(audio.id3.album) LIKE :album");
-        
-            albumQuery.setParameter("album", "%" + token + "%");
-            tmpResult = albumQuery.getResultList();
-            for(Audio audio : tmpResult){
-               if(!result.contains(audio)){
-                   result.add(audio);
-               }
-
-            }
-            
-           Query rockQuery = em.createQuery("SELECT audio FROM Audio audio WHERE "
-                + " LOWER(audio.id3.genre) LIKE :genre");
-        
-            rockQuery.setParameter("genre", "%" + token + "%");
-            tmpResult = rockQuery.getResultList();
-            for(Audio audio : tmpResult){
-               if(!result.contains(audio)){
-                   result.add(audio);
-               }
-
-            }
-            
-        }
-        
-     
-        return result;
-    }
-    
-    
-    
+   
     @Override
     public List<Audio> searchForAudioInPlayList(String searchToken,String userID ) {
         

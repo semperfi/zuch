@@ -76,20 +76,19 @@ public class Searcher {
     private List<Document> search(Folder folder,Analyzer analyser,String q){
        
         List<Document> searchResult = new ArrayList<>();
-       
-        
+         
         try {
             Directory dir = NIOFSDirectory.open(new File(systemUtils.getPathString(folder)));
+           
             
             try (IndexReader indexReader = DirectoryReader.open(dir)) {
-                IndexSearcher indexSearcher = new IndexSearcher(indexReader);
+                IndexSearcher indexSearcher  = new IndexSearcher(indexReader);
                 
                 QueryBuilder stdBuilder = new QueryBuilder(analyser);
                  
                 BooleanQuery booleanQuery = new BooleanQuery();
                 booleanQuery.add(stdBuilder.createBooleanQuery("contents", q), BooleanClause.Occur.MUST);
-                
-                
+                             
                 long start = System.currentTimeMillis();
                 TopDocs hits = indexSearcher.search(booleanQuery, 15);
                 long end = System.currentTimeMillis();
@@ -101,8 +100,7 @@ public class Searcher {
                         q + "':";
                 
                log.warning(msg);
-                
-              
+                           
                for(ScoreDoc scoreDoc : hits.scoreDocs){
                     Document doc  = indexSearcher.doc(scoreDoc.doc);
                     searchResult.add(doc);
@@ -119,10 +117,10 @@ public class Searcher {
                 if(ex instanceof NullPointerException){
                      log.warning("Cannot search for stop world");
                 }else{
+                   
                     log.severe(ex.getMessage());
                 }
-           
-        }
+       }
         return searchResult;
    }
    
@@ -143,10 +141,9 @@ public class Searcher {
         docList.add(englishDoc);
         
         List<Document> selectedList = max(docList); //get list with max size cause it's likely has best hits
-        
-        for(Document doc : selectedList){
+        selectedList.stream().forEach((doc) -> {
             resultList.add(toSearchResult(doc));
-        }
+        });
         
           
        long end = System.currentTimeMillis();

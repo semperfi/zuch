@@ -157,6 +157,8 @@ public class Indexer {
                     .append("\n")
                     .append(id3.getArtist())
                     .append("\n")
+                    .append(audio.getOwner().getId())
+                    .append("\n")
                     .append(audio.getAvgRating())
                     .toString();
                   

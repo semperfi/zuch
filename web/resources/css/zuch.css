@@ -33,9 +33,9 @@ body{
     -moz-border-radius: 8px;
     border-radius: 8px;
     
-    -webkit-box-shadow: 3px 3px 6px 4px rgba(0, 0, 0, 0.4);
-    -moz-box-shadow: 3px 3px 6px 4px rgba(0, 0, 0, 0.4);
-    box-shadow: 3px 3px 6px 4px rgba(0, 0, 0, 0.4);
+    -webkit-box-shadow: 3px 3px 6px 4px rgba(0, 0, 0, 0.0);
+    -moz-box-shadow: 3px 3px 6px 4px rgba(0, 0, 0, 0.0);
+    box-shadow: 3px 3px 6px 4px rgba(0, 0, 0, 0.0);
     
     
     

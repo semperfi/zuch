@@ -131,12 +131,7 @@ public class ID3 implements Serializable {
         this.artWorkMimeType = artWorkMimeType;
     }
 
-    
-
-    
-
-    
-
+  
     public String getGenre() {
         return genre;
     }

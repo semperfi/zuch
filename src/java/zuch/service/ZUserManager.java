@@ -100,15 +100,7 @@ public class ZUserManager implements ZUserManagerLocal{
         
         user.setGroupList(userGroups);
         
-        /*
-        try{
-        
-        }catch(Exception ex){
-        
-            Logger.getLogger(AudioManager.class.getName()).log(Level.WARNING, "CANNOT PERSIST AUDIO...");
-        }
-        */
-        
+      
         em.persist(user);
         em.flush();
         

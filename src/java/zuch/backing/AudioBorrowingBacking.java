@@ -10,6 +10,7 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.UUID;
 import java.util.logging.Logger;
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Named;
 import javax.faces.application.FacesMessage;
@@ -45,7 +46,14 @@ public class AudioBorrowingBacking extends BaseBacking implements Serializable{
     public AudioBorrowingBacking() {
     }
     
-     public List<Audio> retrieveBorrowedAudioList(){
+    private int borrowedAudioCount;
+    
+    @PostConstruct
+    public void init(){
+        borrowedAudioCount = retrieveBorrowedAudioList().size();
+    }
+    
+    public List<Audio> retrieveBorrowedAudioList(){
        
         return audioManager.getAllUserBorrowedAudios(getCurrentUser());
         
@@ -135,6 +143,15 @@ public class AudioBorrowingBacking extends BaseBacking implements Serializable{
     public void setAudioInfo(String audioInfo) {
         this.audioInfo = audioInfo;
     }
+
+    public int getBorrowedAudioCount() {
+        return borrowedAudioCount;
+    }
+
+    public void setBorrowedAudioCount(int borrowedAudioCount) {
+        this.borrowedAudioCount = borrowedAudioCount;
+    }
+    
     
      
 }

@@ -20,7 +20,7 @@ xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
          
                   <div align="center" >   
                       <p:panel styleClass="zuch-panel" >
-                          <p:panelGrid columns="2" >
+                          <p:panelGrid columns="3" >
                            
                          
                        
@@ -34,6 +34,12 @@ xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
                             <f:ajax execute="@form" render=":audioSearchDataForm"/>
                         </h:commandButton>
                         
+                       <p:ajaxStatus >
+                            <f:facet name="start">
+                                <p:graphicImage value="../../resources/images/battery_charge.png" />
+                            </f:facet>
+                           
+                       </p:ajaxStatus>
                        
                         
                         </p:panelGrid>
@@ -142,12 +148,13 @@ xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
                           
 				<p:column>
                                 <f:facet name="header">
-                                    LISTEN
+                                    SAMPLE
                                 </f:facet>
                                   <p:commandButton update=":audioSearchForm:sampleAudioPanel 
                                                    :audioSearchDataForm:searchAudioInfo"
                                                    icon="ui-icon-play" 
-                                                   action="#{audioSearchBacking.retrieveAudioInfo()}">
+                                                   action="#{audioSearchBacking.retrieveAudioInfo()}"
+                                                   title="Listen track sample.">
                                       <f:setPropertyActionListener 
                                           value="#{currentResult}"
                                           target="#{audioSearchBacking.selectedResult}" />
@@ -159,9 +166,11 @@ xmlns:c="http://xmlns.jcp.org/jsp/jstl/core">
                                 <f:facet name="header">
                                     OWNER
                                 </f:facet>
-                                  <h:outputText value="#{currentResult.owner}" 
-                                                style="color: #189807; font-weight: bolder;"/>
-                                    
+                                  
+                                    <p:commandLink value="#{currentResult.owner}" 
+                                                   actionListener="#{audioSearchBacking.luceneSearchAudios(currentResult.owner)}"
+                                                   update=":audioSearchDataForm :audioSearchForm:searchTitle" 
+                                                   style="color: #189807; font-weight: bolder;"/> 
                                </p:column>
                               
                                <p:column>
