@@ -38,6 +38,7 @@ import zuch.search.ZSpellChecker;
 import zuch.service.AudioManagerLocal;
 import zuch.event.EventService;
 import zuch.event.AudioAddedPayload;
+import zuch.service.AudioManager;
 
 import zuch.service.ZFileManager;
 import zuch.service.ZUserManagerLocal;
@@ -57,6 +58,7 @@ public class AudioAddBacking extends BaseBacking implements Serializable{
     static final Logger log = Logger.getLogger("zuch.service.AudioAddBacking");
    // @Inject Logger log;
    // @Inject Date maintenant;
+    
     
     
     @Inject AudioManagerLocal audioManager;

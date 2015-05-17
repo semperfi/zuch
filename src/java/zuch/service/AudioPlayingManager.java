@@ -7,7 +7,6 @@ package zuch.service;
 
 import java.util.List;
 import javax.ejb.Stateless;
-import zuch.exception.AudioLendingAlreadyExists;
 import zuch.model.Audio;
 import zuch.model.AudioLending;
 import zuch.model.AudioPlayingInfo;

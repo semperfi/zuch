@@ -199,7 +199,7 @@ public class AudioSearchBacking extends BaseBacking implements Serializable{
         boolean result = false;
         try {
             
-            log.info(String.format("CURRENT AUDIO ID: %d", searchResult.getAudioId()));
+            //log.info(String.format("CURRENT AUDIO ID: %d", searchResult.getAudioId()));
             Audio audio = audioManager.getAudio(searchResult.getAudioId());
             if( (audio.getStatus().equals(AudioStatus.IN_JUKEBOX)) && 
             (! audio.getOwner().getId().equals(getCurrentUser())) ){

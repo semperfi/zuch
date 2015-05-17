@@ -13,6 +13,7 @@ import java.util.List;
 
 import java.util.OptionalDouble;
 import java.util.logging.Logger;
+import javafx.scene.image.Image;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.CacheRetrieveMode;
@@ -233,7 +234,7 @@ public class AudioManager implements AudioManagerLocal{
     @Override
     public Audio getAudio(Long id) throws AudioNotFound{
         
-        log.info(String.format("getAudio CURRENT AUDIO ID: %d", id));
+        //log.info(String.format("getAudio CURRENT AUDIO ID: %d", id));
         Audio audio = em.find(Audio.class, id);
         if(audio == null){
             throw new AudioNotFound();
@@ -257,6 +258,7 @@ public class AudioManager implements AudioManagerLocal{
         if(audioList == null){
             return new ArrayList<>();
         }
+        
         
         return audioList;
     }
@@ -288,9 +290,12 @@ public class AudioManager implements AudioManagerLocal{
                     .mapToInt((rat) -> rat.getRatingValue())
                     .average();
            
-           int intAvg = (int)avg.getAsDouble();
-           Audio savedAudio = em.find(Audio.class, audio.getId());
-           savedAudio.setAvgRating(intAvg);
+           if(avg.isPresent()){
+               int intAvg = (int)avg.getAsDouble();
+                Audio savedAudio = em.find(Audio.class, audio.getId());
+                savedAudio.setAvgRating(intAvg);
+           }
+           
          }
          
          return mergedAudio;

@@ -118,7 +118,7 @@ public class Indexer {
         
         Analyzer analyser = new FrenchAnalyzer(Version.LUCENE_4_9, stopWords);
         addToIndex(audio, Folder.FR_INDEX, analyser);
-            
+    
       
         
     }
